@@ -1,0 +1,10 @@
+subdirs = [
+    "radio/V1_0/",
+    "wifi/supplicant/V1_0/",
+    "wifi/V1_0/",
+    "benchmarks/msgq/V1_0/",
+    "bluetooth/V1_0/",
+    "boot/V1_0/",
+    "ir/V1_0/",
+    "nfc/V1_0/",
+]
