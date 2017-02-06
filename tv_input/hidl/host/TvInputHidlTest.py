@@ -40,7 +40,7 @@ class TvInputHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
             coverage_utils.InitializeDeviceCoverage(self.dut)
 
         self.dut.hal.InitHidlHal(target_type="tv_input",
-                                 target_basepaths=["/system/lib64"],
+                                 target_basepaths=self.dut.libPaths,
                                  target_version=1.0,
                                  target_package="android.hardware.tv.input",
                                  target_component_name="ITvInput",

@@ -41,12 +41,12 @@ class VrHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
 
         self.dut.hal.InitHidlHal(
             target_type="vr",
-            target_basepaths=["/system/lib64"],
+            target_basepaths=self.dut.libPaths,
             target_version=1.0,
             target_package="android.hardware.vr",
             target_component_name="IVr",
             hw_binder_service_name=None,
-            bits=64)
+            bits=64 if self.dut.is64Bit else 32)
 
     def tearDownClass(self):
         """ If profiling is enabled for the test, collect the profiling data
