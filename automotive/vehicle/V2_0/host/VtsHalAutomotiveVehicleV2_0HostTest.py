@@ -115,6 +115,30 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test_with_webdb.BaseTestWithWebDb
                 break
         return isLiveSupported, isFreezeSupported
 
+    def emptyValueProperty(self, propertyId, areaId=0):
+        """Creates a property structure for use with the Vehicle HAL.
+
+        Args:
+            propertyId: the numeric identifier of the output property.
+            areaId: the numeric identifier of the vehicle area of the output
+                    property. 0, or omitted, for global.
+
+        Returns:
+            a property structure for use with the Vehicle HAL.
+        """
+        return {
+            'prop' : propertyId,
+            'timestamp' : 0,
+            'areaId' : areaId,
+            'value' : {
+                'int32Values' : [],
+                'floatValues' : [],
+                'int64Values' : [],
+                'bytes' : [],
+                'stringValue' : ""
+            }
+        }
+
     def readVhalProperty(self, propertyId, areaId=0):
         """Reads a specified property from Vehicle HAL.
 
@@ -127,25 +151,59 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test_with_webdb.BaseTestWithWebDb
             the value of the property as read from Vehicle HAL, or None
             if it could not read successfully.
         """
-        vp_dict = {
-            'prop' : propertyId,
-            'timestamp' : 0,
-            'areaId' : areaId,
-            'value' : {
-                'int32Values' : [],
-                'floatValues' : [],
-                'int64Values' : [],
-                'bytes' : [],
-                'stringValue' : ""
-            }
-        }
-        vp = self.vtypes.Py2Pb("VehiclePropValue", vp_dict)
+        vp = self.vtypes.Py2Pb("VehiclePropValue",
+                               self.emptyValueProperty(propertyId, areaId))
+        logging.info("0x%08X get request: %s", propertyId, vp)
         status, value = self.vehicle.get(vp)
+        logging.info("0x%08X get response: %s, %s", propertyId, status, value)
         if self.vtypes.OK == status:
             return value
         else:
-            logging.warning("attempt to read property %s returned error %d",
+            logging.warning("attempt to read property 0x%08X returned error %d",
                             propertyId, status)
+
+    def setVhalProperty(self, propertyId, value, areaId=0,
+                        expectedStatus=0):
+        """Sets a specified property in the Vehicle HAL.
+
+        Args:
+            propertyId: the numeric identifier of the property to be set.
+            value: the value of the property, formatted as per the Vehicle HAL
+                   (use emptyValueProperty() as a helper).
+            areaId: the numeric identifier of the vehicle area to set the
+                    property for. 0, or omitted, for global.
+            expectedStatus: the StatusCode expected to be returned from setting
+                    the property. 0, or omitted, for OK.
+        """
+        propValue = self.emptyValueProperty(propertyId, areaId)
+        for k in propValue["value"]:
+            if k in value:
+                if k == "stringValue":
+                    propValue["value"][k] += value[k]
+                else:
+                    propValue["value"][k].extend(value[k])
+        vp = self.vtypes.Py2Pb("VehiclePropValue", propValue)
+        logging.info("0x%08X set request: %s", propertyId, vp)
+        status = self.vehicle.set(vp)
+        logging.info("0x%08X set response: %s", propertyId, status)
+        if 0 == expectedStatus:
+            expectedStatus = self.vtypes.OK
+        asserts.assertEqual(expectedStatus, status)
+
+    def setAndVerifyIntProperty(self, propertyId, value, areaId=0):
+        """Sets a integer property in the Vehicle HAL and reads it back.
+
+        Args:
+            propertyId: the numeric identifier of the property to be set.
+            value: the int32 value of the property to be set.
+            areaId: the numeric identifier of the vehicle area to set the
+                    property for. 0, or omitted, for global.
+        """
+        self.setVhalProperty(propertyId, {"int32Values" : [value]})
+
+        propValue = self.readVhalProperty(propertyId)
+        asserts.assertEqual(1, len(propValue["value"]["int32Values"]))
+        asserts.assertEqual(value, propValue["value"]["int32Values"][0])
 
     def testObd2SensorProperties(self):
         """Test reading the live and freeze OBD2 frame properties.
@@ -207,39 +265,100 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test_with_webdb.BaseTestWithWebDb
         if isFreezeSupported:
             checkFreezeFrameRead()
 
-    def createVehiclePropValue(self, propId):
-        value = {
-            "int32Values" : [],
-            "floatValues" : [],
-            "int64Values" : [],
-            "bytes": [],
-            "stringValue": ""
-        }
-        propValue = {
-            "prop": propId,
-            "timestamp": 0,
-            "areaId": 0,
-            "value": value
-        }
-        return self.vtypes.Py2Pb("VehiclePropValue", propValue)
-
     def testDrivingStatus(self):
         """Checks that DRIVING_STATUS property returns correct result."""
-        request = self.createVehiclePropValue(self.vtypes.DRIVING_STATUS)
-        logging.info("Driving status request: %s", request)
-        response = self.vehicle.get(request)
-        logging.info("Driving status response: %s", response)
-        status = response[0]
-        asserts.assertEqual(self.vtypes.OK, status)
-        propValue = response[1]
-        assertEqual(1, len(propValue.value.int32Values))
-        drivingStatus = propValue.value.int32Values[0]
+        propValue = self.readVhalProperty(self.vtypes.DRIVING_STATUS)
+        asserts.assertEqual(1, len(propValue["value"]["int32Values"]))
+        drivingStatus = propValue["value"]["int32Values"][0]
 
         allStatuses = (self.vtypes.UNRESTRICTED | self.vtypes.NO_VIDEO
                | self.vtypes.NO_KEYBOARD_INPUT | self.vtypes.NO_VOICE_INPUT
                | self.vtypes.NO_CONFIG | self.vtypes.LIMIT_MESSAGE_LEN)
 
-        assertEqual(allStatuses, allStatuses | drivingStatus)
+        asserts.assertEqual(allStatuses, allStatuses | drivingStatus)
+
+    def testHvacPowerOn(self):
+        """Test power on/off and properties associated with it.
+
+        Gets the list of properties that are affected by the HVAC power state
+        and validates them.
+
+        Turns power on to start in a defined state, verifies that power is on
+        and properties are available.  State change from on->off and verifies
+        that properties are no longer available, then state change again from
+        off->on to verify properties are now available again.
+        """
+
+        # Checks that HVAC_POWER_ON property is supported and returns valid
+        # result initially.
+        propValue = self.readVhalProperty(self.vtypes.HVAC_POWER_ON)
+        if propValue is None:
+            logging.info("HVAC_POWER_ON not supported")
+            return
+        asserts.assertEqual(1, len(propValue["value"]["int32Values"]))
+        asserts.assertTrue(
+            propValue["value"]["int32Values"][0] in [0, 1],
+            "%d not a valid value for HVAC_POWER_ON" %
+                propValue["value"]["int32Values"][0]
+            )
+
+        # Checks that HVAC_POWER_ON config string returns valid result.
+        requestConfig = [self.vtypes.Py2Pb("VehicleProperty",
+                                           self.vtypes.HVAC_POWER_ON)]
+        logging.info("HVAC power on config request: %s", requestConfig)
+        responseConfig = self.vehicle.getPropConfigs(requestConfig)
+        logging.info("HVAC power on config response: %s", responseConfig)
+        hvacTypes = set([
+            self.vtypes.HVAC_FAN_SPEED,
+            self.vtypes.HVAC_FAN_DIRECTION,
+            self.vtypes.HVAC_TEMPERATURE_CURRENT,
+            self.vtypes.HVAC_TEMPERATURE_SET,
+            self.vtypes.HVAC_DEFROSTER,
+            self.vtypes.HVAC_AC_ON,
+            self.vtypes.HVAC_MAX_AC_ON,
+            self.vtypes.HVAC_MAX_DEFROST_ON,
+            self.vtypes.HVAC_RECIRC_ON,
+            self.vtypes.HVAC_DUAL_ON,
+            self.vtypes.HVAC_AUTO_ON,
+            self.vtypes.HVAC_ACTUAL_FAN_SPEED_RPM,
+        ])
+        status = responseConfig[0]
+        asserts.assertEqual(self.vtypes.OK, status)
+        configString = responseConfig[1][0]["configString"]
+        configProps = []
+        if configString != "":
+            for prop in configString.split(","):
+                configProps.append(int(prop, 16))
+        for prop in configProps:
+            asserts.assertTrue(prop in hvacTypes,
+                               "0x%X not an HVAC type" % prop)
+
+        # Turn power on.
+        self.setAndVerifyIntProperty(self.vtypes.HVAC_POWER_ON, 1)
+
+        # Check that properties that require power to be on can be set.
+        propVals = {}
+        for prop in configProps:
+            v = self.readVhalProperty(prop)["value"]
+            self.setVhalProperty(prop, v)
+            # Save the value for use later when trying to set the property when
+            # HVAC is off.
+            propVals[prop] = v
+
+        # Turn power off.
+        self.setAndVerifyIntProperty(self.vtypes.HVAC_POWER_ON, 0)
+
+        # Check that properties that require power to be on can't be set.
+        for prop in configProps:
+            self.setVhalProperty(prop, propVals[prop],
+                                 expectedStatus=self.vtypes.NOT_AVAILABLE)
+
+        # Turn power on.
+        self.setAndVerifyIntProperty(self.vtypes.HVAC_POWER_ON, 1)
+
+        # Check that properties that require power to be on can be set.
+        for prop in configProps:
+            self.setVhalProperty(prop, propVals[prop])
 
     def testPropertyRanges(self):
         """Retrieve the property ranges for all areas.
