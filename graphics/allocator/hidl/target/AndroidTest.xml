@@ -24,7 +24,8 @@
             _32bit::DATA/nativetest/graphics_allocator_hidl_hal_test/graphics_allocator_hidl_hal_test,
             _64bit::DATA/nativetest64/graphics_allocator_hidl_hal_test/graphics_allocator_hidl_hal_test,
 	    " />
-        <option name="binary-test-type" value="gtest" />
+        <option name="binary-test-type" value="hal_hidl_gtest" />
+        <option name="precondition-lshal" value="android.hardware.graphics.allocator@2.0" />
         <option name="test-timeout" value="1m" />
     </test>
 </configuration>

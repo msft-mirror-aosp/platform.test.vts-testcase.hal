@@ -24,7 +24,8 @@
             _32bit::DATA/nativetest/graphics_composer_hidl_hal_test/graphics_composer_hidl_hal_test,
             _64bit::DATA/nativetest64/graphics_composer_hidl_hal_test/graphics_composer_hidl_hal_test,
 	    " />
-        <option name="binary-test-type" value="gtest" />
+        <option name="binary-test-type" value="hal_hidl_gtest" />
+        <option name="precondition-lshal" value="android.hardware.graphics.composer@2.1" />
         <option name="test-timeout" value="1m" />
     </test>
 </configuration>
