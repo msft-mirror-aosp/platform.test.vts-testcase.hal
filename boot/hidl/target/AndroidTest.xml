@@ -26,7 +26,7 @@
             "/>
         <option name="test-config-path" value="vts/testcases/hal/boot/hidl/target/HalBootHidlTargetTest.config" />
         <option name="binary-test-type" value="hal_hidl_gtest" />
-        <option name="precondition-lshal" value="android.hardware.boot@1.0::I*" />
+        <option name="precondition-lshal" value="android.hardware.boot@1.0" />
         <option name="test-timeout" value="1m" />
     </test>
 </configuration>
