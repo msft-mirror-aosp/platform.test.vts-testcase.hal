@@ -25,6 +25,7 @@ from vts.runners.host import keys
 from vts.runners.host import test_runner
 from vts.utils.python.controllers import android_device
 from vts.utils.python.coverage import coverage_utils
+from vts.utils.python.profiling import profiling_utils
 
 
 class TvCecHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
@@ -43,6 +44,9 @@ class TvCecHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
         if getattr(self, keys.ConfigKeys.IKEY_ENABLE_COVERAGE, False):
             coverage_utils.InitializeDeviceCoverage(self.dut)
 
+        if self.enable_profiling:
+            profiling_utils.EnableVTSProfiling(self.dut.shell.one)
+
         self.dut.hal.InitHidlHal(
             target_type="tv_cec",
             target_basepaths=self.dut.libPaths,
@@ -56,6 +60,12 @@ class TvCecHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
         """To be executed when all test cases are finished."""
         if getattr(self, keys.ConfigKeys.IKEY_ENABLE_COVERAGE, False):
             self.SetCoverageData(coverage_utils.GetGcdaDict(self.dut))
+
+        if self.enable_profiling:
+            profiling_trace_path = getattr(
+                self, self.VTS_PROFILING_TRACING_PATH, "")
+            self.ProcessTraceDataForTestCase(self.dut, profiling_trace_path)
+            profiling_utils.DisableVTSProfiling(self.dut.shell.one)
 
     def testGetCecVersion1(self):
         """A simple test case which queries the cec version."""
