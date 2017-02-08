@@ -1,0 +1,57 @@
+// This file was auto-generated. Do not edit manually.
+// Use test/vts-testcase/hal/update_makefiles.py to generate this file.
+
+genrule {
+    name: "android.hardware.{HAL_NAME}.vts.driver@{HAL_VERSION}_genc++",
+    tools: ["hidl-gen", "vtsc"],
+    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.{HAL_NAME}@{HAL_VERSION} && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/{HAL_NAME_DIR}/{HAL_VERSION}/ $(genDir)/android/hardware/{HAL_NAME_DIR}/{HAL_VERSION}/",
+    srcs: [
+        ":android.hardware.{HAL_NAME}@{HAL_VERSION}_hal",
+    ],
+    out: [
+        {GENERATED_SOURCES}
+    ],
+}
+
+genrule {
+    name: "android.hardware.{HAL_NAME}.vts.driver@{HAL_VERSION}_genc++_headers",
+    tools: ["hidl-gen", "vtsc"],
+    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.{HAL_NAME}@{HAL_VERSION} && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/{HAL_NAME_DIR}/{HAL_VERSION}/ $(genDir)/android/hardware/{HAL_NAME_DIR}/{HAL_VERSION}/",
+    srcs: [
+        ":android.hardware.{HAL_NAME}@{HAL_VERSION}_hal",
+    ],
+    out: [
+        {GENERATED_HEADERS}
+    ],
+}
+
+cc_library_shared {
+    name: "android.hardware.{HAL_NAME}.vts.driver@{HAL_VERSION}",
+    generated_sources: ["android.hardware.{HAL_NAME}.vts.driver@{HAL_VERSION}_genc++"],
+    generated_headers: ["android.hardware.{HAL_NAME}.vts.driver@{HAL_VERSION}_genc++_headers"],
+    export_generated_headers: ["android.hardware.{HAL_NAME}.vts.driver@{HAL_VERSION}_genc++_headers"],
+    shared_libs: [
+        "libhidlbase",
+        "libhidltransport",
+        "libhwbinder",
+        "liblog",
+        "libutils",
+        "libcutils",
+        "libvts_common",
+        "libvts_datatype",
+        "libvts_measurement",
+        "libvts_multidevice_proto",
+        "libcamera_metadata",
+        "libprotobuf-cpp-full",
+        "android.hidl.base@1.0",
+        "android.hardware.{HAL_NAME}@{HAL_VERSION}",
+    ],
+    export_shared_lib_headers: [
+        "libhidlbase",
+        "libhidltransport",
+        "libhwbinder",
+        "libutils",
+        "android.hidl.base@1.0",
+    ],
+}
+
