@@ -18,6 +18,6 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := HalWifiHidlTargetTest
-VTS_CONFIG_SRC_DIR := testcases/hal/wifi/hidl/target
+LOCAL_MODULE := HalIrHidlTargetTest
+VTS_CONFIG_SRC_DIR := testcases/hal/ir/V1_0/target
 include test/vts/tools/build/Android.host_config.mk
