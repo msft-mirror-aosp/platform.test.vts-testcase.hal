@@ -19,5 +19,5 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := NfcHidlBinderizeBasicTest
-VTS_CONFIG_SRC_DIR := testcases/hal/nfc/hidl/host/binderize
+VTS_CONFIG_SRC_DIR := testcases/hal/nfc/V1_0/hidl/host/binderize
 include test/vts/tools/build/Android.host_config.mk

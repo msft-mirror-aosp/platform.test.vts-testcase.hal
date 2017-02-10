@@ -24,7 +24,7 @@
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="NfcHidlPassthroughBasicTest" />
-        <option name="test-case-path" value="vts/testcases/hal/nfc/hidl/host/NfcHidlBasicTest" />
-        <option name="test-config-path" value="vts/testcases/hal/nfc/hidl/host/passthrough/NfcHidlPassthroughBasicTest.config" />
+        <option name="test-case-path" value="vts/testcases/hal/nfc/V1_0/host/NfcHidlBasicTest" />
+        <option name="test-config-path" value="vts/testcases/hal/nfc/V1_0/host/passthrough/NfcHidlPassthroughBasicTest.config" />
     </test>
 </configuration>
