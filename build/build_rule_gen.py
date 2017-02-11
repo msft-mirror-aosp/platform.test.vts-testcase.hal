@@ -17,10 +17,17 @@
 
 import fnmatch
 import os
+import shutil
+import subprocess
+import sys
 
+# TODO(trong): use proper packaging without referencing modules from source.
+TEST_VTS_DIR = '%s/../../../vts' % os.path.dirname(__file__)
+sys.path.append(TEST_VTS_DIR)
+from proto import ComponentSpecificationMessage_pb2 as CompSpecMsg
+from google.protobuf import text_format
 HW_IFACE_DIR = '../../../hardware/interfaces/'
-VTS_DRIVER_BUILD_TEMPLATE = 'build/template/vts_driver_build_template.bp'
-VTS_PROFILER_BUILD_TEMPLATE = 'build/template/vts_profiler_build_template.bp'
+VTS_BUILD_TEMPLATE = 'build/template/vts_build_template.bp'
 
 
 def UpdateBuildRule():
@@ -29,10 +36,10 @@ def UpdateBuildRule():
     def HalList():
         """Returns a list of hals and version present under hardware/interfaces.
 
-    Returns:
-      List of tuples of strings containing hal names and hal versions. For example,
-      [('vibrator', '1.3'), ('sensors', '1.7')]
-    """
+        Returns:
+          List of tuples of strings containing hal names and hal versions.
+          For example, [('vibrator', '1.3'), ('sensors', '1.7')]
+        """
         result = []
         for base, dirs, files in os.walk(HW_IFACE_DIR):
             pattern = HW_IFACE_DIR + '*/[0-9].[0-9]'
@@ -57,12 +64,13 @@ def UpdateTopLevelBuildRule(hal_list):
 def UpdateHalDirBuildRule(hal_list):
     """Updates build rules for vts drivers/profilers.
 
-  Updates vts drivers/profilers for each pair of (hal_name, hal_version) in hal_list.
+    Updates vts drivers/profilers for each pair of (hal_name, hal_version)
+    in hal_list.
 
-  Args:
-    hal_list: list of tuple of strings. For example,
-        [('vibrator', '1.3'), ('sensors', '1.7')]
-  """
+    Args:
+        hal_list: list of tuple of strings. For example,
+            [('vibrator', '1.3'), ('sensors', '1.7')]
+    """
     for target in hal_list:
         hal_name = target[0]
         hal_version = target[1]
@@ -70,28 +78,21 @@ def UpdateHalDirBuildRule(hal_list):
         hal_version_dir = 'V' + hal_version.replace('.', '_')
 
         file_path = './%s/%s/Android.bp' % (hal_name_dir, hal_version_dir)
-        WriteBuildRule(file_path, HalDirBuildRule())
-
-        file_path = './%s/%s/driver/Android.bp' % (hal_name_dir,
-                                                   hal_version_dir)
         WriteBuildRule(file_path, VtsBuildRuleFromTemplate(
-            VTS_DRIVER_BUILD_TEMPLATE, hal_name, hal_version))
-
-        file_path = './%s/%s/profiler/Android.bp' % (hal_name_dir,
-                                                     hal_version_dir)
-        WriteBuildRule(file_path, VtsBuildRuleFromTemplate(
-            VTS_PROFILER_BUILD_TEMPLATE, hal_name, hal_version))
+            VTS_BUILD_TEMPLATE, hal_name, hal_version))
 
 
 def WriteBuildRule(file_path, build_rule):
     """Writes the build rule into specified file.
 
-  Opens file_path and writes build_rule into it. Creates intermediate directories if necessary.
+    Opens file_path and writes build_rule into it. Creates intermediate
+    directories if necessary.
 
-  Args:
-    file_path: string, path to file to which to write.
-    build_rule: string, build rule to be written into file.
-  """
+    Args:
+      file_path: string, path to file to which to write.
+      build_rule: string, build rule to be written into file.
+    """
+    print 'Updating %s' % file_path
     dir_path = os.path.dirname(file_path)
 
     if not os.path.exists(dir_path):
@@ -104,10 +105,10 @@ def WriteBuildRule(file_path, build_rule):
 def TopLevelBuildRule(hal_list):
     """Returns build rules for test/vts-testcase/hal/Android.bp.
 
-  Args:
-    hal_list: list of tuple of strings. For example,
-        [('vibrator', '1.3'), ('sensors', '1.7')]
-  """
+    Args:
+      hal_list: list of tuple of strings. For example,
+          [('vibrator', '1.3'), ('sensors', '1.7')]
+    """
     result = 'subdirs = [\n'
     for target in hal_list:
         hal_name = target[0]
@@ -120,55 +121,84 @@ def TopLevelBuildRule(hal_list):
     return result
 
 
-def HalDirBuildRule():
-    return 'subdirs = ["*"]\n'
-
-
 def VtsBuildRuleFromTemplate(template_path, hal_name, hal_version):
     """Returns build rules in string form by filling out a template.
 
-  Reads template from given path and fills it out.
-
-  Args:
-    template_path: string, path to build rule template file.
-    hal_name: string, name of the hal, e.g. 'vibrator'.
-    hal_version: string, version of the hal, e.g '7.4'
-
-  Returns:
-    string, complete build rules in string form
-  """
-    with open(template_path) as template_file:
-        build_template = str(template_file.read())
-    return FillOutBuildRuleTemplate(build_template, hal_name, hal_version)
-
-
-def FillOutBuildRuleTemplate(template, hal_name, hal_version):
-    """Returns build rules in string form by filling out given template.
-
-  Args:
-    template: string, build rule template to fill out.
-    hal_name: string, name of the hal, e.g. 'vibrator'.
-    hal_version: string, version of the hal, e.g '7.4'
-
-  Returns:
-    string, complete build rule in string form.
-  """
-
-    def HalSpecToVtsSpecName(hal_spec_name):
-        """Transforms hal spec name to its corresponding vts spec name.
+    Reads template from given path and fills it out.
 
     Args:
-      hal_spec_name: string, name of hal file, e.g. 'IVibrator.hal'.
-    Returns:
-      string, name of hal file, e.g. 'Vibrator.vts'.
-    """
-        vts_spec_name = hal_spec_name.replace('.hal', '.vts')
-        if vts_spec_name != 'types.vts':
-            vts_spec_name = vts_spec_name[1:]
-        return vts_spec_name
+      template_path: string, path to build rule template file.
+      hal_name: string, name of the hal, e.g. 'vibrator'.
+      hal_version: string, version of the hal, e.g '7.4'
 
-    def VtsSpecList(hal_name, hal_version):
-        """Returns list of .vts files for given hal name and version.
+    Returns:
+      string, complete build rules in string form
+    """
+    with open(template_path) as template_file:
+        build_template = str(template_file.read())
+    return FillOutBuildRuleTemplate(hal_name, hal_version, build_template)
+
+
+def ImportedPackagesList(hal_name, hal_version):
+    """Returns a list of imported packages.
+
+    Args:
+      hal_name: string, name of the hal, e.g. 'vibrator'.
+      hal_version: string, version of the hal, e.g '7.4'
+
+    Returns:
+      list of strings. For example,
+          ['android.hardware.vibrator@1.3', 'android.hidl.base@1.7']
+    """
+    temp_dir = './temp/'
+
+    def GenerateVtsSpecs(hal_name, hal_version, temp_dir):
+        """Generates VTS specs.
+
+        Uses hidl-gen to generate .vts files under a temp directory.
+
+        Args:
+          hal_name: string, name of the hal, e.g. 'vibrator'.
+          hal_version: string, version of the hal, e.g '7.4'
+          temp_dir: string, location to which to write temp files.
+        """
+        hidl_gen_cmd = ('hidl-gen -o {TEMP_DIR} -L vts '
+                        '-r android.hardware:../../../hardware/interfaces '
+                        '-r android.hidl:../../../system/libhidl/transport '
+                        'android.hardware.{HAL_NAME}@{HAL_VERSION}').format(
+                            TEMP_DIR=temp_dir,
+                            HAL_NAME=hal_name,
+                            HAL_VERSION=hal_version)
+        subprocess.call(hidl_gen_cmd, shell=True)
+
+    GenerateVtsSpecs(hal_name, hal_version, temp_dir)
+    vts_spec_list = VtsSpecList(hal_name, hal_version)
+
+    hal_name_dir = hal_name.replace('.', '/')
+    vts_spec_dir = '%s/android/hardware/%s/%s/' % (temp_dir, hal_name_dir,
+                                                   hal_version)
+    imported_packages = set()
+    for vts_spec in vts_spec_list:
+        spec_proto = CompSpecMsg.ComponentSpecificationMessage()
+        vts_spec_path = '%s/%s' % (vts_spec_dir, vts_spec)
+        with open(vts_spec_path, 'r') as spec_file:
+            spec_string = spec_file.read()
+            text_format.Merge(spec_string, spec_proto)
+
+        for package in getattr(spec_proto, 'import', []):
+            package = package.split('::')[0]
+            imported_packages.add(package)
+
+    this_package = 'android.hardware.%s@%s' % (hal_name, hal_version)
+    if this_package in imported_packages:
+        imported_packages.remove(this_package)
+
+    shutil.rmtree(temp_dir)
+    return imported_packages
+
+
+def VtsSpecList(hal_name, hal_version):
+    """Returns list of .vts files for given hal name and version.
 
     hal_name: string, name of the hal, e.g. 'vibrator'.
     hal_version: string, version of the hal, e.g '7.4'
@@ -177,18 +207,84 @@ def FillOutBuildRuleTemplate(template, hal_name, hal_version):
       list of string, .vts files for given hal name and version,
           e.g. ['Vibrator.vts', 'types.vts']
     """
-        hal_files_dir = '%s/%s/%s/' % (HW_IFACE_DIR, hal_name.replace(
-            '.', '/'), hal_version)
-        hal_spec_list = filter(lambda x: x.endswith('.hal'),
-                               os.listdir(hal_files_dir))
-        vts_spec_list = map(HalSpecToVtsSpecName, hal_spec_list)
-        return vts_spec_list
+
+    def HalSpecToVtsSpecName(hal_spec_name):
+        """Transforms hal spec name to its corresponding vts spec name.
+
+        Args:
+          hal_spec_name: string, name of hal file, e.g. 'IVibrator.hal'.
+
+        Returns:
+          string, name of hal file, e.g. 'Vibrator.vts'.
+        """
+        vts_spec_name = hal_spec_name.replace('.hal', '.vts')
+        if vts_spec_name != 'types.vts':
+            vts_spec_name = vts_spec_name[1:]
+        return vts_spec_name
+
+    hal_files_dir = '%s/%s/%s/' % (HW_IFACE_DIR, hal_name.replace('.', '/'),
+                                   hal_version)
+    hal_spec_list = filter(lambda x: x.endswith('.hal'),
+                           os.listdir(hal_files_dir))
+    vts_spec_list = map(HalSpecToVtsSpecName, hal_spec_list)
+    return vts_spec_list
+
+
+def FillOutBuildRuleTemplate(hal_name, hal_version, template):
+    """Returns build rules in string form by filling out given template.
+
+    Args:
+      hal_name: string, name of the hal, e.g. 'vibrator'.
+      hal_version: string, version of the hal, e.g '7.4'
+      template: string, build rule template to fill out.
+
+    Returns:
+      string, complete build rule in string form.
+    """
 
     def GeneratedOutput(hal_name, hal_version, extension):
+        """Formats list of vts spec names into a string.
+
+        Formats list of vts spec name for given hal_name, hal_version
+        into a string that can be inserted into build template.
+
+        Args:
+          hal_name: string, name of the hal, e.g. 'vibrator'.
+          hal_version: string, version of the hal, e.g '7.4'
+          extension: string, extension of files e.g. '.cpp'.
+
+        Returns:
+          string, to be inserted into build template.
+        """
         result = []
-        for vts_spec in VtsSpecList(hal_name, hal_version):
+        vts_spec_list = VtsSpecList(hal_name, hal_version)
+        for vts_spec in vts_spec_list:
             result.append('"android/hardware/%s/%s/%s%s",' % (
                 hal_name.replace('.', '/'), hal_version, vts_spec, extension))
+        return '\n        '.join(result)
+
+    def ImportedDriverPackages(hal_name, hal_version):
+        """Formats list of imported packages into a string.
+
+        Formats list of imported packages for given hal_name, hal_version
+        into a string that can be inserted into build template.
+
+        Args:
+          hal_name: string, name of the hal, e.g. 'vibrator'.
+          hal_version: string, version of the hal, e.g '7.4'
+
+        Returns:
+          string, to be inserted into build template.
+        """
+        result = []
+        imported_packages_list = ImportedPackagesList(hal_name, hal_version)
+        for package in imported_packages_list:
+            prefix = 'android.hardware.'
+            if package.startswith(prefix):
+                vts_driver_name = package.replace('@', '.vts.driver@')
+                result.append('"%s",' % vts_driver_name)
+            else:
+                result.append('"%s",' % package)
         return '\n        '.join(result)
 
     build_rule = template
@@ -200,5 +296,8 @@ def FillOutBuildRuleTemplate(template, hal_name, hal_version):
         '{GENERATED_SOURCES}', GeneratedOutput(hal_name, hal_version, '.cpp'))
     build_rule = build_rule.replace(
         '{GENERATED_HEADERS}', GeneratedOutput(hal_name, hal_version, '.h'))
+    build_rule = build_rule.replace(
+        '{IMPORTED_DRIVER_PACKAGES}',
+        ImportedDriverPackages(hal_name, hal_version))
 
     return build_rule
