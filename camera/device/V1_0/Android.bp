@@ -10,10 +10,10 @@ genrule {
         ":android.hardware.camera.device@1.0_hal",
     ],
     out: [
-        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.cpp",
-        "android/hardware/camera/device/1.0/types.vts.cpp",
-        "android/hardware/camera/device/1.0/CameraDevice.vts.cpp",
         "android/hardware/camera/device/1.0/CameraDevicePreviewCallback.vts.cpp",
+        "android/hardware/camera/device/1.0/types.vts.cpp",
+        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.cpp",
+        "android/hardware/camera/device/1.0/CameraDevice.vts.cpp",
     ],
 }
 
@@ -25,10 +25,10 @@ genrule {
         ":android.hardware.camera.device@1.0_hal",
     ],
     out: [
-        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.h",
-        "android/hardware/camera/device/1.0/types.vts.h",
-        "android/hardware/camera/device/1.0/CameraDevice.vts.h",
         "android/hardware/camera/device/1.0/CameraDevicePreviewCallback.vts.h",
+        "android/hardware/camera/device/1.0/types.vts.h",
+        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.h",
+        "android/hardware/camera/device/1.0/CameraDevice.vts.h",
     ],
 }
 
@@ -52,15 +52,15 @@ cc_library_shared {
         "libprotobuf-cpp-full",
         "android.hardware.camera.device@1.0",
         "android.hardware.camera.common.vts.driver@1.0",
-        "android.hidl.base@1.0",
-        "android.hardware.graphics.common.vts.driver@1.0",
         "android.hardware.graphics.allocator.vts.driver@2.0",
+        "android.hardware.graphics.common.vts.driver@1.0",
+        "android.hidl.base@1.0",
     ],
     export_shared_lib_headers: [
         "android.hardware.camera.common.vts.driver@1.0",
-        "android.hidl.base@1.0",
-        "android.hardware.graphics.common.vts.driver@1.0",
         "android.hardware.graphics.allocator.vts.driver@2.0",
+        "android.hardware.graphics.common.vts.driver@1.0",
+        "android.hidl.base@1.0",
     ],
 }
 
@@ -73,10 +73,10 @@ genrule {
         ":android.hardware.camera.device@1.0_hal",
     ],
     out: [
-        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.cpp",
-        "android/hardware/camera/device/1.0/types.vts.cpp",
-        "android/hardware/camera/device/1.0/CameraDevice.vts.cpp",
         "android/hardware/camera/device/1.0/CameraDevicePreviewCallback.vts.cpp",
+        "android/hardware/camera/device/1.0/types.vts.cpp",
+        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.cpp",
+        "android/hardware/camera/device/1.0/CameraDevice.vts.cpp",
     ],
 }
 
@@ -88,10 +88,10 @@ genrule {
         ":android.hardware.camera.device@1.0_hal",
     ],
     out: [
-        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.h",
-        "android/hardware/camera/device/1.0/types.vts.h",
-        "android/hardware/camera/device/1.0/CameraDevice.vts.h",
         "android/hardware/camera/device/1.0/CameraDevicePreviewCallback.vts.h",
+        "android/hardware/camera/device/1.0/types.vts.h",
+        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.h",
+        "android/hardware/camera/device/1.0/CameraDevice.vts.h",
     ],
 }
 
@@ -107,8 +107,11 @@ cc_library_shared {
         "libvts_profiling",
         "libvts_multidevice_proto",
         "libprotobuf-cpp-full",
-        "android.hidl.base@1.0",
         "android.hardware.camera.device@1.0",
+        "android.hardware.camera.common@1.0-vts.profiler",
+        "android.hardware.graphics.allocator@2.0-vts.profiler",
+        "android.hardware.graphics.common@1.0-vts.profiler",
+        "android.hidl.base@1.0",
     ],
 }
 

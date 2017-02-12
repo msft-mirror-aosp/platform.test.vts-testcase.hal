@@ -11,8 +11,8 @@ genrule {
     ],
     out: [
         "android/hardware/usb/1.0/types.vts.cpp",
-        "android/hardware/usb/1.0/UsbCallback.vts.cpp",
         "android/hardware/usb/1.0/Usb.vts.cpp",
+        "android/hardware/usb/1.0/UsbCallback.vts.cpp",
     ],
 }
 
@@ -25,8 +25,8 @@ genrule {
     ],
     out: [
         "android/hardware/usb/1.0/types.vts.h",
-        "android/hardware/usb/1.0/UsbCallback.vts.h",
         "android/hardware/usb/1.0/Usb.vts.h",
+        "android/hardware/usb/1.0/UsbCallback.vts.h",
     ],
 }
 
@@ -66,8 +66,8 @@ genrule {
     ],
     out: [
         "android/hardware/usb/1.0/types.vts.cpp",
-        "android/hardware/usb/1.0/UsbCallback.vts.cpp",
         "android/hardware/usb/1.0/Usb.vts.cpp",
+        "android/hardware/usb/1.0/UsbCallback.vts.cpp",
     ],
 }
 
@@ -80,8 +80,8 @@ genrule {
     ],
     out: [
         "android/hardware/usb/1.0/types.vts.h",
-        "android/hardware/usb/1.0/UsbCallback.vts.h",
         "android/hardware/usb/1.0/Usb.vts.h",
+        "android/hardware/usb/1.0/UsbCallback.vts.h",
     ],
 }
 
@@ -97,8 +97,8 @@ cc_library_shared {
         "libvts_profiling",
         "libvts_multidevice_proto",
         "libprotobuf-cpp-full",
-        "android.hidl.base@1.0",
         "android.hardware.usb@1.0",
+        "android.hidl.base@1.0",
     ],
 }
 

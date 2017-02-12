@@ -103,8 +103,13 @@ cc_library_shared {
         "libvts_profiling",
         "libvts_multidevice_proto",
         "libprotobuf-cpp-full",
-        "android.hidl.base@1.0",
         "android.hardware.camera.provider@2.4",
+        "android.hidl.base@1.0",
+        "android.hardware.graphics.allocator@2.0-vts.profiler",
+        "android.hardware.camera.device@1.0-vts.profiler",
+        "android.hardware.graphics.common@1.0-vts.profiler",
+        "android.hardware.camera.device@3.2-vts.profiler",
+        "android.hardware.camera.common@1.0-vts.profiler",
     ],
 }
 
