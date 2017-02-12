@@ -16,8 +16,10 @@
 
 LOCAL_PATH := $(call my-dir)
 
+include $(call all-subdir-makefiles)
+
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := NfcHidlBinderizeBasicTest
-VTS_CONFIG_SRC_DIR := testcases/hal/nfc/V1_0/host/binderize
+LOCAL_MODULE := HalGraphicsMapperHidlTargetTest
+VTS_CONFIG_SRC_DIR := testcases/hal/graphics/mapper/V2_0/target
 include test/vts/tools/build/Android.host_config.mk
