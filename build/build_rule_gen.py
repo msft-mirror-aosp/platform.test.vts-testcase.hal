@@ -263,25 +263,45 @@ def FillOutBuildRuleTemplate(hal_name, hal_version, template):
                 hal_name.replace('.', '/'), hal_version, vts_spec, extension))
         return '\n        '.join(result)
 
-    def ImportedDriverPackages(hal_name, hal_version):
+    def ImportedDriverPackages(imported_packages):
         """Formats list of imported packages into a string.
 
         Formats list of imported packages for given hal_name, hal_version
         into a string that can be inserted into build template.
 
         Args:
-          hal_name: string, name of the hal, e.g. 'vibrator'.
-          hal_version: string, version of the hal, e.g '7.4'
+          imported_packages: list of imported packages
 
         Returns:
           string, to be inserted into build template.
         """
         result = []
-        imported_packages_list = ImportedPackagesList(hal_name, hal_version)
-        for package in imported_packages_list:
+        for package in imported_packages:
             prefix = 'android.hardware.'
             if package.startswith(prefix):
                 vts_driver_name = package.replace('@', '.vts.driver@')
+                result.append('"%s",' % vts_driver_name)
+            else:
+                result.append('"%s",' % package)
+        return '\n        '.join(result)
+
+    def ImportedProfilerPackages(imported_packages):
+        """Formats list of imported packages into a string.
+
+        Formats list of imported packages for given hal_name, hal_version
+        into a string that can be inserted into build template.
+
+        Args:
+          imported_packages: list of imported packages
+
+        Returns:
+          string, to be inserted into build template.
+        """
+        result = []
+        for package in imported_packages:
+            prefix = 'android.hardware.'
+            if package.startswith(prefix):
+                vts_driver_name = package + "-vts.profiler"
                 result.append('"%s",' % vts_driver_name)
             else:
                 result.append('"%s",' % package)
@@ -296,8 +316,13 @@ def FillOutBuildRuleTemplate(hal_name, hal_version, template):
         '{GENERATED_SOURCES}', GeneratedOutput(hal_name, hal_version, '.cpp'))
     build_rule = build_rule.replace(
         '{GENERATED_HEADERS}', GeneratedOutput(hal_name, hal_version, '.h'))
+
+    imported_packages = ImportedPackagesList(hal_name, hal_version)
     build_rule = build_rule.replace(
         '{IMPORTED_DRIVER_PACKAGES}',
-        ImportedDriverPackages(hal_name, hal_version))
+        ImportedDriverPackages(imported_packages))
+    build_rule = build_rule.replace(
+        '{IMPORTED_PROFILER_PACKAGES}',
+        ImportedProfilerPackages(imported_packages))
 
     return build_rule
