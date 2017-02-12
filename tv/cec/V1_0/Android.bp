@@ -10,9 +10,9 @@ genrule {
         ":android.hardware.tv.cec@1.0_hal",
     ],
     out: [
+        "android/hardware/tv/cec/1.0/HdmiCec.vts.cpp",
         "android/hardware/tv/cec/1.0/HdmiCecCallback.vts.cpp",
         "android/hardware/tv/cec/1.0/types.vts.cpp",
-        "android/hardware/tv/cec/1.0/HdmiCec.vts.cpp",
     ],
 }
 
@@ -24,9 +24,9 @@ genrule {
         ":android.hardware.tv.cec@1.0_hal",
     ],
     out: [
+        "android/hardware/tv/cec/1.0/HdmiCec.vts.h",
         "android/hardware/tv/cec/1.0/HdmiCecCallback.vts.h",
         "android/hardware/tv/cec/1.0/types.vts.h",
-        "android/hardware/tv/cec/1.0/HdmiCec.vts.h",
     ],
 }
 
@@ -65,9 +65,9 @@ genrule {
         ":android.hardware.tv.cec@1.0_hal",
     ],
     out: [
+        "android/hardware/tv/cec/1.0/HdmiCec.vts.cpp",
         "android/hardware/tv/cec/1.0/HdmiCecCallback.vts.cpp",
         "android/hardware/tv/cec/1.0/types.vts.cpp",
-        "android/hardware/tv/cec/1.0/HdmiCec.vts.cpp",
     ],
 }
 
@@ -79,9 +79,9 @@ genrule {
         ":android.hardware.tv.cec@1.0_hal",
     ],
     out: [
+        "android/hardware/tv/cec/1.0/HdmiCec.vts.h",
         "android/hardware/tv/cec/1.0/HdmiCecCallback.vts.h",
         "android/hardware/tv/cec/1.0/types.vts.h",
-        "android/hardware/tv/cec/1.0/HdmiCec.vts.h",
     ],
 }
 
@@ -97,8 +97,8 @@ cc_library_shared {
         "libvts_profiling",
         "libvts_multidevice_proto",
         "libprotobuf-cpp-full",
-        "android.hidl.base@1.0",
         "android.hardware.tv.cec@1.0",
+        "android.hidl.base@1.0",
     ],
 }
 

@@ -10,9 +10,9 @@ genrule {
         ":android.hardware.bluetooth@1.0_hal",
     ],
     out: [
-        "android/hardware/bluetooth/1.0/types.vts.cpp",
-        "android/hardware/bluetooth/1.0/BluetoothHciCallbacks.vts.cpp",
         "android/hardware/bluetooth/1.0/BluetoothHci.vts.cpp",
+        "android/hardware/bluetooth/1.0/BluetoothHciCallbacks.vts.cpp",
+        "android/hardware/bluetooth/1.0/types.vts.cpp",
     ],
 }
 
@@ -24,9 +24,9 @@ genrule {
         ":android.hardware.bluetooth@1.0_hal",
     ],
     out: [
-        "android/hardware/bluetooth/1.0/types.vts.h",
-        "android/hardware/bluetooth/1.0/BluetoothHciCallbacks.vts.h",
         "android/hardware/bluetooth/1.0/BluetoothHci.vts.h",
+        "android/hardware/bluetooth/1.0/BluetoothHciCallbacks.vts.h",
+        "android/hardware/bluetooth/1.0/types.vts.h",
     ],
 }
 
@@ -65,9 +65,9 @@ genrule {
         ":android.hardware.bluetooth@1.0_hal",
     ],
     out: [
-        "android/hardware/bluetooth/1.0/types.vts.cpp",
-        "android/hardware/bluetooth/1.0/BluetoothHciCallbacks.vts.cpp",
         "android/hardware/bluetooth/1.0/BluetoothHci.vts.cpp",
+        "android/hardware/bluetooth/1.0/BluetoothHciCallbacks.vts.cpp",
+        "android/hardware/bluetooth/1.0/types.vts.cpp",
     ],
 }
 
@@ -79,9 +79,9 @@ genrule {
         ":android.hardware.bluetooth@1.0_hal",
     ],
     out: [
-        "android/hardware/bluetooth/1.0/types.vts.h",
-        "android/hardware/bluetooth/1.0/BluetoothHciCallbacks.vts.h",
         "android/hardware/bluetooth/1.0/BluetoothHci.vts.h",
+        "android/hardware/bluetooth/1.0/BluetoothHciCallbacks.vts.h",
+        "android/hardware/bluetooth/1.0/types.vts.h",
     ],
 }
 

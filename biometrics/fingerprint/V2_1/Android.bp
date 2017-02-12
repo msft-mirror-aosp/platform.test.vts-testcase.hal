@@ -11,8 +11,8 @@ genrule {
     ],
     out: [
         "android/hardware/biometrics/fingerprint/2.1/BiometricsFingerprint.vts.cpp",
-        "android/hardware/biometrics/fingerprint/2.1/types.vts.cpp",
         "android/hardware/biometrics/fingerprint/2.1/BiometricsFingerprintClientCallback.vts.cpp",
+        "android/hardware/biometrics/fingerprint/2.1/types.vts.cpp",
     ],
 }
 
@@ -25,8 +25,8 @@ genrule {
     ],
     out: [
         "android/hardware/biometrics/fingerprint/2.1/BiometricsFingerprint.vts.h",
-        "android/hardware/biometrics/fingerprint/2.1/types.vts.h",
         "android/hardware/biometrics/fingerprint/2.1/BiometricsFingerprintClientCallback.vts.h",
+        "android/hardware/biometrics/fingerprint/2.1/types.vts.h",
     ],
 }
 
@@ -66,8 +66,8 @@ genrule {
     ],
     out: [
         "android/hardware/biometrics/fingerprint/2.1/BiometricsFingerprint.vts.cpp",
-        "android/hardware/biometrics/fingerprint/2.1/types.vts.cpp",
         "android/hardware/biometrics/fingerprint/2.1/BiometricsFingerprintClientCallback.vts.cpp",
+        "android/hardware/biometrics/fingerprint/2.1/types.vts.cpp",
     ],
 }
 
@@ -80,8 +80,8 @@ genrule {
     ],
     out: [
         "android/hardware/biometrics/fingerprint/2.1/BiometricsFingerprint.vts.h",
-        "android/hardware/biometrics/fingerprint/2.1/types.vts.h",
         "android/hardware/biometrics/fingerprint/2.1/BiometricsFingerprintClientCallback.vts.h",
+        "android/hardware/biometrics/fingerprint/2.1/types.vts.h",
     ],
 }
 
@@ -97,8 +97,8 @@ cc_library_shared {
         "libvts_profiling",
         "libvts_multidevice_proto",
         "libprotobuf-cpp-full",
-        "android.hidl.base@1.0",
         "android.hardware.biometrics.fingerprint@2.1",
+        "android.hidl.base@1.0",
     ],
 }
 

@@ -10,14 +10,14 @@ genrule {
         ":android.hardware.audio@2.0_hal",
     ],
     out: [
-        "android/hardware/audio/2.0/types.vts.cpp",
-        "android/hardware/audio/2.0/StreamOutCallback.vts.cpp",
         "android/hardware/audio/2.0/Device.vts.cpp",
+        "android/hardware/audio/2.0/DevicesFactory.vts.cpp",
         "android/hardware/audio/2.0/Stream.vts.cpp",
         "android/hardware/audio/2.0/StreamIn.vts.cpp",
-        "android/hardware/audio/2.0/PrimaryDevice.vts.cpp",
+        "android/hardware/audio/2.0/StreamOutCallback.vts.cpp",
         "android/hardware/audio/2.0/StreamOut.vts.cpp",
-        "android/hardware/audio/2.0/DevicesFactory.vts.cpp",
+        "android/hardware/audio/2.0/types.vts.cpp",
+        "android/hardware/audio/2.0/PrimaryDevice.vts.cpp",
     ],
 }
 
@@ -29,14 +29,14 @@ genrule {
         ":android.hardware.audio@2.0_hal",
     ],
     out: [
-        "android/hardware/audio/2.0/types.vts.h",
-        "android/hardware/audio/2.0/StreamOutCallback.vts.h",
         "android/hardware/audio/2.0/Device.vts.h",
+        "android/hardware/audio/2.0/DevicesFactory.vts.h",
         "android/hardware/audio/2.0/Stream.vts.h",
         "android/hardware/audio/2.0/StreamIn.vts.h",
-        "android/hardware/audio/2.0/PrimaryDevice.vts.h",
+        "android/hardware/audio/2.0/StreamOutCallback.vts.h",
         "android/hardware/audio/2.0/StreamOut.vts.h",
-        "android/hardware/audio/2.0/DevicesFactory.vts.h",
+        "android/hardware/audio/2.0/types.vts.h",
+        "android/hardware/audio/2.0/PrimaryDevice.vts.h",
     ],
 }
 
@@ -77,14 +77,14 @@ genrule {
         ":android.hardware.audio@2.0_hal",
     ],
     out: [
-        "android/hardware/audio/2.0/types.vts.cpp",
-        "android/hardware/audio/2.0/StreamOutCallback.vts.cpp",
         "android/hardware/audio/2.0/Device.vts.cpp",
+        "android/hardware/audio/2.0/DevicesFactory.vts.cpp",
         "android/hardware/audio/2.0/Stream.vts.cpp",
         "android/hardware/audio/2.0/StreamIn.vts.cpp",
-        "android/hardware/audio/2.0/PrimaryDevice.vts.cpp",
+        "android/hardware/audio/2.0/StreamOutCallback.vts.cpp",
         "android/hardware/audio/2.0/StreamOut.vts.cpp",
-        "android/hardware/audio/2.0/DevicesFactory.vts.cpp",
+        "android/hardware/audio/2.0/types.vts.cpp",
+        "android/hardware/audio/2.0/PrimaryDevice.vts.cpp",
     ],
 }
 
@@ -96,14 +96,14 @@ genrule {
         ":android.hardware.audio@2.0_hal",
     ],
     out: [
-        "android/hardware/audio/2.0/types.vts.h",
-        "android/hardware/audio/2.0/StreamOutCallback.vts.h",
         "android/hardware/audio/2.0/Device.vts.h",
+        "android/hardware/audio/2.0/DevicesFactory.vts.h",
         "android/hardware/audio/2.0/Stream.vts.h",
         "android/hardware/audio/2.0/StreamIn.vts.h",
-        "android/hardware/audio/2.0/PrimaryDevice.vts.h",
+        "android/hardware/audio/2.0/StreamOutCallback.vts.h",
         "android/hardware/audio/2.0/StreamOut.vts.h",
-        "android/hardware/audio/2.0/DevicesFactory.vts.h",
+        "android/hardware/audio/2.0/types.vts.h",
+        "android/hardware/audio/2.0/PrimaryDevice.vts.h",
     ],
 }
 
@@ -119,8 +119,9 @@ cc_library_shared {
         "libvts_profiling",
         "libvts_multidevice_proto",
         "libprotobuf-cpp-full",
-        "android.hidl.base@1.0",
         "android.hardware.audio@2.0",
+        "android.hardware.audio.common@2.0-vts.profiler",
+        "android.hidl.base@1.0",
     ],
 }
 
