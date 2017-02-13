@@ -10,10 +10,10 @@ genrule {
         ":android.hardware.tests.inheritance@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/inheritance/1.0/Parent.vts.cpp",
         "android/hardware/tests/inheritance/1.0/Child.vts.cpp",
         "android/hardware/tests/inheritance/1.0/Fetcher.vts.cpp",
         "android/hardware/tests/inheritance/1.0/Grandparent.vts.cpp",
+        "android/hardware/tests/inheritance/1.0/Parent.vts.cpp",
     ],
 }
 
@@ -25,10 +25,10 @@ genrule {
         ":android.hardware.tests.inheritance@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/inheritance/1.0/Parent.vts.h",
         "android/hardware/tests/inheritance/1.0/Child.vts.h",
         "android/hardware/tests/inheritance/1.0/Fetcher.vts.h",
         "android/hardware/tests/inheritance/1.0/Grandparent.vts.h",
+        "android/hardware/tests/inheritance/1.0/Parent.vts.h",
     ],
 }
 
@@ -67,10 +67,10 @@ genrule {
         ":android.hardware.tests.inheritance@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/inheritance/1.0/Parent.vts.cpp",
         "android/hardware/tests/inheritance/1.0/Child.vts.cpp",
         "android/hardware/tests/inheritance/1.0/Fetcher.vts.cpp",
         "android/hardware/tests/inheritance/1.0/Grandparent.vts.cpp",
+        "android/hardware/tests/inheritance/1.0/Parent.vts.cpp",
     ],
 }
 
@@ -82,10 +82,10 @@ genrule {
         ":android.hardware.tests.inheritance@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/inheritance/1.0/Parent.vts.h",
         "android/hardware/tests/inheritance/1.0/Child.vts.h",
         "android/hardware/tests/inheritance/1.0/Fetcher.vts.h",
         "android/hardware/tests/inheritance/1.0/Grandparent.vts.h",
+        "android/hardware/tests/inheritance/1.0/Parent.vts.h",
     ],
 }
 

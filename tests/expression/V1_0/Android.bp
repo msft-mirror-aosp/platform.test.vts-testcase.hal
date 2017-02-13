@@ -10,8 +10,8 @@ genrule {
         ":android.hardware.tests.expression@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/expression/1.0/ExpressionExt.vts.cpp",
         "android/hardware/tests/expression/1.0/Expression.vts.cpp",
+        "android/hardware/tests/expression/1.0/ExpressionExt.vts.cpp",
     ],
 }
 
@@ -23,8 +23,8 @@ genrule {
         ":android.hardware.tests.expression@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/expression/1.0/ExpressionExt.vts.h",
         "android/hardware/tests/expression/1.0/Expression.vts.h",
+        "android/hardware/tests/expression/1.0/ExpressionExt.vts.h",
     ],
 }
 
@@ -63,8 +63,8 @@ genrule {
         ":android.hardware.tests.expression@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/expression/1.0/ExpressionExt.vts.cpp",
         "android/hardware/tests/expression/1.0/Expression.vts.cpp",
+        "android/hardware/tests/expression/1.0/ExpressionExt.vts.cpp",
     ],
 }
 
@@ -76,8 +76,8 @@ genrule {
         ":android.hardware.tests.expression@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/expression/1.0/ExpressionExt.vts.h",
         "android/hardware/tests/expression/1.0/Expression.vts.h",
+        "android/hardware/tests/expression/1.0/ExpressionExt.vts.h",
     ],
 }
 
