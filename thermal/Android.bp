@@ -1,3 +1,4 @@
 subdirs = [
     "V1_0",
+    "V1_0/target_stress",
 ]
