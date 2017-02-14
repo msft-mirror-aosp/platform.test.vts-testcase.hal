@@ -43,7 +43,7 @@ def UpdateBuildRule():
         result = []
         for base, dirs, files in os.walk(HW_IFACE_DIR):
             pattern = HW_IFACE_DIR + '*/[0-9].[0-9]'
-            if fnmatch.fnmatch(base, pattern) and 'tests' not in base:
+            if fnmatch.fnmatch(base, pattern):
                 hal_dir = base[len(HW_IFACE_DIR):]
                 hal_dir = hal_dir.rsplit('/', 1)
                 hal_name = hal_dir[0].replace('/', '.')
