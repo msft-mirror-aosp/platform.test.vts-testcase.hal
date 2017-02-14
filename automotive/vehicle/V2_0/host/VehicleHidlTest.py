@@ -242,5 +242,60 @@ class VehicleHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
 
         assertEqual(allStatuses, allStatuses | drivingStatus)
 
+    def testPropertyRanges(self):
+        """Retrieve the property ranges for all areas.
+
+        This checks that the areas noted in the config all give valid area
+        configs.  Once these are validated, the values for all these areas
+        retrieved from the HIDL must be within the ranges defined."""
+        configs = self.vehicle.getAllPropConfigs()
+        logging.info("Property list response: %s", configs)
+        for c in configs:
+            areasFound = 0
+            for a in c["areaConfigs"]:
+                # Make sure this doesn't override one of the other areas found.
+                asserts.assertEqual(0, areasFound & a["areaId"])
+                areasFound |= a["areaId"]
+
+                # Do some basic checking the min and max aren't mixed up.
+                checks = [
+                    ("minInt32Value", "maxInt32Value"),
+                    ("minInt64Value", "maxInt64Value"),
+                    ("minFloatValue", "maxFloatValue")
+                ]
+                for minName, maxName in checks:
+                    asserts.assertFalse(
+                        a[minName] > a[maxName],
+                        "Prop 0x%x Area 0x%X %s > %s: %d > %d" %
+                            (c["prop"], a["areaId"],
+                             minName, maxName, a[minName], a[maxName]))
+
+                # Get a value and make sure it's within the bounds.
+                propVal = self.readVhalProperty(c["prop"], a["areaId"])
+                # Some values may not be available, which is not an error.
+                if propVal is None:
+                    continue
+                val = propVal["value"]
+                valTypes = {
+                    "int32Values": ("minInt32Value", "maxInt32Value"),
+                    "int64Values": ("minInt64Value", "maxInt64Value"),
+                    "floatValues": ("minFloatValue", "maxFloatValue"),
+                }
+                for valType, valBoundNames in valTypes.items():
+                    for v in val[valType]:
+                        # Make sure value isn't less than the minimum.
+                        asserts.assertFalse(
+                            v < a[valBoundNames[0]],
+                            "Prop 0x%x Area 0x%X %s < min: %s < %s" %
+                                (c["prop"], a["areaId"],
+                                 valType, v, a[valBoundNames[0]]))
+                        # Make sure value isn't greater than the maximum.
+                        asserts.assertFalse(
+                            v > a[valBoundNames[1]],
+                            "Prop 0x%x Area 0x%X %s > max: %s > %s" %
+                                (c["prop"], a["areaId"],
+                                 valType, v, a[valBoundNames[1]]))
+
+
 if __name__ == "__main__":
     test_runner.main()
