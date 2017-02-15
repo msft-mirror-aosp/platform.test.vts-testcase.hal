@@ -34,7 +34,6 @@ subdirs = [
     "graphics/mapper/V2_0/",
     "graphics/composer/V2_1/",
     "graphics/allocator/V2_0/",
-    "example/extension/light/V2_0/",
     "vibrator/V1_0/",
     "boot/V1_0/",
     "gnss/V1_0/",
