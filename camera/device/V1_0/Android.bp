@@ -10,10 +10,10 @@ genrule {
         ":android.hardware.camera.device@1.0_hal",
     ],
     out: [
+        "android/hardware/camera/device/1.0/CameraDevice.vts.cpp",
+        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.cpp",
         "android/hardware/camera/device/1.0/CameraDevicePreviewCallback.vts.cpp",
         "android/hardware/camera/device/1.0/types.vts.cpp",
-        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.cpp",
-        "android/hardware/camera/device/1.0/CameraDevice.vts.cpp",
     ],
 }
 
@@ -25,10 +25,10 @@ genrule {
         ":android.hardware.camera.device@1.0_hal",
     ],
     out: [
+        "android/hardware/camera/device/1.0/CameraDevice.vts.h",
+        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.h",
         "android/hardware/camera/device/1.0/CameraDevicePreviewCallback.vts.h",
         "android/hardware/camera/device/1.0/types.vts.h",
-        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.h",
-        "android/hardware/camera/device/1.0/CameraDevice.vts.h",
     ],
 }
 
@@ -73,10 +73,10 @@ genrule {
         ":android.hardware.camera.device@1.0_hal",
     ],
     out: [
+        "android/hardware/camera/device/1.0/CameraDevice.vts.cpp",
+        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.cpp",
         "android/hardware/camera/device/1.0/CameraDevicePreviewCallback.vts.cpp",
         "android/hardware/camera/device/1.0/types.vts.cpp",
-        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.cpp",
-        "android/hardware/camera/device/1.0/CameraDevice.vts.cpp",
     ],
 }
 
@@ -88,10 +88,10 @@ genrule {
         ":android.hardware.camera.device@1.0_hal",
     ],
     out: [
+        "android/hardware/camera/device/1.0/CameraDevice.vts.h",
+        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.h",
         "android/hardware/camera/device/1.0/CameraDevicePreviewCallback.vts.h",
         "android/hardware/camera/device/1.0/types.vts.h",
-        "android/hardware/camera/device/1.0/CameraDeviceCallback.vts.h",
-        "android/hardware/camera/device/1.0/CameraDevice.vts.h",
     ],
 }
 

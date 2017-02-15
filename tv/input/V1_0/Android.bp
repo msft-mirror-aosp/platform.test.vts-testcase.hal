@@ -10,9 +10,9 @@ genrule {
         ":android.hardware.tv.input@1.0_hal",
     ],
     out: [
-        "android/hardware/tv/input/1.0/types.vts.cpp",
         "android/hardware/tv/input/1.0/TvInput.vts.cpp",
         "android/hardware/tv/input/1.0/TvInputCallback.vts.cpp",
+        "android/hardware/tv/input/1.0/types.vts.cpp",
     ],
 }
 
@@ -24,9 +24,9 @@ genrule {
         ":android.hardware.tv.input@1.0_hal",
     ],
     out: [
-        "android/hardware/tv/input/1.0/types.vts.h",
         "android/hardware/tv/input/1.0/TvInput.vts.h",
         "android/hardware/tv/input/1.0/TvInputCallback.vts.h",
+        "android/hardware/tv/input/1.0/types.vts.h",
     ],
 }
 
@@ -49,12 +49,12 @@ cc_library_shared {
         "libcamera_metadata",
         "libprotobuf-cpp-full",
         "android.hardware.tv.input@1.0",
-        "android.hidl.base@1.0",
         "android.hardware.audio.common.vts.driver@2.0",
+        "android.hidl.base@1.0",
     ],
     export_shared_lib_headers: [
-        "android.hidl.base@1.0",
         "android.hardware.audio.common.vts.driver@2.0",
+        "android.hidl.base@1.0",
     ],
 }
 
@@ -67,9 +67,9 @@ genrule {
         ":android.hardware.tv.input@1.0_hal",
     ],
     out: [
-        "android/hardware/tv/input/1.0/types.vts.cpp",
         "android/hardware/tv/input/1.0/TvInput.vts.cpp",
         "android/hardware/tv/input/1.0/TvInputCallback.vts.cpp",
+        "android/hardware/tv/input/1.0/types.vts.cpp",
     ],
 }
 
@@ -81,9 +81,9 @@ genrule {
         ":android.hardware.tv.input@1.0_hal",
     ],
     out: [
-        "android/hardware/tv/input/1.0/types.vts.h",
         "android/hardware/tv/input/1.0/TvInput.vts.h",
         "android/hardware/tv/input/1.0/TvInputCallback.vts.h",
+        "android/hardware/tv/input/1.0/types.vts.h",
     ],
 }
 
@@ -100,8 +100,8 @@ cc_library_shared {
         "libvts_multidevice_proto",
         "libprotobuf-cpp-full",
         "android.hardware.tv.input@1.0",
-        "android.hidl.base@1.0",
         "android.hardware.audio.common@2.0-vts.profiler",
+        "android.hidl.base@1.0",
     ],
 }
 

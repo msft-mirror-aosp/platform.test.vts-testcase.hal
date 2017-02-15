@@ -11,8 +11,8 @@ genrule {
     ],
     out: [
         "android/hardware/graphics/allocator/2.0/Allocator.vts.cpp",
-        "android/hardware/graphics/allocator/2.0/types.vts.cpp",
         "android/hardware/graphics/allocator/2.0/AllocatorClient.vts.cpp",
+        "android/hardware/graphics/allocator/2.0/types.vts.cpp",
     ],
 }
 
@@ -25,8 +25,8 @@ genrule {
     ],
     out: [
         "android/hardware/graphics/allocator/2.0/Allocator.vts.h",
-        "android/hardware/graphics/allocator/2.0/types.vts.h",
         "android/hardware/graphics/allocator/2.0/AllocatorClient.vts.h",
+        "android/hardware/graphics/allocator/2.0/types.vts.h",
     ],
 }
 
@@ -68,8 +68,8 @@ genrule {
     ],
     out: [
         "android/hardware/graphics/allocator/2.0/Allocator.vts.cpp",
-        "android/hardware/graphics/allocator/2.0/types.vts.cpp",
         "android/hardware/graphics/allocator/2.0/AllocatorClient.vts.cpp",
+        "android/hardware/graphics/allocator/2.0/types.vts.cpp",
     ],
 }
 
@@ -82,8 +82,8 @@ genrule {
     ],
     out: [
         "android/hardware/graphics/allocator/2.0/Allocator.vts.h",
-        "android/hardware/graphics/allocator/2.0/types.vts.h",
         "android/hardware/graphics/allocator/2.0/AllocatorClient.vts.h",
+        "android/hardware/graphics/allocator/2.0/types.vts.h",
     ],
 }
 

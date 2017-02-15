@@ -11,8 +11,8 @@ genrule {
     ],
     out: [
         "android/hardware/graphics/composer/2.1/Composer.vts.cpp",
-        "android/hardware/graphics/composer/2.1/ComposerClient.vts.cpp",
         "android/hardware/graphics/composer/2.1/ComposerCallback.vts.cpp",
+        "android/hardware/graphics/composer/2.1/ComposerClient.vts.cpp",
         "android/hardware/graphics/composer/2.1/types.vts.cpp",
     ],
 }
@@ -26,8 +26,8 @@ genrule {
     ],
     out: [
         "android/hardware/graphics/composer/2.1/Composer.vts.h",
-        "android/hardware/graphics/composer/2.1/ComposerClient.vts.h",
         "android/hardware/graphics/composer/2.1/ComposerCallback.vts.h",
+        "android/hardware/graphics/composer/2.1/ComposerClient.vts.h",
         "android/hardware/graphics/composer/2.1/types.vts.h",
     ],
 }
@@ -70,8 +70,8 @@ genrule {
     ],
     out: [
         "android/hardware/graphics/composer/2.1/Composer.vts.cpp",
-        "android/hardware/graphics/composer/2.1/ComposerClient.vts.cpp",
         "android/hardware/graphics/composer/2.1/ComposerCallback.vts.cpp",
+        "android/hardware/graphics/composer/2.1/ComposerClient.vts.cpp",
         "android/hardware/graphics/composer/2.1/types.vts.cpp",
     ],
 }
@@ -85,8 +85,8 @@ genrule {
     ],
     out: [
         "android/hardware/graphics/composer/2.1/Composer.vts.h",
-        "android/hardware/graphics/composer/2.1/ComposerClient.vts.h",
         "android/hardware/graphics/composer/2.1/ComposerCallback.vts.h",
+        "android/hardware/graphics/composer/2.1/ComposerClient.vts.h",
         "android/hardware/graphics/composer/2.1/types.vts.h",
     ],
 }

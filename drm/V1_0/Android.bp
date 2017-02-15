@@ -10,12 +10,12 @@ genrule {
         ":android.hardware.drm@1.0_hal",
     ],
     out: [
-        "android/hardware/drm/1.0/DrmPluginListener.vts.cpp",
+        "android/hardware/drm/1.0/CryptoFactory.vts.cpp",
+        "android/hardware/drm/1.0/CryptoPlugin.vts.cpp",
         "android/hardware/drm/1.0/DrmFactory.vts.cpp",
         "android/hardware/drm/1.0/DrmPlugin.vts.cpp",
-        "android/hardware/drm/1.0/CryptoFactory.vts.cpp",
+        "android/hardware/drm/1.0/DrmPluginListener.vts.cpp",
         "android/hardware/drm/1.0/types.vts.cpp",
-        "android/hardware/drm/1.0/CryptoPlugin.vts.cpp",
     ],
 }
 
@@ -27,12 +27,12 @@ genrule {
         ":android.hardware.drm@1.0_hal",
     ],
     out: [
-        "android/hardware/drm/1.0/DrmPluginListener.vts.h",
+        "android/hardware/drm/1.0/CryptoFactory.vts.h",
+        "android/hardware/drm/1.0/CryptoPlugin.vts.h",
         "android/hardware/drm/1.0/DrmFactory.vts.h",
         "android/hardware/drm/1.0/DrmPlugin.vts.h",
-        "android/hardware/drm/1.0/CryptoFactory.vts.h",
+        "android/hardware/drm/1.0/DrmPluginListener.vts.h",
         "android/hardware/drm/1.0/types.vts.h",
-        "android/hardware/drm/1.0/CryptoPlugin.vts.h",
     ],
 }
 
@@ -71,12 +71,12 @@ genrule {
         ":android.hardware.drm@1.0_hal",
     ],
     out: [
-        "android/hardware/drm/1.0/DrmPluginListener.vts.cpp",
+        "android/hardware/drm/1.0/CryptoFactory.vts.cpp",
+        "android/hardware/drm/1.0/CryptoPlugin.vts.cpp",
         "android/hardware/drm/1.0/DrmFactory.vts.cpp",
         "android/hardware/drm/1.0/DrmPlugin.vts.cpp",
-        "android/hardware/drm/1.0/CryptoFactory.vts.cpp",
+        "android/hardware/drm/1.0/DrmPluginListener.vts.cpp",
         "android/hardware/drm/1.0/types.vts.cpp",
-        "android/hardware/drm/1.0/CryptoPlugin.vts.cpp",
     ],
 }
 
@@ -88,12 +88,12 @@ genrule {
         ":android.hardware.drm@1.0_hal",
     ],
     out: [
-        "android/hardware/drm/1.0/DrmPluginListener.vts.h",
+        "android/hardware/drm/1.0/CryptoFactory.vts.h",
+        "android/hardware/drm/1.0/CryptoPlugin.vts.h",
         "android/hardware/drm/1.0/DrmFactory.vts.h",
         "android/hardware/drm/1.0/DrmPlugin.vts.h",
-        "android/hardware/drm/1.0/CryptoFactory.vts.h",
+        "android/hardware/drm/1.0/DrmPluginListener.vts.h",
         "android/hardware/drm/1.0/types.vts.h",
-        "android/hardware/drm/1.0/CryptoPlugin.vts.h",
     ],
 }
 

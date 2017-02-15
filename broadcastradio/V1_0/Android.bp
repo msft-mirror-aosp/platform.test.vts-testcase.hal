@@ -10,11 +10,11 @@ genrule {
         ":android.hardware.broadcastradio@1.0_hal",
     ],
     out: [
-        "android/hardware/broadcastradio/1.0/BroadcastRadioFactory.vts.cpp",
-        "android/hardware/broadcastradio/1.0/TunerCallback.vts.cpp",
-        "android/hardware/broadcastradio/1.0/Tuner.vts.cpp",
-        "android/hardware/broadcastradio/1.0/types.vts.cpp",
         "android/hardware/broadcastradio/1.0/BroadcastRadio.vts.cpp",
+        "android/hardware/broadcastradio/1.0/BroadcastRadioFactory.vts.cpp",
+        "android/hardware/broadcastradio/1.0/Tuner.vts.cpp",
+        "android/hardware/broadcastradio/1.0/TunerCallback.vts.cpp",
+        "android/hardware/broadcastradio/1.0/types.vts.cpp",
     ],
 }
 
@@ -26,11 +26,11 @@ genrule {
         ":android.hardware.broadcastradio@1.0_hal",
     ],
     out: [
-        "android/hardware/broadcastradio/1.0/BroadcastRadioFactory.vts.h",
-        "android/hardware/broadcastradio/1.0/TunerCallback.vts.h",
-        "android/hardware/broadcastradio/1.0/Tuner.vts.h",
-        "android/hardware/broadcastradio/1.0/types.vts.h",
         "android/hardware/broadcastradio/1.0/BroadcastRadio.vts.h",
+        "android/hardware/broadcastradio/1.0/BroadcastRadioFactory.vts.h",
+        "android/hardware/broadcastradio/1.0/Tuner.vts.h",
+        "android/hardware/broadcastradio/1.0/TunerCallback.vts.h",
+        "android/hardware/broadcastradio/1.0/types.vts.h",
     ],
 }
 
@@ -69,11 +69,11 @@ genrule {
         ":android.hardware.broadcastradio@1.0_hal",
     ],
     out: [
-        "android/hardware/broadcastradio/1.0/BroadcastRadioFactory.vts.cpp",
-        "android/hardware/broadcastradio/1.0/TunerCallback.vts.cpp",
-        "android/hardware/broadcastradio/1.0/Tuner.vts.cpp",
-        "android/hardware/broadcastradio/1.0/types.vts.cpp",
         "android/hardware/broadcastradio/1.0/BroadcastRadio.vts.cpp",
+        "android/hardware/broadcastradio/1.0/BroadcastRadioFactory.vts.cpp",
+        "android/hardware/broadcastradio/1.0/Tuner.vts.cpp",
+        "android/hardware/broadcastradio/1.0/TunerCallback.vts.cpp",
+        "android/hardware/broadcastradio/1.0/types.vts.cpp",
     ],
 }
 
@@ -85,11 +85,11 @@ genrule {
         ":android.hardware.broadcastradio@1.0_hal",
     ],
     out: [
-        "android/hardware/broadcastradio/1.0/BroadcastRadioFactory.vts.h",
-        "android/hardware/broadcastradio/1.0/TunerCallback.vts.h",
-        "android/hardware/broadcastradio/1.0/Tuner.vts.h",
-        "android/hardware/broadcastradio/1.0/types.vts.h",
         "android/hardware/broadcastradio/1.0/BroadcastRadio.vts.h",
+        "android/hardware/broadcastradio/1.0/BroadcastRadioFactory.vts.h",
+        "android/hardware/broadcastradio/1.0/Tuner.vts.h",
+        "android/hardware/broadcastradio/1.0/TunerCallback.vts.h",
+        "android/hardware/broadcastradio/1.0/types.vts.h",
     ],
 }
 

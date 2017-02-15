@@ -10,11 +10,11 @@ genrule {
         ":android.hardware.evs@1.0_hal",
     ],
     out: [
-        "android/hardware/evs/1.0/EvsEnumerator.vts.cpp",
-        "android/hardware/evs/1.0/EvsCameraStream.vts.cpp",
         "android/hardware/evs/1.0/EvsCamera.vts.cpp",
-        "android/hardware/evs/1.0/types.vts.cpp",
+        "android/hardware/evs/1.0/EvsCameraStream.vts.cpp",
         "android/hardware/evs/1.0/EvsDisplay.vts.cpp",
+        "android/hardware/evs/1.0/EvsEnumerator.vts.cpp",
+        "android/hardware/evs/1.0/types.vts.cpp",
     ],
 }
 
@@ -26,11 +26,11 @@ genrule {
         ":android.hardware.evs@1.0_hal",
     ],
     out: [
-        "android/hardware/evs/1.0/EvsEnumerator.vts.h",
-        "android/hardware/evs/1.0/EvsCameraStream.vts.h",
         "android/hardware/evs/1.0/EvsCamera.vts.h",
-        "android/hardware/evs/1.0/types.vts.h",
+        "android/hardware/evs/1.0/EvsCameraStream.vts.h",
         "android/hardware/evs/1.0/EvsDisplay.vts.h",
+        "android/hardware/evs/1.0/EvsEnumerator.vts.h",
+        "android/hardware/evs/1.0/types.vts.h",
     ],
 }
 
@@ -69,11 +69,11 @@ genrule {
         ":android.hardware.evs@1.0_hal",
     ],
     out: [
-        "android/hardware/evs/1.0/EvsEnumerator.vts.cpp",
-        "android/hardware/evs/1.0/EvsCameraStream.vts.cpp",
         "android/hardware/evs/1.0/EvsCamera.vts.cpp",
-        "android/hardware/evs/1.0/types.vts.cpp",
+        "android/hardware/evs/1.0/EvsCameraStream.vts.cpp",
         "android/hardware/evs/1.0/EvsDisplay.vts.cpp",
+        "android/hardware/evs/1.0/EvsEnumerator.vts.cpp",
+        "android/hardware/evs/1.0/types.vts.cpp",
     ],
 }
 
@@ -85,11 +85,11 @@ genrule {
         ":android.hardware.evs@1.0_hal",
     ],
     out: [
-        "android/hardware/evs/1.0/EvsEnumerator.vts.h",
-        "android/hardware/evs/1.0/EvsCameraStream.vts.h",
         "android/hardware/evs/1.0/EvsCamera.vts.h",
-        "android/hardware/evs/1.0/types.vts.h",
+        "android/hardware/evs/1.0/EvsCameraStream.vts.h",
         "android/hardware/evs/1.0/EvsDisplay.vts.h",
+        "android/hardware/evs/1.0/EvsEnumerator.vts.h",
+        "android/hardware/evs/1.0/types.vts.h",
     ],
 }
 

@@ -10,8 +10,8 @@ genrule {
         ":android.hardware.contexthub@1.0_hal",
     ],
     out: [
-        "android/hardware/contexthub/1.0/ContexthubCallback.vts.cpp",
         "android/hardware/contexthub/1.0/Contexthub.vts.cpp",
+        "android/hardware/contexthub/1.0/ContexthubCallback.vts.cpp",
         "android/hardware/contexthub/1.0/types.vts.cpp",
     ],
 }
@@ -24,8 +24,8 @@ genrule {
         ":android.hardware.contexthub@1.0_hal",
     ],
     out: [
-        "android/hardware/contexthub/1.0/ContexthubCallback.vts.h",
         "android/hardware/contexthub/1.0/Contexthub.vts.h",
+        "android/hardware/contexthub/1.0/ContexthubCallback.vts.h",
         "android/hardware/contexthub/1.0/types.vts.h",
     ],
 }
@@ -65,8 +65,8 @@ genrule {
         ":android.hardware.contexthub@1.0_hal",
     ],
     out: [
-        "android/hardware/contexthub/1.0/ContexthubCallback.vts.cpp",
         "android/hardware/contexthub/1.0/Contexthub.vts.cpp",
+        "android/hardware/contexthub/1.0/ContexthubCallback.vts.cpp",
         "android/hardware/contexthub/1.0/types.vts.cpp",
     ],
 }
@@ -79,8 +79,8 @@ genrule {
         ":android.hardware.contexthub@1.0_hal",
     ],
     out: [
-        "android/hardware/contexthub/1.0/ContexthubCallback.vts.h",
         "android/hardware/contexthub/1.0/Contexthub.vts.h",
+        "android/hardware/contexthub/1.0/ContexthubCallback.vts.h",
         "android/hardware/contexthub/1.0/types.vts.h",
     ],
 }

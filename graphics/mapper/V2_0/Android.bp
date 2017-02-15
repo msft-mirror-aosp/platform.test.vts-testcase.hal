@@ -10,8 +10,8 @@ genrule {
         ":android.hardware.graphics.mapper@2.0_hal",
     ],
     out: [
-        "android/hardware/graphics/mapper/2.0/types.vts.cpp",
         "android/hardware/graphics/mapper/2.0/Mapper.vts.cpp",
+        "android/hardware/graphics/mapper/2.0/types.vts.cpp",
     ],
 }
 
@@ -23,8 +23,8 @@ genrule {
         ":android.hardware.graphics.mapper@2.0_hal",
     ],
     out: [
-        "android/hardware/graphics/mapper/2.0/types.vts.h",
         "android/hardware/graphics/mapper/2.0/Mapper.vts.h",
+        "android/hardware/graphics/mapper/2.0/types.vts.h",
     ],
 }
 
@@ -67,8 +67,8 @@ genrule {
         ":android.hardware.graphics.mapper@2.0_hal",
     ],
     out: [
-        "android/hardware/graphics/mapper/2.0/types.vts.cpp",
         "android/hardware/graphics/mapper/2.0/Mapper.vts.cpp",
+        "android/hardware/graphics/mapper/2.0/types.vts.cpp",
     ],
 }
 
@@ -80,8 +80,8 @@ genrule {
         ":android.hardware.graphics.mapper@2.0_hal",
     ],
     out: [
-        "android/hardware/graphics/mapper/2.0/types.vts.h",
         "android/hardware/graphics/mapper/2.0/Mapper.vts.h",
+        "android/hardware/graphics/mapper/2.0/types.vts.h",
     ],
 }
 

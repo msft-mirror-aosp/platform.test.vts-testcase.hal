@@ -10,9 +10,9 @@ genrule {
         ":android.hardware.soundtrigger@2.0_hal",
     ],
     out: [
+        "android/hardware/soundtrigger/2.0/SoundTriggerHw.vts.cpp",
         "android/hardware/soundtrigger/2.0/SoundTriggerHwCallback.vts.cpp",
         "android/hardware/soundtrigger/2.0/types.vts.cpp",
-        "android/hardware/soundtrigger/2.0/SoundTriggerHw.vts.cpp",
     ],
 }
 
@@ -24,9 +24,9 @@ genrule {
         ":android.hardware.soundtrigger@2.0_hal",
     ],
     out: [
+        "android/hardware/soundtrigger/2.0/SoundTriggerHw.vts.h",
         "android/hardware/soundtrigger/2.0/SoundTriggerHwCallback.vts.h",
         "android/hardware/soundtrigger/2.0/types.vts.h",
-        "android/hardware/soundtrigger/2.0/SoundTriggerHw.vts.h",
     ],
 }
 
@@ -67,9 +67,9 @@ genrule {
         ":android.hardware.soundtrigger@2.0_hal",
     ],
     out: [
+        "android/hardware/soundtrigger/2.0/SoundTriggerHw.vts.cpp",
         "android/hardware/soundtrigger/2.0/SoundTriggerHwCallback.vts.cpp",
         "android/hardware/soundtrigger/2.0/types.vts.cpp",
-        "android/hardware/soundtrigger/2.0/SoundTriggerHw.vts.cpp",
     ],
 }
 
@@ -81,9 +81,9 @@ genrule {
         ":android.hardware.soundtrigger@2.0_hal",
     ],
     out: [
+        "android/hardware/soundtrigger/2.0/SoundTriggerHw.vts.h",
         "android/hardware/soundtrigger/2.0/SoundTriggerHwCallback.vts.h",
         "android/hardware/soundtrigger/2.0/types.vts.h",
-        "android/hardware/soundtrigger/2.0/SoundTriggerHw.vts.h",
     ],
 }
 
