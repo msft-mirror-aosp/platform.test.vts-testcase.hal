@@ -10,12 +10,12 @@ genrule {
         ":android.hardware.tests.foo@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/foo/1.0/types.vts.cpp",
         "android/hardware/tests/foo/1.0/Foo.vts.cpp",
-        "android/hardware/tests/foo/1.0/MyTypes.vts.cpp",
-        "android/hardware/tests/foo/1.0/TheirTypes.vts.cpp",
         "android/hardware/tests/foo/1.0/FooCallback.vts.cpp",
+        "android/hardware/tests/foo/1.0/MyTypes.vts.cpp",
         "android/hardware/tests/foo/1.0/Simple.vts.cpp",
+        "android/hardware/tests/foo/1.0/TheirTypes.vts.cpp",
+        "android/hardware/tests/foo/1.0/types.vts.cpp",
     ],
 }
 
@@ -27,12 +27,12 @@ genrule {
         ":android.hardware.tests.foo@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/foo/1.0/types.vts.h",
         "android/hardware/tests/foo/1.0/Foo.vts.h",
-        "android/hardware/tests/foo/1.0/MyTypes.vts.h",
-        "android/hardware/tests/foo/1.0/TheirTypes.vts.h",
         "android/hardware/tests/foo/1.0/FooCallback.vts.h",
+        "android/hardware/tests/foo/1.0/MyTypes.vts.h",
         "android/hardware/tests/foo/1.0/Simple.vts.h",
+        "android/hardware/tests/foo/1.0/TheirTypes.vts.h",
+        "android/hardware/tests/foo/1.0/types.vts.h",
     ],
 }
 
@@ -71,12 +71,12 @@ genrule {
         ":android.hardware.tests.foo@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/foo/1.0/types.vts.cpp",
         "android/hardware/tests/foo/1.0/Foo.vts.cpp",
-        "android/hardware/tests/foo/1.0/MyTypes.vts.cpp",
-        "android/hardware/tests/foo/1.0/TheirTypes.vts.cpp",
         "android/hardware/tests/foo/1.0/FooCallback.vts.cpp",
+        "android/hardware/tests/foo/1.0/MyTypes.vts.cpp",
         "android/hardware/tests/foo/1.0/Simple.vts.cpp",
+        "android/hardware/tests/foo/1.0/TheirTypes.vts.cpp",
+        "android/hardware/tests/foo/1.0/types.vts.cpp",
     ],
 }
 
@@ -88,12 +88,12 @@ genrule {
         ":android.hardware.tests.foo@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/foo/1.0/types.vts.h",
         "android/hardware/tests/foo/1.0/Foo.vts.h",
-        "android/hardware/tests/foo/1.0/MyTypes.vts.h",
-        "android/hardware/tests/foo/1.0/TheirTypes.vts.h",
         "android/hardware/tests/foo/1.0/FooCallback.vts.h",
+        "android/hardware/tests/foo/1.0/MyTypes.vts.h",
         "android/hardware/tests/foo/1.0/Simple.vts.h",
+        "android/hardware/tests/foo/1.0/TheirTypes.vts.h",
+        "android/hardware/tests/foo/1.0/types.vts.h",
     ],
 }
 
