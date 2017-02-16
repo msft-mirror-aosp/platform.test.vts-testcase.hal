@@ -10,10 +10,10 @@ genrule {
         ":android.hardware.tests.baz@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/baz/1.0/types.vts.cpp",
-        "android/hardware/tests/baz/1.0/BazCallback.vts.cpp",
         "android/hardware/tests/baz/1.0/Base.vts.cpp",
         "android/hardware/tests/baz/1.0/Baz.vts.cpp",
+        "android/hardware/tests/baz/1.0/BazCallback.vts.cpp",
+        "android/hardware/tests/baz/1.0/types.vts.cpp",
     ],
 }
 
@@ -25,10 +25,10 @@ genrule {
         ":android.hardware.tests.baz@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/baz/1.0/types.vts.h",
-        "android/hardware/tests/baz/1.0/BazCallback.vts.h",
         "android/hardware/tests/baz/1.0/Base.vts.h",
         "android/hardware/tests/baz/1.0/Baz.vts.h",
+        "android/hardware/tests/baz/1.0/BazCallback.vts.h",
+        "android/hardware/tests/baz/1.0/types.vts.h",
     ],
 }
 
@@ -67,10 +67,10 @@ genrule {
         ":android.hardware.tests.baz@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/baz/1.0/types.vts.cpp",
-        "android/hardware/tests/baz/1.0/BazCallback.vts.cpp",
         "android/hardware/tests/baz/1.0/Base.vts.cpp",
         "android/hardware/tests/baz/1.0/Baz.vts.cpp",
+        "android/hardware/tests/baz/1.0/BazCallback.vts.cpp",
+        "android/hardware/tests/baz/1.0/types.vts.cpp",
     ],
 }
 
@@ -82,10 +82,10 @@ genrule {
         ":android.hardware.tests.baz@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/baz/1.0/types.vts.h",
-        "android/hardware/tests/baz/1.0/BazCallback.vts.h",
         "android/hardware/tests/baz/1.0/Base.vts.h",
         "android/hardware/tests/baz/1.0/Baz.vts.h",
+        "android/hardware/tests/baz/1.0/BazCallback.vts.h",
+        "android/hardware/tests/baz/1.0/types.vts.h",
     ],
 }
 
