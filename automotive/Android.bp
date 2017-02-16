@@ -1,0 +1,3 @@
+subdirs = [
+    "vehicle/V2_0",
+]

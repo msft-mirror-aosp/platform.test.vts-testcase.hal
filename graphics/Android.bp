@@ -1,0 +1,6 @@
+subdirs = [
+    "allocator/V2_0",
+    "common/V1_0",
+    "composer/V2_1",
+    "mapper/V2_0",
+]
