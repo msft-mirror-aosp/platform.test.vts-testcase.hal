@@ -24,7 +24,7 @@ Usage:
   cd test/vts-testcase/hal && python update_makefiles.py
 """
 
-from build.build_rule_gen import UpdateBuildRule
+from build.build_rule_gen import BuildRuleGen
 import os
 import sys
 
@@ -45,4 +45,5 @@ if __name__ == "__main__":
         sys.exit(1)
 
     print 'Updating build rules.'
-    UpdateBuildRule()
+    build_rule_gen = BuildRuleGen()
+    build_rule_gen.UpdateBuildRule()

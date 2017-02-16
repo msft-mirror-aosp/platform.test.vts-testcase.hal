@@ -11,11 +11,11 @@ genrule {
     ],
     out: [
         "android/hardware/radio/1.0/Radio.vts.cpp",
-        "android/hardware/radio/1.0/Sap.vts.cpp",
         "android/hardware/radio/1.0/RadioIndication.vts.cpp",
-        "android/hardware/radio/1.0/types.vts.cpp",
         "android/hardware/radio/1.0/RadioResponse.vts.cpp",
+        "android/hardware/radio/1.0/Sap.vts.cpp",
         "android/hardware/radio/1.0/SapCallback.vts.cpp",
+        "android/hardware/radio/1.0/types.vts.cpp",
     ],
 }
 
@@ -28,11 +28,11 @@ genrule {
     ],
     out: [
         "android/hardware/radio/1.0/Radio.vts.h",
-        "android/hardware/radio/1.0/Sap.vts.h",
         "android/hardware/radio/1.0/RadioIndication.vts.h",
-        "android/hardware/radio/1.0/types.vts.h",
         "android/hardware/radio/1.0/RadioResponse.vts.h",
+        "android/hardware/radio/1.0/Sap.vts.h",
         "android/hardware/radio/1.0/SapCallback.vts.h",
+        "android/hardware/radio/1.0/types.vts.h",
     ],
 }
 
@@ -72,11 +72,11 @@ genrule {
     ],
     out: [
         "android/hardware/radio/1.0/Radio.vts.cpp",
-        "android/hardware/radio/1.0/Sap.vts.cpp",
         "android/hardware/radio/1.0/RadioIndication.vts.cpp",
-        "android/hardware/radio/1.0/types.vts.cpp",
         "android/hardware/radio/1.0/RadioResponse.vts.cpp",
+        "android/hardware/radio/1.0/Sap.vts.cpp",
         "android/hardware/radio/1.0/SapCallback.vts.cpp",
+        "android/hardware/radio/1.0/types.vts.cpp",
     ],
 }
 
@@ -89,11 +89,11 @@ genrule {
     ],
     out: [
         "android/hardware/radio/1.0/Radio.vts.h",
-        "android/hardware/radio/1.0/Sap.vts.h",
         "android/hardware/radio/1.0/RadioIndication.vts.h",
-        "android/hardware/radio/1.0/types.vts.h",
         "android/hardware/radio/1.0/RadioResponse.vts.h",
+        "android/hardware/radio/1.0/Sap.vts.h",
         "android/hardware/radio/1.0/SapCallback.vts.h",
+        "android/hardware/radio/1.0/types.vts.h",
     ],
 }
 

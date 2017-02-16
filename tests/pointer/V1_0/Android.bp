@@ -10,8 +10,8 @@ genrule {
         ":android.hardware.tests.pointer@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/pointer/1.0/Pointer.vts.cpp",
         "android/hardware/tests/pointer/1.0/Graph.vts.cpp",
+        "android/hardware/tests/pointer/1.0/Pointer.vts.cpp",
     ],
 }
 
@@ -23,8 +23,8 @@ genrule {
         ":android.hardware.tests.pointer@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/pointer/1.0/Pointer.vts.h",
         "android/hardware/tests/pointer/1.0/Graph.vts.h",
+        "android/hardware/tests/pointer/1.0/Pointer.vts.h",
     ],
 }
 
@@ -63,8 +63,8 @@ genrule {
         ":android.hardware.tests.pointer@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/pointer/1.0/Pointer.vts.cpp",
         "android/hardware/tests/pointer/1.0/Graph.vts.cpp",
+        "android/hardware/tests/pointer/1.0/Pointer.vts.cpp",
     ],
 }
 
@@ -76,8 +76,8 @@ genrule {
         ":android.hardware.tests.pointer@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/pointer/1.0/Pointer.vts.h",
         "android/hardware/tests/pointer/1.0/Graph.vts.h",
+        "android/hardware/tests/pointer/1.0/Pointer.vts.h",
     ],
 }
 
