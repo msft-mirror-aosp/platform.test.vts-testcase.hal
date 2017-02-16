@@ -24,6 +24,7 @@ from vts.runners.host import keys
 from vts.runners.host import test_runner
 from vts.utils.python.controllers import android_device
 from vts.utils.python.coverage import coverage_utils
+from vts.utils.python.profiling import profiling_utils
 
 
 class TvInputHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
@@ -48,10 +49,28 @@ class TvInputHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
 
         self.dut.shell.InvokeTerminal("one")
 
+    def setUpTest(self):
+        """Setup function that will be called every time before executing each
+        test case in the test class."""
+        if self.enable_profiling:
+            profiling_utils.EnableVTSProfiling(self.dut.shell.one)
+
+    def tearDownTest(self):
+        """TearDown function that will be called every time after executing each
+        test case in the test class."""
+        if self.enable_profiling:
+            profiling_trace_path = getattr(
+                self, self.VTS_PROFILING_TRACING_PATH, "")
+            self.ProcessTraceDataForTestCase(self.dut, profiling_trace_path)
+            profiling_utils.DisableVTSProfiling(self.dut.shell.one)
+
     def tearDownClass(self):
         """To be executed when all test cases are finished."""
         if getattr(self, keys.ConfigKeys.IKEY_ENABLE_COVERAGE, False):
             self.SetCoverageData(coverage_utils.GetGcdaDict(self.dut))
+
+        if self.enable_profiling:
+            self.ProcessAndUploadTraceData()
 
     def testGetStreamConfigurations(self):
         configs = self.dut.hal.tv_input.getStreamConfigurations(0)

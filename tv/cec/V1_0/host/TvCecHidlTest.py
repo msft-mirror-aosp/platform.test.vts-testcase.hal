@@ -56,16 +56,28 @@ class TvCecHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
             hw_binder_service_name="cec-hal-1-0",
             bits=64 if self.dut.is64Bit else 32)
 
+    def setUpTest(self):
+        """Setup function that will be called every time before executing each
+        test case in the test class."""
+        if self.enable_profiling:
+            profiling_utils.EnableVTSProfiling(self.dut.shell.one)
+
+    def tearDownTest(self):
+        """TearDown function that will be called every time after executing each
+        test case in the test class."""
+        if self.enable_profiling:
+            profiling_trace_path = getattr(
+                self, self.VTS_PROFILING_TRACING_PATH, "")
+            self.ProcessTraceDataForTestCase(self.dut, profiling_trace_path)
+            profiling_utils.DisableVTSProfiling(self.dut.shell.one)
+
     def tearDownClass(self):
         """To be executed when all test cases are finished."""
         if getattr(self, keys.ConfigKeys.IKEY_ENABLE_COVERAGE, False):
             self.SetCoverageData(coverage_utils.GetGcdaDict(self.dut))
 
         if self.enable_profiling:
-            profiling_trace_path = getattr(
-                self, self.VTS_PROFILING_TRACING_PATH, "")
-            self.ProcessTraceDataForTestCase(self.dut, profiling_trace_path)
-            profiling_utils.DisableVTSProfiling(self.dut.shell.one)
+            self.ProcessAndUploadTraceData()
 
     def testGetCecVersion1(self):
         """A simple test case which queries the cec version."""
