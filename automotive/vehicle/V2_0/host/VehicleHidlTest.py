@@ -51,7 +51,6 @@ class VehicleHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
             target_version=2.0,
             target_package="android.hardware.automotive.vehicle",
             target_component_name="IVehicle",
-            hw_binder_service_name="Vehicle",
             bits=64 if self.dut.is64Bit else 32)
 
         self.vehicle = self.dut.hal.vehicle  # shortcut
