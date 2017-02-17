@@ -81,18 +81,21 @@ class SensorsHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
         logging.info("sensors_types: %s", sensors_types)
         logging.info("OK: %s", sensors_types.OK)
         logging.info("BAD_VALUE: %s", sensors_types.BAD_VALUE)
+        logging.info("NO_MEMORY: %s", sensors_types.NO_MEMORY)
         logging.info("PERMISSION_DENIED: %s", sensors_types.PERMISSION_DENIED)
         logging.info("INVALID_OPERATION: %s", sensors_types.INVALID_OPERATION)
-        asserts.assertEqual(sensors_types.OK, 0);
-        asserts.assertEqual(sensors_types.BAD_VALUE, -22);
+        asserts.assertEqual(sensors_types.OK, 0)
+        asserts.assertEqual(sensors_types.NO_MEMORY, -12)
+        asserts.assertEqual(sensors_types.BAD_VALUE, -22)
+        asserts.assertEqual(sensors_types.INVALID_OPERATION, -38)
 
         logging.info("sensor types:")
-        logging.info("SENSOR_TYPE_ACCELEROMETER: %s", sensors_types.SENSOR_TYPE_ACCELEROMETER)
-        logging.info("SENSOR_TYPE_GEOMAGNETIC_FIELD: %s", sensors_types.SENSOR_TYPE_GEOMAGNETIC_FIELD)
-        logging.info("SENSOR_TYPE_GYROSCOPE: %s", sensors_types.SENSOR_TYPE_GYROSCOPE)
-        asserts.assertEqual(sensors_types.SENSOR_TYPE_ACCELEROMETER, 1);
-        asserts.assertEqual(sensors_types.SENSOR_TYPE_GEOMAGNETIC_FIELD, 2);
-        asserts.assertEqual(sensors_types.SENSOR_TYPE_GYROSCOPE, 4);
+        logging.info("ACCELEROMETER: %s", sensors_types.ACCELEROMETER)
+        logging.info("MAGNETIC_FIELD: %s", sensors_types.MAGNETIC_FIELD)
+        logging.info("GYROSCOPE: %s", sensors_types.GYROSCOPE)
+        asserts.assertEqual(sensors_types.ACCELEROMETER, 1)
+        asserts.assertEqual(sensors_types.MAGNETIC_FIELD, 2)
+        asserts.assertEqual(sensors_types.GYROSCOPE, 4)
 
 if __name__ == "__main__":
     test_runner.main()
