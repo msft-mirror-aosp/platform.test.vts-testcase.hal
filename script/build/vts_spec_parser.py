@@ -21,12 +21,12 @@ import shutil
 import subprocess
 import sys
 
-# TODO(trong): use proper packaging without referencing modules from source.
 ANDROID_BUILD_TOP = os.environ.get('ANDROID_BUILD_TOP')
 if not ANDROID_BUILD_TOP:
     print 'Run "lunch" command first.'
     sys.exit(1)
 
+# TODO(trong): use proper packaging without referencing modules from source.
 TEST_VTS_DIR = os.path.join(ANDROID_BUILD_TOP, 'test', 'vts')
 sys.path.append(TEST_VTS_DIR)
 from proto import ComponentSpecificationMessage_pb2 as CompSpecMsg
@@ -64,6 +64,32 @@ class VtsSpecParser(object):
         if os.path.exists(self._tmp_dir):
             shutil.rmtree(self._tmp_dir)
 
+    def ImportedPackagesList(self, hal_name, hal_version):
+        """Returns a list of imported packages.
+
+        Args:
+          hal_name: string, name of the hal, e.g. 'vibrator'.
+          hal_version: string, version of the hal, e.g '7.4'
+
+        Returns:
+          list of strings. For example,
+              ['android.hardware.vibrator@1.3', 'android.hidl.base@1.7']
+        """
+
+        vts_spec_protos = self.VtsSpecProtos(hal_name, hal_version)
+
+        imported_packages = set()
+        for vts_spec in vts_spec_protos:
+            for package in getattr(vts_spec, 'import', []):
+                package = package.split('::')[0]
+                imported_packages.add(package)
+
+        this_package = 'android.hardware.%s@%s' % (hal_name, hal_version)
+        if this_package in imported_packages:
+            imported_packages.remove(this_package)
+
+        return sorted(imported_packages)
+
     def GenerateVtsSpecs(self, hal_name, hal_version):
         """Generates VTS specs.
 
@@ -74,15 +100,16 @@ class VtsSpecParser(object):
           hal_version: string, version of the hal, e.g '7.4'
           tmp_dir: string, location to which to write tmp files.
         """
-        hidl_gen_cmd = ('hidl-gen -o {TEMP_DIR} -L vts '
-                        '-r android.hardware:{HW_IFACE_DIR} '
-                        '-r android.hidl:{ANDROID_BUILD_TOP}/system/libhidl/transport '
-                        'android.hardware.{HAL_NAME}@{HAL_VERSION}').format(
-                            TEMP_DIR=self._tmp_dir,
-                            HW_IFACE_DIR=self.HW_IFACE_DIR,
-                            ANDROID_BUILD_TOP=ANDROID_BUILD_TOP,
-                            HAL_NAME=hal_name,
-                            HAL_VERSION=hal_version)
+        hidl_gen_cmd = (
+            'hidl-gen -o {TEMP_DIR} -L vts '
+            '-r android.hardware:{HW_IFACE_DIR} '
+            '-r android.hidl:{ANDROID_BUILD_TOP}/system/libhidl/transport '
+            'android.hardware.{HAL_NAME}@{HAL_VERSION}').format(
+                TEMP_DIR=self._tmp_dir,
+                HW_IFACE_DIR=self.HW_IFACE_DIR,
+                ANDROID_BUILD_TOP=ANDROID_BUILD_TOP,
+                HAL_NAME=hal_name,
+                HAL_VERSION=hal_version)
         subprocess.call(hidl_gen_cmd, shell=True)
 
     def HalNamesAndVersions(self):
