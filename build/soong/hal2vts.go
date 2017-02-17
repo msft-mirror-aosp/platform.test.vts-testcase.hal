@@ -16,7 +16,9 @@ package hal2vts
 
 import (
 	"path/filepath"
+	"sort"
 	"strings"
+	"sync"
 
 	"android/soong/android"
 	"android/soong/genrule"
@@ -69,6 +71,11 @@ func (h *hal2vts) GenerateAndroidBuildActions(ctx android.ModuleContext) {
 
 	genDir := android.PathForModuleGen(ctx, "").String()
 
+	vtsList := vtsList(ctx.AConfig())
+
+	vtsListMutex.Lock()
+	defer vtsListMutex.Unlock()
+
 	for i, src := range srcFiles {
 		out := android.PathForModuleGen(ctx, h.properties.Out[i])
 		if src.Ext() != ".hal" {
@@ -100,6 +107,7 @@ func (h *hal2vts) GenerateAndroidBuildActions(ctx android.ModuleContext) {
 			},
 		})
 		h.generatedHeaders = append(h.generatedHeaders, out)
+		*vtsList = append(*vtsList, out)
 	}
 	h.exportedHeaderDirs = append(h.exportedHeaderDirs, android.PathForModuleGen(ctx, ""))
 }
@@ -119,4 +127,23 @@ func (h *hal2vts) GeneratedSourceFiles() android.Paths {
 func hal2vtsFactory() (blueprint.Module, []interface{}) {
 	h := &hal2vts{}
 	return android.InitAndroidModule(h, &h.properties)
+}
+
+func vtsList(config android.Config) *android.Paths {
+	return config.Once("vtsList", func() interface{} {
+		return &android.Paths{}
+	}).(*android.Paths)
+}
+
+var vtsListMutex sync.Mutex
+
+func init() {
+	android.RegisterMakeVarsProvider(pctx, makeVarsProvider)
+}
+
+func makeVarsProvider(ctx android.MakeVarsContext) {
+	vtsList := vtsList(ctx.Config()).Strings()
+	sort.Strings(vtsList)
+
+	ctx.Strict("VTS_FILE_LIST", strings.Join(vtsList, " "))
 }
