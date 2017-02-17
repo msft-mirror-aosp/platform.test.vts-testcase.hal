@@ -30,7 +30,6 @@ import sys
 
 if __name__ == "__main__":
     usage = (
-    'Need to run from test/vts-testcase/hal!!!\n\n'
     'Updates .bp and .mk files under test/vts-testcase/hal.\n'
     'Among .bp and .mk files affected are:\n'
     '1. test/vts-testcase/hal/Android.bp\n'
@@ -38,11 +37,6 @@ if __name__ == "__main__":
     'Usage:\n'
     '  cd test/vts-testcase/hal && python update_makefiles.py\n')
 
-    PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-    CWD = os.getcwd()
-    if CWD != PROJECT_DIR:
-        print usage
-        sys.exit(1)
 
     print 'Updating build rules.'
     build_rule_gen = BuildRuleGen()

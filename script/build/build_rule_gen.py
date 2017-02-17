@@ -26,6 +26,11 @@ class BuildRuleGen(object):
 
     def __init__(self):
         """BuildRuleGen constructor."""
+        ANDROID_BUILD_TOP = os.environ.get('ANDROID_BUILD_TOP')
+        if not ANDROID_BUILD_TOP:
+            print 'Run "lunch" command first.'
+            sys.exit(1)
+        self._build_top = ANDROID_BUILD_TOP
         self._vts_spec_parser = VtsSpecParser()
 
     def UpdateBuildRule(self):
@@ -35,7 +40,9 @@ class BuildRuleGen(object):
 
     def UpdateTopLevelBuildRule(self, hal_list):
         """Updates test/vts-testcase/hal/Android.bp"""
-        self._WriteBuildRule('./Android.bp', self._TopLevelBuildRule(hal_list))
+        self._WriteBuildRule(
+            os.path.join(self._build_top, 'test/vts-testcase/hal/Android.bp'),
+            self._TopLevelBuildRule(hal_list))
 
     def UpdateHalDirBuildRule(self, hal_list):
         """Updates build rules for vts drivers/profilers.
@@ -53,9 +60,13 @@ class BuildRuleGen(object):
             hal_name_dir = hal_name.replace('.', '/')
             hal_version_dir = 'V' + hal_version.replace('.', '_')
 
-            file_path = './%s/%s/Android.bp' % (hal_name_dir, hal_version_dir)
-            self._WriteBuildRule(file_path, self._VtsBuildRuleFromTemplate(
-                self.VTS_BUILD_TEMPLATE, hal_name, hal_version))
+            file_path = os.path.join(self._build_top, 'test/vts-testcase/hal',
+                                     hal_name_dir, hal_version_dir,
+                                     'Android.bp')
+            self._WriteBuildRule(
+                file_path,
+                self._VtsBuildRuleFromTemplate(self.VTS_BUILD_TEMPLATE,
+                                               hal_name, hal_version))
 
     def _WriteBuildRule(self, file_path, build_rule):
         """Writes the build rule into specified file.
@@ -111,33 +122,6 @@ class BuildRuleGen(object):
             build_template = str(template_file.read())
         return self._FillOutBuildRuleTemplate(hal_name, hal_version,
                                               build_template)
-
-    def _ImportedPackagesList(self, hal_name, hal_version):
-        """Returns a list of imported packages.
-
-        Args:
-          hal_name: string, name of the hal, e.g. 'vibrator'.
-          hal_version: string, version of the hal, e.g '7.4'
-
-        Returns:
-          list of strings. For example,
-              ['android.hardware.vibrator@1.3', 'android.hidl.base@1.7']
-        """
-
-        vts_spec_protos = self._vts_spec_parser.VtsSpecProtos(hal_name,
-                                                              hal_version)
-
-        imported_packages = set()
-        for vts_spec in vts_spec_protos:
-            for package in getattr(vts_spec, 'import', []):
-                package = package.split('::')[0]
-                imported_packages.add(package)
-
-        this_package = 'android.hardware.%s@%s' % (hal_name, hal_version)
-        if this_package in imported_packages:
-            imported_packages.remove(this_package)
-
-        return sorted(imported_packages)
 
     def _FillOutBuildRuleTemplate(self, hal_name, hal_version, template):
         """Returns build rules in string form by filling out given template.
@@ -227,9 +211,11 @@ class BuildRuleGen(object):
             '{GENERATED_SOURCES}',
             GeneratedOutput(hal_name, hal_version, '.cpp'))
         build_rule = build_rule.replace(
-            '{GENERATED_HEADERS}', GeneratedOutput(hal_name, hal_version, '.h'))
+            '{GENERATED_HEADERS}',
+            GeneratedOutput(hal_name, hal_version, '.h'))
 
-        imported_packages = self._ImportedPackagesList(hal_name, hal_version)
+        imported_packages = self._vts_spec_parser.ImportedPackagesList(
+            hal_name, hal_version)
         build_rule = build_rule.replace(
             '{IMPORTED_DRIVER_PACKAGES}',
             ImportedDriverPackages(imported_packages))
