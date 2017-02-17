@@ -1,0 +1,5 @@
+subdirs = [
+    "V2_0",
+    "common/V2_0",
+    "effect/V2_0",
+]
