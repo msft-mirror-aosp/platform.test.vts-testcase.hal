@@ -18,6 +18,6 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := NfcHidlPassthroughBasicTest
+LOCAL_MODULE := VtsHalNfcV1_0HostPassthrough
 VTS_CONFIG_SRC_DIR := testcases/hal/nfc/V1_0/host/passthrough
 include test/vts/tools/build/Android.host_config.mk
