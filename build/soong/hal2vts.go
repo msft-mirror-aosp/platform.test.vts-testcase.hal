@@ -1,0 +1,122 @@
+// Copyright (C) 2017 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package hal2vts
+
+import (
+	"path/filepath"
+	"strings"
+
+	"android/soong/android"
+	"android/soong/genrule"
+
+	"github.com/google/blueprint"
+)
+
+func init() {
+	android.RegisterModuleType("hal2vts", hal2vtsFactory)
+}
+
+var (
+	pctx = android.NewPackageContext("android/soong/hal2vts")
+
+	hidlGen = pctx.HostBinToolVariable("hidlGen", "hidl-gen")
+
+	hidlGenCmd = "${hidlGen}  -o ${genDir} -L vts " +
+		"-r android.hardware:hardware/interfaces " +
+		"-r android.hidl:system/libhidl/transport " +
+		"${pckg}@${ver}::${halFile}"
+
+	hal2vtsRule = pctx.StaticRule("hal2vtsRule", blueprint.RuleParams{
+		Command:     hidlGenCmd,
+		CommandDeps: []string{"${hidlGen}"},
+		Description: "hidl-gen -l vts $in => $out",
+	}, "genDir", "pckg", "ver", "halFile")
+)
+
+type hal2vtsProperties struct {
+	Srcs []string
+	Out  []string
+}
+
+type hal2vts struct {
+	android.ModuleBase
+
+	properties hal2vtsProperties
+
+	exportedHeaderDirs android.Paths
+	generatedHeaders   android.Paths
+}
+
+var _ genrule.SourceFileGenerator = (*hal2vts)(nil)
+
+func (h *hal2vts) GenerateAndroidBuildActions(ctx android.ModuleContext) {
+	srcFiles := ctx.ExpandSources(h.properties.Srcs, nil)
+	if len(srcFiles) != len(h.properties.Out) {
+		ctx.ModuleErrorf("Number of inputs must be equal to number of outputs.")
+	}
+
+	genDir := android.PathForModuleGen(ctx, "").String()
+
+	for i, src := range srcFiles {
+		out := android.PathForModuleGen(ctx, h.properties.Out[i])
+		if src.Ext() != ".hal" {
+			ctx.ModuleErrorf("Source file has to be a .hal file.")
+		}
+
+		relSrc, err := filepath.Rel("hardware/interfaces/", src.String())
+		if err != nil {
+			ctx.ModuleErrorf("Source file has to be from hardware/interfaces")
+		}
+		halDir := filepath.Dir(relSrc)
+		halFile := strings.TrimSuffix(src.Base(), ".hal")
+
+		ver := filepath.Base(halDir)
+		// Need this to transform directory path to hal name.
+		// For example, audio/effect -> audio.effect
+		pckg := strings.Replace(filepath.Dir(halDir), "/", ".", -1)
+		pckg = "android.hardware." + pckg
+
+		ctx.ModuleBuild(pctx, android.ModuleBuildParams{
+			Rule:   hal2vtsRule,
+			Input:  src,
+			Output: out,
+			Args: map[string]string{
+				"genDir":  genDir,
+				"pckg":    pckg,
+				"ver":     ver,
+				"halFile": halFile,
+			},
+		})
+		h.generatedHeaders = append(h.generatedHeaders, out)
+	}
+	h.exportedHeaderDirs = append(h.exportedHeaderDirs, android.PathForModuleGen(ctx, ""))
+}
+
+func (h *hal2vts) DepsMutator(ctx android.BottomUpMutatorContext) {
+	android.ExtractSourcesDeps(ctx, h.properties.Srcs)
+}
+
+func (h *hal2vts) GeneratedHeaderDirs() android.Paths {
+	return h.exportedHeaderDirs
+}
+
+func (h *hal2vts) GeneratedSourceFiles() android.Paths {
+	return h.generatedHeaders
+}
+
+func hal2vtsFactory() (blueprint.Module, []interface{}) {
+	h := &hal2vts{}
+	return android.InitAndroidModule(h, &h.properties)
+}
