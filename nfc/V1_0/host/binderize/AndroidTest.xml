@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2016 The Android Open Source Project
+<!-- Copyright (C) 2017 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -20,11 +20,13 @@
         <option name="push" value="spec/hardware/interfaces/nfc/1.0/vts/Nfc.vts->/data/local/tmp/spec/Nfc.vts" />
         <option name="push" value="spec/hardware/interfaces/nfc/1.0/vts/NfcClientCallback.vts->/data/local/tmp/spec/NfcClientCallback.vts" />
         <option name="push" value="spec/hardware/interfaces/nfc/1.0/vts/types.vts->/data/local/tmp/spec/types.vts" />
+        <option name="push" value="DATA/lib/android.hardware.nfc.vts.driver@1.0.so->/data/local/tmp/32/android.hardware.nfc.vts.driver@1.0.so"/>
+        <option name="push" value="DATA/lib64/android.hardware.nfc.vts.driver@1.0.so->/data/local/tmp/64/android.hardware.nfc.vts.driver@1.0.so"/>
     </target_preparer>
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
-        <option name="test-module-name" value="NfcHidlBinderizeBasicTest" />
-        <option name="test-case-path" value="vts/testcases/hal/nfc/V1_0/host/NfcHidlBasicTest" />
+        <option name="test-module-name" value="VtsHalNfcV1_0HostBinderize" />
+        <option name="test-case-path" value="vts/testcases/hal/nfc/V1_0/host/VtsHalNfcV1_0HostTest" />
         <option name="test-config-path" value="vts/testcases/hal/nfc/V1_0/host/binderize/NfcHidlBinderizeBasicTest.config" />
     </test>
 </configuration>
