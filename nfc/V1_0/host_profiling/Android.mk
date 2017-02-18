@@ -18,6 +18,6 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := VtsHalBluetoothV1_0Target
-VTS_CONFIG_SRC_DIR := testcases/hal/bluetooth/V1_0/target
+LOCAL_MODULE := VtsHalNfcV1_0HostProfiling
+VTS_CONFIG_SRC_DIR := testcases/hal/nfc/V1_0/host_profiling
 include test/vts/tools/build/Android.host_config.mk

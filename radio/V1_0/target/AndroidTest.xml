@@ -13,18 +13,19 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<configuration description="Config for VTS Radio HIDL HAL's target-side test cases">
+<configuration description="Config for VTS VtsHalRadioV1_0Target test cases">
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
-        <option name="push-group" value="HidlHalTest.push" />
+        <option name="push-group" value="HidlHalTest.push"/>
     </target_preparer>
-    <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
+    <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
-        <option name="test-module-name" value="HalRadioHidlTargetTest" />
+        <option name="test-module-name" value="VtsHalRadioV1_0Target"/>
         <option name="binary-test-sources" value="
-            _32bit::DATA/nativetest/radio_hidl_hal_test/radio_hidl_hal_test,
-            _64bit::DATA/nativetest64/radio_hidl_hal_test/radio_hidl_hal_test,
-            "/>
-        <option name="binary-test-type" value="gtest" />
-        <option name="test-timeout" value="10m" />
+          _32bit::DATA/nativetest/VtsHalRadioV1_0TargetTest/VtsHalRadioV1_0TargetTest,
+          _64bit::DATA/nativetest64/VtsHalRadioV1_0TargetTest/VtsHalRadioV1_0TargetTest,
+          "/>
+        <option name="binary-test-type" value="hal_hidl_gtest"/>
+        <option name="precondition-lshal" value="android.hardware.radio@1.0"/>
+        <option name="test-timeout" value="10m"/>
     </test>
 </configuration>
