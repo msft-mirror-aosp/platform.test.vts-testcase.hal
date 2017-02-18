@@ -212,6 +212,9 @@ class BuildRuleGen(object):
                                         utils.HalNameDir(hal_name))
         build_rule = build_rule.replace('{HAL_VERSION}', hal_version)
         build_rule = build_rule.replace(
+            '{GENERATED_VTS_SPECS}',
+            GeneratedOutput(hal_name, hal_version, ''))
+        build_rule = build_rule.replace(
             '{GENERATED_SOURCES}',
             GeneratedOutput(hal_name, hal_version, '.cpp'))
         build_rule = build_rule.replace(

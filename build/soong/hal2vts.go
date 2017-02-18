@@ -64,7 +64,13 @@ type hal2vts struct {
 var _ genrule.SourceFileGenerator = (*hal2vts)(nil)
 
 func (h *hal2vts) GenerateAndroidBuildActions(ctx android.ModuleContext) {
+	// Sort by name to match .hal to .vts file name.
+	sort.Strings(h.properties.Out)
 	srcFiles := ctx.ExpandSources(h.properties.Srcs, nil)
+	sort.SliceStable(srcFiles, func(i, j int) bool {
+		return strings.Compare(srcFiles[j].String(), srcFiles[i].String()) == 1
+	})
+
 	if len(srcFiles) != len(h.properties.Out) {
 		ctx.ModuleErrorf("Number of inputs must be equal to number of outputs.")
 	}
@@ -145,5 +151,5 @@ func makeVarsProvider(ctx android.MakeVarsContext) {
 	vtsList := vtsList(ctx.Config()).Strings()
 	sort.Strings(vtsList)
 
-	ctx.Strict("VTS_FILE_LIST", strings.Join(vtsList, " "))
+	ctx.Strict("VTS_SPEC_FILE_LIST", strings.Join(vtsList, " "))
 }
