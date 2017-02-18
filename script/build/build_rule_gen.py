@@ -18,31 +18,49 @@
 import os
 
 from vts_spec_parser import VtsSpecParser
+import build_rule_gen_utils as utils
 
 
 class BuildRuleGen(object):
     """Build rule generator for test/vts-testcase/hal."""
-    VTS_BUILD_TEMPLATE = 'build/template/vts_build_template.bp'
+    _ANDROID_BUILD_TOP = os.environ.get('ANDROID_BUILD_TOP')
+    if not _ANDROID_BUILD_TOP:
+        print 'Run "lunch" command first.'
+        sys.exit(1)
+    _PROJECT_PATH = os.path.join(_ANDROID_BUILD_TOP, 'test', 'vts-testcase',
+                                 'hal')
+    _VTS_BUILD_TEMPLATE = os.path.join(_PROJECT_PATH, 'script', 'build',
+                                       'template', 'vts_build_template.bp')
 
     def __init__(self):
         """BuildRuleGen constructor."""
-        ANDROID_BUILD_TOP = os.environ.get('ANDROID_BUILD_TOP')
-        if not ANDROID_BUILD_TOP:
-            print 'Run "lunch" command first.'
-            sys.exit(1)
-        self._build_top = ANDROID_BUILD_TOP
         self._vts_spec_parser = VtsSpecParser()
 
     def UpdateBuildRule(self):
         """Updates build rules under test/vts-testcase/hal."""
         hal_list = self._vts_spec_parser.HalNamesAndVersions()
+        self.UpdateTopLevelBuildRule()
         self.UpdateHalDirBuildRule(hal_list)
 
-    def UpdateTopLevelBuildRule(self, hal_list):
+    def UpdateTopLevelBuildRule(self):
         """Updates test/vts-testcase/hal/Android.bp"""
-        self._WriteBuildRule(
-            os.path.join(self._build_top, 'test/vts-testcase/hal/Android.bp'),
-            self._TopLevelBuildRule(hal_list))
+        utils.WriteBuildRule(
+            os.path.join(self._PROJECT_PATH, 'Android.bp'),
+            self._TopLevelBuildRule())
+
+    def UpdateSecondLevelBuildRule(self, hal_list):
+        """Updates test/vts-testcase/hal/<hal_name>/Android.bp"""
+        top_level_dirs = dict()
+        for target in hal_list:
+            hal_dir = os.path.join(
+                utils.HalNameDir(target[0]), utils.HalVerDir(target[1]))
+            top_dir = hal_dir.split('/', 1)[0]
+            top_level_dirs.setdefault(
+                top_dir, []).append(os.path.relpath(hal_dir, top_dir))
+
+        for k, v in top_level_dirs.items():
+            file_path = os.path.join(self._PROJECT_PATH, k, 'Android.bp')
+            utils.WriteBuildRule(file_path, self._SecondLevelBuildRule(v))
 
     def UpdateHalDirBuildRule(self, hal_list):
         """Updates build rules for vts drivers/profilers.
@@ -57,51 +75,37 @@ class BuildRuleGen(object):
         for target in hal_list:
             hal_name = target[0]
             hal_version = target[1]
-            hal_name_dir = hal_name.replace('.', '/')
-            hal_version_dir = 'V' + hal_version.replace('.', '_')
 
-            file_path = os.path.join(self._build_top, 'test/vts-testcase/hal',
-                                     hal_name_dir, hal_version_dir,
-                                     'Android.bp')
-            self._WriteBuildRule(
-                file_path,
-                self._VtsBuildRuleFromTemplate(self.VTS_BUILD_TEMPLATE,
-                                               hal_name, hal_version))
+            file_path = os.path.join(self._PROJECT_PATH,
+                                     utils.HalNameDir(hal_name),
+                                     utils.HalVerDir(hal_version), 'Android.bp')
 
-    def _WriteBuildRule(self, file_path, build_rule):
-        """Writes the build rule into specified file.
+            utils.WriteBuildRule(file_path, self._VtsBuildRuleFromTemplate(
+                self._VTS_BUILD_TEMPLATE, hal_name, hal_version))
 
-        Opens file_path and writes build_rule into it. Creates intermediate
-        directories if necessary.
-
-        Args:
-          file_path: string, path to file to which to write.
-          build_rule: string, build rule to be written into file.
-        """
-        print 'Updating %s' % file_path
-        dir_path = os.path.dirname(file_path)
-
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path)
-
-        with open(file_path, 'w') as bp_file:
-            bp_file.write(build_rule)
-
-    def _TopLevelBuildRule(self, hal_list):
+    def _TopLevelBuildRule(self):
         """Returns build rules for test/vts-testcase/hal/Android.bp.
 
         Args:
           hal_list: list of tuple of strings. For example,
               [('vibrator', '1.3'), ('sensors', '1.7')]
         """
+        result = '// This file was auto-generated. Do not edit manually.\n'
+        result += 'subdirs = [\n'
+        result += '    "*",\n'
+        result += ']\n'
+        return result
+
+    def _SecondLevelBuildRule(self, hal_subdirs):
+        """Returns build rules for test/vts-testcase/hal/*/Android.bp.
+
+        Args:
+          hal_subname: list of strings, sub-dirs of the hal,
+              e.g. for 'audio/effect/1.0' it would be 'effect/V1_0'.
+        """
         result = 'subdirs = [\n'
-        for target in hal_list:
-            hal_name = target[0]
-            hal_version = target[1]
-            hal_name_dir = hal_name.replace('.', '/')
-            hal_version_dir = 'V' + hal_version.replace('.', '_')
-            hal_dir = '%s/%s/' % (hal_name_dir, hal_version_dir)
-            result += '    "%s",\n' % hal_dir
+        for subdir in hal_subdirs:
+            result += '    "%s",\n' % subdir
         result += ']\n'
         return result
 
@@ -154,7 +158,7 @@ class BuildRuleGen(object):
                                                                 hal_version)
             for vts_spec in vts_spec_names:
                 result.append('"android/hardware/%s/%s/%s%s",' %
-                              (hal_name.replace('.', '/'), hal_version,
+                              (utils.HalNameDir(hal_name), hal_version,
                                vts_spec, extension))
             return '\n        '.join(result)
 
@@ -205,14 +209,13 @@ class BuildRuleGen(object):
         build_rule = template
         build_rule = build_rule.replace('{HAL_NAME}', hal_name)
         build_rule = build_rule.replace('{HAL_NAME_DIR}',
-                                        hal_name.replace('.', '/'))
+                                        utils.HalNameDir(hal_name))
         build_rule = build_rule.replace('{HAL_VERSION}', hal_version)
         build_rule = build_rule.replace(
             '{GENERATED_SOURCES}',
             GeneratedOutput(hal_name, hal_version, '.cpp'))
         build_rule = build_rule.replace(
-            '{GENERATED_HEADERS}',
-            GeneratedOutput(hal_name, hal_version, '.h'))
+            '{GENERATED_HEADERS}', GeneratedOutput(hal_name, hal_version, '.h'))
 
         imported_packages = self._vts_spec_parser.ImportedPackagesList(
             hal_name, hal_version)
