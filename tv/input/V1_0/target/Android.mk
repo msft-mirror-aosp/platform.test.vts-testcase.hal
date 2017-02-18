@@ -16,11 +16,8 @@
 
 LOCAL_PATH := $(call my-dir)
 
-include $(call all-subdir-makefiles)
-
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := HalTvInputHidlTargetTest
+LOCAL_MODULE := VtsHalTvInputV1_0Target
 VTS_CONFIG_SRC_DIR := testcases/hal/tv/input/V1_0/target
 include test/vts/tools/build/Android.host_config.mk
-

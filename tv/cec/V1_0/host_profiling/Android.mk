@@ -18,6 +18,6 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := TvCecHidlProfilingTest
-VTS_CONFIG_SRC_DIR := testcases/hal/tv_cec/V1_0/host_profiling
+LOCAL_MODULE := VtsHalTvCecV1_0HostProfiling
+VTS_CONFIG_SRC_DIR := testcases/hal/tv/cec/V1_0/host_profiling
 include test/vts/tools/build/Android.host_config.mk

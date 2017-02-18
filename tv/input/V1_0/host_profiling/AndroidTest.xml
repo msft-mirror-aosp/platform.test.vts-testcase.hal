@@ -13,19 +13,28 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<configuration description="Config for VTS Tv Input HIDL HAL's host-side test cases">
+<configuration description="Config for VTS VtsHalTvInputV1_0HostProfiling test cases">
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
-        <option name="push-group" value="HidlHalTest.push" />
-        <option name="push" value="spec/hardware/interfaces/tv/input/1.0/vts/TvInput.vts->/data/local/tmp/spec/TvInput.vts" />
-        <option name="push" value="spec/hardware/interfaces/tv/input/1.0/vts/TvInputCallback.vts->/data/local/tmp/spec/TvInputCallback.vts" />
-        <option name="push" value="spec/hardware/interfaces/tv/input/1.0/vts/types.vts->/data/local/tmp/spec/types.vts" />
-        <option name="cleanup" value="true" />
+        <option name="push-group" value="HidlHalTest.push"/>
+        <option name="cleanup" value="true"/>
+        <option name="push" value="spec/hardware/interfaces/tv/input/1.0/vts/TvInput.vts->/data/local/tmp/spec/TvInput.vts"/>
+        <option name="push" value="spec/hardware/interfaces/tv/input/1.0/vts/TvInputCallback.vts->/data/local/tmp/spec/TvInputCallback.vts"/>
+        <option name="push" value="spec/hardware/interfaces/tv/input/1.0/vts/types.vts->/data/local/tmp/spec/types.vts"/>
+        <option name="push" value="DATA/lib/android.hardware.audio.common.vts.driver@2.0.so->/data/local/tmp/32/android.hardware.audio.common.vts.driver@2.0.so"/>
+        <option name="push" value="DATA/lib64/android.hardware.audio.common.vts.driver@2.0.so->/data/local/tmp/64/android.hardware.audio.common.vts.driver@2.0.so"/>
+        <option name="push" value="DATA/lib/android.hardware.tv.input.vts.driver@1.0.so->/data/local/tmp/32/android.hardware.tv.input.vts.driver@1.0.so"/>
+        <option name="push" value="DATA/lib64/android.hardware.tv.input.vts.driver@1.0.so->/data/local/tmp/64/android.hardware.tv.input.vts.driver@1.0.so"/>
+        <option name="push" value="DATA/lib/android.hardware.audio.common@2.0-vts.profiler.so->/data/local/tmp/32/android.hardware.audio.common@2.0-vts.profiler.so"/>
+        <option name="push" value="DATA/lib64/android.hardware.audio.common@2.0-vts.profiler.so->/data/local/tmp/64/android.hardware.audio.common@2.0-vts.profiler.so"/>
+        <option name="push" value="DATA/lib/android.hardware.tv.input@1.0-vts.profiler.so->/data/local/tmp/32/android.hardware.tv.input@1.0-vts.profiler.so"/>
+        <option name="push" value="DATA/lib64/android.hardware.tv.input@1.0-vts.profiler.so->/data/local/tmp/64/android.hardware.tv.input@1.0-vts.profiler.so"/>
     </target_preparer>
-    <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer">
-    </target_preparer>
+    <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
-        <option name="test-module-name" value="TvInputHidlProfilingTest" />
-        <option name="test-case-path" value="vts/testcases/hal/tv/input/V1_0/host/TvInputHidlTest" />
-        <option name="enable-profiling" value="true" />
+        <option name="test-module-name" value="VtsHalTvInputV1_0HostProfiling"/>
+        <option name="test-case-path" value="vts/testcases/tv/input/V1_0/host/VtsHalTvInputV1_0HostTest"/>
+        <option name="enable-profiling" value="true"/>
+        <option name="precondition-lshal" value="android.hardware.tv.input@1.0"/>
+        <option name="test-timeout" value="1m"/>
     </test>
 </configuration>
