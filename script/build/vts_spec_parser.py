@@ -31,6 +31,7 @@ TEST_VTS_DIR = os.path.join(ANDROID_BUILD_TOP, 'test', 'vts')
 sys.path.append(TEST_VTS_DIR)
 from proto import ComponentSpecificationMessage_pb2 as CompSpecMsg
 from google.protobuf import text_format
+import build_rule_gen_utils as utils
 
 
 class VtsSpecParser(object):
@@ -140,7 +141,7 @@ class VtsSpecParser(object):
               e.g. ['Vibrator.vts', 'types.vts']
         """
         vts_spec_dir = os.path.join(self._tmp_dir, 'android', 'hardware',
-                                    hal_name.replace('.', '/'), hal_version)
+                                    utils.HalNameDir(hal_name), hal_version)
         vts_spec_names = filter(lambda x: x.endswith('.vts'),
                                 os.listdir(vts_spec_dir))
         return sorted(vts_spec_names)
@@ -155,7 +156,7 @@ class VtsSpecParser(object):
           list of ComponentSpecificationMessages
         """
         vts_spec_dir = os.path.join(self._tmp_dir, 'android', 'hardware',
-                                    hal_name.replace('.', '/'), hal_version)
+                                    utils.HalNameDir(hal_name), hal_version)
         vts_spec_protos = []
         for vts_spec in self.VtsSpecNames(hal_name, hal_version):
             spec_proto = CompSpecMsg.ComponentSpecificationMessage()
