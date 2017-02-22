@@ -1,6 +1,17 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.{HAL_NAME}@{HAL_VERSION}-vts.spec",
+    srcs: [
+        ":android.hardware.{HAL_NAME}@{HAL_VERSION}_hal",
+    ],
+    out: [
+        {GENERATED_VTS_SPECS}
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.{HAL_NAME}.vts.driver@{HAL_VERSION}_genc++",
