@@ -1,6 +1,29 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.wifi.supplicant@1.0-vts.spec",
+    srcs: [
+        ":android.hardware.wifi.supplicant@1.0_hal",
+    ],
+    out: [
+        "android/hardware/wifi/supplicant/1.0/Supplicant.vts",
+        "android/hardware/wifi/supplicant/1.0/SupplicantCallback.vts",
+        "android/hardware/wifi/supplicant/1.0/SupplicantIface.vts",
+        "android/hardware/wifi/supplicant/1.0/SupplicantNetwork.vts",
+        "android/hardware/wifi/supplicant/1.0/SupplicantP2pIface.vts",
+        "android/hardware/wifi/supplicant/1.0/SupplicantP2pIfaceCallback.vts",
+        "android/hardware/wifi/supplicant/1.0/SupplicantP2pNetwork.vts",
+        "android/hardware/wifi/supplicant/1.0/SupplicantP2pNetworkCallback.vts",
+        "android/hardware/wifi/supplicant/1.0/SupplicantStaIface.vts",
+        "android/hardware/wifi/supplicant/1.0/SupplicantStaIfaceCallback.vts",
+        "android/hardware/wifi/supplicant/1.0/SupplicantStaNetwork.vts",
+        "android/hardware/wifi/supplicant/1.0/SupplicantStaNetworkCallback.vts",
+        "android/hardware/wifi/supplicant/1.0/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.wifi.supplicant.vts.driver@1.0_genc++",
