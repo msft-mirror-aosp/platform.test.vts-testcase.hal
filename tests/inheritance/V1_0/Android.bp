@@ -1,6 +1,20 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.tests.inheritance@1.0-vts.spec",
+    srcs: [
+        ":android.hardware.tests.inheritance@1.0_hal",
+    ],
+    out: [
+        "android/hardware/tests/inheritance/1.0/Child.vts",
+        "android/hardware/tests/inheritance/1.0/Fetcher.vts",
+        "android/hardware/tests/inheritance/1.0/Grandparent.vts",
+        "android/hardware/tests/inheritance/1.0/Parent.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.tests.inheritance.vts.driver@1.0_genc++",
