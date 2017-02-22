@@ -1,6 +1,18 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.camera.provider@2.4-vts.spec",
+    srcs: [
+        ":android.hardware.camera.provider@2.4_hal",
+    ],
+    out: [
+        "android/hardware/camera/provider/2.4/CameraProvider.vts",
+        "android/hardware/camera/provider/2.4/CameraProviderCallback.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.camera.provider.vts.driver@2.4_genc++",

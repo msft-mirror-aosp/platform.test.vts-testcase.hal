@@ -1,6 +1,19 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.soundtrigger@2.0-vts.spec",
+    srcs: [
+        ":android.hardware.soundtrigger@2.0_hal",
+    ],
+    out: [
+        "android/hardware/soundtrigger/2.0/SoundTriggerHw.vts",
+        "android/hardware/soundtrigger/2.0/SoundTriggerHwCallback.vts",
+        "android/hardware/soundtrigger/2.0/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.soundtrigger.vts.driver@2.0_genc++",

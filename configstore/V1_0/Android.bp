@@ -1,6 +1,18 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.configstore@1.0-vts.spec",
+    srcs: [
+        ":android.hardware.configstore@1.0_hal",
+    ],
+    out: [
+        "android/hardware/configstore/1.0/SurfaceFlingerConfigs.vts",
+        "android/hardware/configstore/1.0/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.configstore.vts.driver@1.0_genc++",

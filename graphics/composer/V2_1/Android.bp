@@ -1,6 +1,20 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.graphics.composer@2.1-vts.spec",
+    srcs: [
+        ":android.hardware.graphics.composer@2.1_hal",
+    ],
+    out: [
+        "android/hardware/graphics/composer/2.1/Composer.vts",
+        "android/hardware/graphics/composer/2.1/ComposerCallback.vts",
+        "android/hardware/graphics/composer/2.1/ComposerClient.vts",
+        "android/hardware/graphics/composer/2.1/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.graphics.composer.vts.driver@2.1_genc++",

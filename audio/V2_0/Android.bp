@@ -1,6 +1,24 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.audio@2.0-vts.spec",
+    srcs: [
+        ":android.hardware.audio@2.0_hal",
+    ],
+    out: [
+        "android/hardware/audio/2.0/Device.vts",
+        "android/hardware/audio/2.0/DevicesFactory.vts",
+        "android/hardware/audio/2.0/PrimaryDevice.vts",
+        "android/hardware/audio/2.0/Stream.vts",
+        "android/hardware/audio/2.0/StreamIn.vts",
+        "android/hardware/audio/2.0/StreamOut.vts",
+        "android/hardware/audio/2.0/StreamOutCallback.vts",
+        "android/hardware/audio/2.0/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.audio.vts.driver@2.0_genc++",

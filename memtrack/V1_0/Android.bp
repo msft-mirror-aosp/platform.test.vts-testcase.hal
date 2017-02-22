@@ -1,6 +1,18 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.memtrack@1.0-vts.spec",
+    srcs: [
+        ":android.hardware.memtrack@1.0_hal",
+    ],
+    out: [
+        "android/hardware/memtrack/1.0/Memtrack.vts",
+        "android/hardware/memtrack/1.0/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.memtrack.vts.driver@1.0_genc++",

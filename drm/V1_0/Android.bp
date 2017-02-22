@@ -1,6 +1,22 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.drm@1.0-vts.spec",
+    srcs: [
+        ":android.hardware.drm@1.0_hal",
+    ],
+    out: [
+        "android/hardware/drm/1.0/CryptoFactory.vts",
+        "android/hardware/drm/1.0/CryptoPlugin.vts",
+        "android/hardware/drm/1.0/DrmFactory.vts",
+        "android/hardware/drm/1.0/DrmPlugin.vts",
+        "android/hardware/drm/1.0/DrmPluginListener.vts",
+        "android/hardware/drm/1.0/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.drm.vts.driver@1.0_genc++",

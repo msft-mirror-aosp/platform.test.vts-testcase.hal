@@ -1,6 +1,21 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.evs@1.0-vts.spec",
+    srcs: [
+        ":android.hardware.evs@1.0_hal",
+    ],
+    out: [
+        "android/hardware/evs/1.0/EvsCamera.vts",
+        "android/hardware/evs/1.0/EvsCameraStream.vts",
+        "android/hardware/evs/1.0/EvsDisplay.vts",
+        "android/hardware/evs/1.0/EvsEnumerator.vts",
+        "android/hardware/evs/1.0/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.evs.vts.driver@1.0_genc++",

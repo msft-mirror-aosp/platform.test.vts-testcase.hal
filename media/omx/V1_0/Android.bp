@@ -1,6 +1,24 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.media.omx@1.0-vts.spec",
+    srcs: [
+        ":android.hardware.media.omx@1.0_hal",
+    ],
+    out: [
+        "android/hardware/media/omx/1.0/GraphicBufferSource.vts",
+        "android/hardware/media/omx/1.0/Omx.vts",
+        "android/hardware/media/omx/1.0/OmxBufferProducer.vts",
+        "android/hardware/media/omx/1.0/OmxBufferSource.vts",
+        "android/hardware/media/omx/1.0/OmxNode.vts",
+        "android/hardware/media/omx/1.0/OmxObserver.vts",
+        "android/hardware/media/omx/1.0/OmxProducerListener.vts",
+        "android/hardware/media/omx/1.0/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.media.omx.vts.driver@1.0_genc++",

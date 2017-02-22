@@ -1,6 +1,19 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.graphics.allocator@2.0-vts.spec",
+    srcs: [
+        ":android.hardware.graphics.allocator@2.0_hal",
+    ],
+    out: [
+        "android/hardware/graphics/allocator/2.0/Allocator.vts",
+        "android/hardware/graphics/allocator/2.0/AllocatorClient.vts",
+        "android/hardware/graphics/allocator/2.0/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.graphics.allocator.vts.driver@2.0_genc++",

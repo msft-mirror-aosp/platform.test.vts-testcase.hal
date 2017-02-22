@@ -1,6 +1,17 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.camera.common@1.0-vts.spec",
+    srcs: [
+        ":android.hardware.camera.common@1.0_hal",
+    ],
+    out: [
+        "android/hardware/camera/common/1.0/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.camera.common.vts.driver@1.0_genc++",

@@ -1,6 +1,21 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.broadcastradio@1.0-vts.spec",
+    srcs: [
+        ":android.hardware.broadcastradio@1.0_hal",
+    ],
+    out: [
+        "android/hardware/broadcastradio/1.0/BroadcastRadio.vts",
+        "android/hardware/broadcastradio/1.0/BroadcastRadioFactory.vts",
+        "android/hardware/broadcastradio/1.0/Tuner.vts",
+        "android/hardware/broadcastradio/1.0/TunerCallback.vts",
+        "android/hardware/broadcastradio/1.0/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.broadcastradio.vts.driver@1.0_genc++",

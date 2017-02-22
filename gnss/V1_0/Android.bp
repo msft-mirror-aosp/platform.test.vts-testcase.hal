@@ -1,6 +1,37 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.gnss@1.0-vts.spec",
+    srcs: [
+        ":android.hardware.gnss@1.0_hal",
+    ],
+    out: [
+        "android/hardware/gnss/1.0/AGnss.vts",
+        "android/hardware/gnss/1.0/AGnssCallback.vts",
+        "android/hardware/gnss/1.0/AGnssRil.vts",
+        "android/hardware/gnss/1.0/AGnssRilCallback.vts",
+        "android/hardware/gnss/1.0/Gnss.vts",
+        "android/hardware/gnss/1.0/GnssBatching.vts",
+        "android/hardware/gnss/1.0/GnssBatchingCallback.vts",
+        "android/hardware/gnss/1.0/GnssCallback.vts",
+        "android/hardware/gnss/1.0/GnssConfiguration.vts",
+        "android/hardware/gnss/1.0/GnssDebug.vts",
+        "android/hardware/gnss/1.0/GnssGeofenceCallback.vts",
+        "android/hardware/gnss/1.0/GnssGeofencing.vts",
+        "android/hardware/gnss/1.0/GnssMeasurement.vts",
+        "android/hardware/gnss/1.0/GnssMeasurementCallback.vts",
+        "android/hardware/gnss/1.0/GnssNavigationMessage.vts",
+        "android/hardware/gnss/1.0/GnssNavigationMessageCallback.vts",
+        "android/hardware/gnss/1.0/GnssNi.vts",
+        "android/hardware/gnss/1.0/GnssNiCallback.vts",
+        "android/hardware/gnss/1.0/GnssXtra.vts",
+        "android/hardware/gnss/1.0/GnssXtraCallback.vts",
+        "android/hardware/gnss/1.0/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.gnss.vts.driver@1.0_genc++",
