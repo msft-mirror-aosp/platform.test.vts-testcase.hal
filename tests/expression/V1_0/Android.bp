@@ -1,6 +1,18 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.tests.expression@1.0-vts.spec",
+    srcs: [
+        ":android.hardware.tests.expression@1.0_hal",
+    ],
+    out: [
+        "android/hardware/tests/expression/1.0/Expression.vts",
+        "android/hardware/tests/expression/1.0/ExpressionExt.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.tests.expression.vts.driver@1.0_genc++",

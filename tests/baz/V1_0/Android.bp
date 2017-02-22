@@ -1,6 +1,20 @@
 // This file was auto-generated. Do not edit manually.
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.tests.baz@1.0-vts.spec",
+    srcs: [
+        ":android.hardware.tests.baz@1.0_hal",
+    ],
+    out: [
+        "android/hardware/tests/baz/1.0/Base.vts",
+        "android/hardware/tests/baz/1.0/Baz.vts",
+        "android/hardware/tests/baz/1.0/BazCallback.vts",
+        "android/hardware/tests/baz/1.0/types.vts",
+    ],
+}
+
 // Build VTS driver.
 genrule {
     name: "android.hardware.tests.baz.vts.driver@1.0_genc++",
