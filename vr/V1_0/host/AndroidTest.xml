@@ -24,7 +24,7 @@
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalVrV1_0Host"/>
-        <option name="test-case-path" value="vts/testcases/vr/V1_0/host/VtsHalVrV1_0HostTest"/>
+        <option name="test-case-path" value="vts/testcases/hal/vr/V1_0/host/VtsHalVrV1_0HostTest"/>
         <option name="precondition-lshal" value="android.hardware.vr@1.0"/>
         <option name="test-timeout" value="1m"/>
     </test>

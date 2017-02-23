@@ -26,7 +26,7 @@
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalContexthubV1_0Host"/>
-        <option name="test-case-path" value="vts/testcases/contexthub/V1_0/host/VtsHalContexthubV1_0HostTest"/>
+        <option name="test-case-path" value="vts/testcases/hal/contexthub/V1_0/host/VtsHalContexthubV1_0HostTest"/>
         <option name="precondition-lshal" value="android.hardware.contexthub@1.0"/>
         <option name="test-timeout" value="1m"/>
     </test>
