@@ -382,7 +382,7 @@ TEST_BINEARY_TEMPLATE = """
           _32bit::DATA/nativetest/{test_name}/{test_name},
           _64bit::DATA/nativetest64/{test_name}/{test_name},
           """
-TEST_SCRIPT_TEMPLATE = 'vts/testcases/{hal_path}/{hal_version}/host/{test_name}'
+TEST_SCRIPT_TEMPLATE = 'vts/testcases/hal/{hal_path}/{hal_version}/host/{test_name}'
 
 VTS_SPEC_PUSH_TEMPLATE = 'spec/hardware/interfaces/{hal_path}/{hal_version}/vts/{vts_file}->/data/local/tmp/spec/{vts_file}'
 VTS_LIB_PUSH_TEMPLATE_32 = 'DATA/lib/{lib_name}->/data/local/tmp/32/{lib_name}'
