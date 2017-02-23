@@ -26,6 +26,6 @@
           "/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="precondition-lshal" value="android.hardware.power@1.0"/>
-        <option name="test-timeout" value="1m"/>
+        <option name="test-timeout" value="2m"/>
     </test>
 </configuration>
