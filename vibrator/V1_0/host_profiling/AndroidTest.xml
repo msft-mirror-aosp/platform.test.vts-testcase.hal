@@ -27,7 +27,7 @@
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalVibratorV1_0HostProfiling"/>
-        <option name="test-case-path" value="vts/testcases/vibrator/V1_0/host/VtsHalVibratorV1_0HostTest"/>
+        <option name="test-case-path" value="vts/testcases/hal/vibrator/V1_0/host/VtsHalVibratorV1_0HostTest"/>
         <option name="enable-profiling" value="true"/>
         <option name="precondition-lshal" value="android.hardware.vibrator@1.0"/>
         <option name="test-timeout" value="1m"/>
