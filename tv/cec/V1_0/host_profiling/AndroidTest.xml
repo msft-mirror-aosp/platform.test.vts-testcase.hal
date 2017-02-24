@@ -21,9 +21,7 @@
         <option name="push" value="spec/hardware/interfaces/tv/cec/1.0/vts/HdmiCecCallback.vts->/data/local/tmp/spec/HdmiCecCallback.vts"/>
         <option name="push" value="spec/hardware/interfaces/tv/cec/1.0/vts/types.vts->/data/local/tmp/spec/types.vts"/>
         <option name="push" value="DATA/lib/android.hardware.tv.cec.vts.driver@1.0.so->/data/local/tmp/32/android.hardware.tv.cec.vts.driver@1.0.so"/>
-        <option name="push" value="DATA/lib64/android.hardware.tv.cec.vts.driver@1.0.so->/data/local/tmp/64/android.hardware.tv.cec.vts.driver@1.0.so"/>
         <option name="push" value="DATA/lib/android.hardware.tv.cec@1.0-vts.profiler.so->/data/local/tmp/32/android.hardware.tv.cec@1.0-vts.profiler.so"/>
-        <option name="push" value="DATA/lib64/android.hardware.tv.cec@1.0-vts.profiler.so->/data/local/tmp/64/android.hardware.tv.cec@1.0-vts.profiler.so"/>
     </target_preparer>
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
