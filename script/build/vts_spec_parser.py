@@ -20,6 +20,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 
 ANDROID_BUILD_TOP = os.environ.get('ANDROID_BUILD_TOP')
 if not ANDROID_BUILD_TOP:
@@ -38,7 +39,7 @@ class VtsSpecParser(object):
     """Provides an API to generate a parse .vts spec files."""
     HW_IFACE_DIR = os.path.join(ANDROID_BUILD_TOP, 'hardware', 'interfaces')
 
-    def __init__(self, tmp_dir='./tmp'):
+    def __init__(self):
         """VtsSpecParser constructor.
 
         For every unique pair of (hal name, hal version) available under
@@ -47,14 +48,9 @@ class VtsSpecParser(object):
         Args:
             tmp_dir: string, temporary directory to which to write .vts files.
         """
-        self._tmp_dir = tmp_dir
+        self._cache = set()
+        self._tmp_dir = tempfile.mkdtemp()
         hal_list = self.HalNamesAndVersions()
-
-        print "Generating .vts specs."
-        for target in hal_list:
-            hal_name = target[0]
-            hal_version = target[1]
-            self.GenerateVtsSpecs(hal_name, hal_version)
 
     def __del__(self):
         """VtsSpecParser destructor.
@@ -76,7 +72,7 @@ class VtsSpecParser(object):
           list of strings. For example,
               ['android.hardware.vibrator@1.3', 'android.hidl.base@1.7']
         """
-
+        self.GenerateVtsSpecs(hal_name, hal_version)
         vts_spec_protos = self.VtsSpecProtos(hal_name, hal_version)
 
         imported_packages = set()
@@ -101,6 +97,8 @@ class VtsSpecParser(object):
           hal_version: string, version of the hal, e.g '7.4'
           tmp_dir: string, location to which to write tmp files.
         """
+        if (hal_name, hal_version) in self._cache:
+            return
         hidl_gen_cmd = (
             'hidl-gen -o {TEMP_DIR} -L vts '
             '-r android.hardware:{HW_IFACE_DIR} '
@@ -112,6 +110,7 @@ class VtsSpecParser(object):
                 HAL_NAME=hal_name,
                 HAL_VERSION=hal_version)
         subprocess.call(hidl_gen_cmd, shell=True)
+        self._cache.add((hal_name, hal_version))
 
     def HalNamesAndVersions(self):
         """Returns a list of hals and version present under hardware/interfaces.
@@ -140,6 +139,7 @@ class VtsSpecParser(object):
           list of string, .vts files for given hal name and version,
               e.g. ['Vibrator.vts', 'types.vts']
         """
+        self.GenerateVtsSpecs(hal_name, hal_version)
         vts_spec_dir = os.path.join(self._tmp_dir, 'android', 'hardware',
                                     utils.HalNameDir(hal_name), hal_version)
         vts_spec_names = filter(lambda x: x.endswith('.vts'),
@@ -155,6 +155,7 @@ class VtsSpecParser(object):
         Returns:
           list of ComponentSpecificationMessages
         """
+        self.GenerateVtsSpecs(hal_name, hal_version)
         vts_spec_dir = os.path.join(self._tmp_dir, 'android', 'hardware',
                                     utils.HalNameDir(hal_name), hal_version)
         vts_spec_protos = []
