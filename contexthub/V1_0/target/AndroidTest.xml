@@ -25,6 +25,7 @@
           _64bit::DATA/nativetest64/VtsHalContexthubV1_0TargetTest/VtsHalContexthubV1_0TargetTest,
           "/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
+        <option name="binary-test-disable-framework" value="true" />
         <option name="precondition-lshal" value="android.hardware.contexthub@1.0"/>
         <option name="test-timeout" value="10m"/>
     </test>
