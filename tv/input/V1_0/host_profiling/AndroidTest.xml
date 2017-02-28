@@ -15,7 +15,7 @@
 -->
 <configuration description="Config for VTS VtsHalTvInputV1_0HostProfiling test cases">
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
-        <option name="push-group" value="HidlHalTest.push"/>
+        <option name="push-group" value="HalHidlHostProfilingTest.push"/>
         <option name="cleanup" value="true"/>
         <option name="push" value="spec/hardware/interfaces/tv/input/1.0/vts/TvInput.vts->/data/local/tmp/spec/TvInput.vts"/>
         <option name="push" value="spec/hardware/interfaces/tv/input/1.0/vts/TvInputCallback.vts->/data/local/tmp/spec/TvInputCallback.vts"/>
