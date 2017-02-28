@@ -25,7 +25,7 @@ from vts.utils.python.controllers import android_device
 from vts.utils.python.profiling import profiling_utils
 
 
-class VehicleHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
+class VtsHalRadioV1_0HostTest(base_test_with_webdb.BaseTestWithWebDbClass):
     """A simple testcase for the VEHICLE HIDL HAL."""
 
     def setUpClass(self):

@@ -28,7 +28,7 @@ from vts.utils.python.profiling import profiling_utils
 from vts.utils.python.coverage import coverage_utils
 
 
-class VehicleHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
+class VtsHalAutomotiveVehicleV2_0HostTest(base_test_with_webdb.BaseTestWithWebDbClass):
     """A simple testcase for the VEHICLE HIDL HAL."""
 
     def setUpClass(self):

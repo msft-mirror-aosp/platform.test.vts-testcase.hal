@@ -26,7 +26,7 @@
     </target_preparer>
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
-        <option name="test-module-name" value="RadioHidlTest" />
-        <option name="test-case-path" value="vts/testcases/hal/radio/V1_0/host/RadioHidlTest" />
+        <option name="test-module-name" value="VtsHalRadioV1_0Host" />
+        <option name="test-case-path" value="vts/testcases/hal/radio/V1_0/host/VtsHalRadioV1_0HostTest" />
     </test>
 </configuration>
