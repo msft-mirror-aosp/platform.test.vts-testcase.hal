@@ -1,4 +1,3 @@
-#!/usr/bin/env python3.4
 #
 # Copyright (C) 2016 The Android Open Source Project
 #
@@ -18,6 +17,7 @@
 
 import os
 
+WARNING_HEADER = '// This file was auto-generated. Do not edit manually.\n'
 
 def HalNameDir(hal_name):
     """Returns directory name corresponding to hal name."""
@@ -47,3 +47,21 @@ def WriteBuildRule(file_path, build_rule):
 
     with open(file_path, 'w') as bp_file:
         bp_file.write(build_rule)
+
+
+def OnlySubdirsBpRule(subdirs):
+    """Returns a .bp rule containing only subdirs field.
+
+    For example, 'subdirs = ["*"]' bp rule tells soong to look in all
+    sub-directories for Android.bp files.
+
+    Args:
+        subdirs: list of sub-directories.
+    """
+    result = WARNING_HEADER
+
+    result += 'subdirs = [\n'
+    for subdir in subdirs:
+        result += '    "%s",\n' % subdir
+    result += ']\n'
+    return result
