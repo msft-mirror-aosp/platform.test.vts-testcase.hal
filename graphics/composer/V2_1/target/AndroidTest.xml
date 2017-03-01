@@ -25,6 +25,7 @@
           _64bit::DATA/nativetest64/VtsHalGraphicsComposerV2_1TargetTest/VtsHalGraphicsComposerV2_1TargetTest,
           "/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
+        <option name="binary-test-disable-framework" value="true" />
         <option name="precondition-lshal" value="android.hardware.graphics.composer@2.1"/>
         <option name="test-timeout" value="1m"/>
     </test>
