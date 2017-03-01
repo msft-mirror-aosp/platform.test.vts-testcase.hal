@@ -39,16 +39,22 @@ def main():
         '--time_out',
         dest='time_out',
         required=False,
-        help='Timeout for the test, default is 1m')
+        help='Timeout for the test, default is 1m.')
     parser.add_argument(
         '--enable_profiling',
         dest='enable_profiling',
         action='store_true',
         required=False,
-        help='Whether to create profiling tests')
+        help='Whether to create profiling test.')
+    parser.add_argument(
+        '--stop_runtime',
+        dest='stop_runtime',
+        action='store_true',
+        required=False,
+        help='Whether to stop framework before the test.')
     parser.add_argument(
         'hal_package_name',
-        help='hal package name (e.g. android.hardware.nfc@1.0)')
+        help='hal package name (e.g. android.hardware.nfc@1.0).')
     args = parser.parse_args()
 
     regex = re.compile(HAL_PACKAGE_NAME_PATTERN)
@@ -77,7 +83,8 @@ def main():
 
     vts_spec_parser = VtsSpecParser()
     test_case_creater = TestCaseCreator(vts_spec_parser, args.hal_package_name)
-    if not test_case_creater.LaunchTestCase(args.test_type, args.time_out):
+    if not test_case_creater.LaunchTestCase(
+            args.test_type, args.time_out, stop_runtime=args.stop_runtime):
         print('Error: Failed to launch test for %s. Exiting...' %
               args.hal_package_name)
         sys.exit(1)
@@ -85,7 +92,10 @@ def main():
     # Create additional profiling test case if enable_profiling is specified.
     if (args.enable_profiling):
         if not test_case_creater.LaunchTestCase(
-                args.test_type, args.time_out, is_profiling=True):
+                args.test_type,
+                args.time_out,
+                is_profiling=True,
+                stop_runtime=args.stop_runtime):
             print('Error: Failed to launch profiling test for %s. Exiting...' %
                   args.hal_package_name)
             sys.exit(1)
