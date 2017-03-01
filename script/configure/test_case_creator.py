@@ -49,6 +49,7 @@ class TestCaseCreator(object):
         test_dir: string, test case absolute directory.
         time_out: string, timeout of the test, default is 1m.
         is_profiling: boolean, whether to create a profiling test case.
+        stop_runtime: boolean whether to stop framework before the test.
         build_top: string, equal to environment variable ANDROID_BUILD_TOP.
         vts_spec_parser: tools that generates and parses vts spec with hidl-gen.
         current_year: current year.
@@ -76,6 +77,7 @@ class TestCaseCreator(object):
                        test_type,
                        time_out='1m',
                        is_profiling=False,
+                       stop_runtime=False,
                        update_only=False):
         """Create the necessary configuration files to launch a test case.
 
@@ -83,6 +85,7 @@ class TestCaseCreator(object):
           test_type: type of the test.
           time_out: timeout of the test.
           is_profiling: whether to create a profiling test case.
+          stop_runtime: whether to stop framework before the test.
           update_only: flag to only update existing test configure.
 
         Returns:
@@ -91,6 +94,7 @@ class TestCaseCreator(object):
         self._test_type = test_type
         self._time_out = time_out
         self._is_profiling = is_profiling
+        self._stop_runtime = stop_runtime
 
         self._test_module_name = self.GetVtsHalTestModuleName()
         if is_profiling:
@@ -217,9 +221,24 @@ class TestCaseCreator(object):
         Args:
           file_pusher: parent xml element for push file configure.
         """
-        ET.SubElement(file_pusher, 'option',
-                      {'name': 'push-group',
-                       'value': 'HidlHalTest.push'})
+        if self._test_type == 'target':
+            if self._is_profiling:
+                ET.SubElement(file_pusher, 'option',
+                              {'name': 'push-group',
+                               'value': 'HalHidlTargetProfilingTest.push'})
+            else:
+                ET.SubElement(file_pusher, 'option',
+                              {'name': 'push-group',
+                               'value': 'HalHidlTargetTest.push'})
+        else:
+            if self._is_profiling:
+                ET.SubElement(file_pusher, 'option',
+                              {'name': 'push-group',
+                               'value': 'HalHidlHostProfilingTest.push'})
+            else:
+                ET.SubElement(file_pusher, 'option',
+                              {'name': 'push-group',
+                               'value': 'HalHidlHostTest.push'})
 
         imported_package_lists = self._vts_spec_parser.ImportedPackagesList(
             self._hal_name, self._hal_version)
@@ -308,6 +327,11 @@ class TestCaseCreator(object):
                           {'name': 'enable-profiling',
                            'value': 'true'})
 
+        if self._stop_runtime:
+            ET.SubElement(test, 'option', {
+                'name': 'binary-test-disable-framework',
+                'value': 'true'
+            })
         ET.SubElement(test, 'option', {
             'name': 'precondition-lshal',
             'value': self._hal_package_name
