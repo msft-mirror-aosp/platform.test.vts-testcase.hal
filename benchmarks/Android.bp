@@ -1,0 +1,3 @@
+subdirs = [
+    "msgq/V1_0",
+]
