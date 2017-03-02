@@ -8,7 +8,6 @@ hal2vts {
         ":android.hardware.tests.msgq@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/msgq/1.0/BenchmarkMsgQ.vts",
         "android/hardware/tests/msgq/1.0/TestMsgQ.vts",
     ],
 }
@@ -22,7 +21,6 @@ genrule {
         ":android.hardware.tests.msgq@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/msgq/1.0/BenchmarkMsgQ.vts.cpp",
         "android/hardware/tests/msgq/1.0/TestMsgQ.vts.cpp",
     ],
 }
@@ -35,7 +33,6 @@ genrule {
         ":android.hardware.tests.msgq@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/msgq/1.0/BenchmarkMsgQ.vts.h",
         "android/hardware/tests/msgq/1.0/TestMsgQ.vts.h",
     ],
 }
@@ -75,7 +72,6 @@ genrule {
         ":android.hardware.tests.msgq@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/msgq/1.0/BenchmarkMsgQ.vts.cpp",
         "android/hardware/tests/msgq/1.0/TestMsgQ.vts.cpp",
     ],
 }
@@ -88,7 +84,6 @@ genrule {
         ":android.hardware.tests.msgq@1.0_hal",
     ],
     out: [
-        "android/hardware/tests/msgq/1.0/BenchmarkMsgQ.vts.h",
         "android/hardware/tests/msgq/1.0/TestMsgQ.vts.h",
     ],
 }
