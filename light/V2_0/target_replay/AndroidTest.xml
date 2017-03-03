@@ -15,7 +15,7 @@
 -->
 <configuration description="Config for VTS Light HIDL HAL's target-side replay test cases">
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
-        <option name="push-group" value="HidlHalTest.push" />
+        <option name="push-group" value="HalHidlHostTest.push" />
         <option name="cleanup" value="true" />
         <option name="push" value="spec/hardware/interfaces/light/2.0/vts/Light.vts->/data/local/tmp/spec/target.vts" />
         <option name="push" value="DATA/lib/android.hardware.light.vts.driver@2.0.so->/data/local/tmp/32/android.hardware.light.vts.driver@2.0.so"/>

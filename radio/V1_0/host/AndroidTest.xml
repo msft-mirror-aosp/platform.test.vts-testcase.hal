@@ -15,7 +15,7 @@
 -->
 <configuration description="Config for VTS HAL Radio test cases">
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
-        <option name="push-group" value="HidlHalTest.push" />
+        <option name="push-group" value="HalHidlHostTest.push" />
         <option name="cleanup" value="true" />
         <option name="push" value="spec/hardware/interfaces/radio/1.0/vts/Radio.vts->/data/local/tmp/spec/Radio.vts" />
         <option name="push" value="spec/hardware/interfaces/radio/1.0/vts/RadioIndication.vts->/data/local/tmp/spec/RadioIndication.vts" />
