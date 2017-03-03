@@ -90,8 +90,8 @@ class TvCecHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
         logging.info("tv_cec types: %s", self.vtypes)
 
         cec_message = {
-            "initiator": self.vtypes.TV,
-            "destination": self.vtypes.PLAYBACK_1,
+            "initiator": self.vtypes.CecLogicalAddress.TV,
+            "destination": self.vtypes.CecLogicalAddress.PLAYBACK_1,
             "body": [1, 2, 3]
         }
         message = self.vtypes.Py2Pb("CecMessage", cec_message)
