@@ -381,6 +381,14 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test_with_webdb.BaseTestWithWebDb
         configs = self.vehicle.getAllPropConfigs()
         logging.info("Property list response: %s", configs)
         for c in configs:
+            # Continuous properties need to have a sampling frequency.
+            if c["changeMode"] & self.vtypes.CONTINUOUS != 0:
+                asserts.assertLess(0.0, c["minSampleRate"])
+                asserts.assertLess(0.0, c["maxSampleRate"])
+                asserts.assertFalse(c["minSampleRate"] > c["maxSampleRate"],
+                                    "Prop 0x%x minSampleRate > maxSampleRate" %
+                                        c["prop"])
+
             areasFound = 0
             for a in c["areaConfigs"]:
                 # Make sure this doesn't override one of the other areas found.
