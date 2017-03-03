@@ -69,18 +69,18 @@ class VibratorHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
         """A simple test case which just calls each registered function."""
         vibrator_types = self.dut.hal.vibrator.GetHidlTypeInterface("types")
         logging.info("vibrator_types: %s", vibrator_types)
-        logging.info("OK: %s", vibrator_types.OK)
-        logging.info("ERR: %s", vibrator_types.ERR)
+        logging.info("OK: %s", vibrator_types.Status.OK)
+        logging.info("ERR: %s", vibrator_types.Status.ERR)
 
         result = self.dut.hal.vibrator.on(10000)
         logging.info("on result: %s", result)
-        asserts.assertEqual(vibrator_types.OK, result)
+        asserts.assertEqual(vibrator_types.Status.OK, result)
 
         time.sleep(1)
 
         result = self.dut.hal.vibrator.off()
         logging.info("off result: %s", result)
-        asserts.assertEqual(vibrator_types.OK, result)
+        asserts.assertEqual(vibrator_types.Status.OK, result)
 
 if __name__ == "__main__":
     test_runner.main()
