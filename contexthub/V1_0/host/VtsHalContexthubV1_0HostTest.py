@@ -20,10 +20,9 @@ import threading
 import time
 
 from vts.runners.host import asserts
-from vts.runners.host import base_test_with_webdb
+from vts.runners.host import base_test
 from vts.runners.host import test_runner
 from vts.utils.python.controllers import android_device
-from vts.utils.python.profiling import profiling_utils
 
 
 class ContextHubCallback:
@@ -64,7 +63,7 @@ class ContextHubCallback:
         self.event.set()
 
 
-class ContexthubHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
+class ContexthubHidlTest(base_test.BaseTestClass):
     """A set of test cases for the context hub HIDL HAL"""
 
     def setUpClass(self):
@@ -73,8 +72,8 @@ class ContexthubHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
 
         self.dut.shell.InvokeTerminal("one")
         self.dut.shell.one.Execute("setenforce 0")  # SELinux permissive mode
-        if self.enable_profiling:
-            profiling_utils.EnableVTSProfiling(self.dut.shell.one)
+        if self.profiling.enabled:
+            self.profiling.EnableVTSProfiling(self.dut.shell.one)
 
         # Bring down the Android runtime so it doesn't interfere with the test
         #self.dut.shell.one.Execute("stop")
@@ -94,11 +93,15 @@ class ContexthubHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
     def tearDownClass(self):
         # Restart the Android runtime
         #self.dut.shell.one.Execute("start")
-        if self.enable_profiling:
-            profiling_trace_path = getattr(
-                self, self.VTS_PROFILING_TRACING_PATH, "")
-            self.ProcessAndUploadTraceData(self.dut, profiling_trace_path)
-            profiling_utils.DisableVTSProfiling(self.dut.shell.one)
+        if self.profiling.enabled:
+            self.profiling.ProcessAndUploadTraceData()
+
+    def tearDownTest(self):
+        """Process trace data.
+        """
+        if self.profiling.enabled:
+            self.profiling.ProcessTraceDataForTestCase(self.dut)
+            self.profiling.DisableVTSProfiling(self.dut.shell.one)
 
     def testContexthubBasic(self):
         logging.info("About to call gethubs!!!")

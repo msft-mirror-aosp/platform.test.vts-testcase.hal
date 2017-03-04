@@ -19,16 +19,14 @@ import logging
 
 from vts.proto import ComponentSpecificationMessage_pb2 as CompSpecMsg
 from vts.runners.host import asserts
-from vts.runners.host import base_test_with_webdb
+from vts.runners.host import base_test
 from vts.runners.host import const
 from vts.runners.host import keys
 from vts.runners.host import test_runner
 from vts.utils.python.controllers import android_device
-from vts.utils.python.coverage import coverage_utils
-from vts.utils.python.profiling import profiling_utils
 
 
-class TvCecHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
+class TvCecHidlTest(base_test.BaseTestClass):
     """Host testcase class for the TV HDMI_CEC HIDL HAL."""
 
     def setUpClass(self):
@@ -41,11 +39,12 @@ class TvCecHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
         self.dut.shell.one.Execute(
             "setprop vts.hal.vts.hidl.get_stub true")
 
-        if getattr(self, keys.ConfigKeys.IKEY_ENABLE_COVERAGE, False):
-            coverage_utils.InitializeDeviceCoverage(self.dut)
+        if self.coverage.enabled:
+            self.coverage.LoadArtifacts()
+            self.coverage.InitializeDeviceCoverage(self.dut)
 
-        if self.enable_profiling:
-            profiling_utils.EnableVTSProfiling(self.dut.shell.one)
+        if self.profiling.enabled:
+            self.profiling.EnableVTSProfiling(self.dut.shell.one)
 
         self.dut.hal.InitHidlHal(
             target_type="tv_cec",
@@ -58,25 +57,23 @@ class TvCecHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
     def setUpTest(self):
         """Setup function that will be called every time before executing each
         test case in the test class."""
-        if self.enable_profiling:
-            profiling_utils.EnableVTSProfiling(self.dut.shell.one)
+        if self.profiling.enabled:
+            self.profiling.EnableVTSProfiling(self.dut.shell.one)
 
     def tearDownTest(self):
         """TearDown function that will be called every time after executing each
         test case in the test class."""
-        if self.enable_profiling:
-            profiling_trace_path = getattr(
-                self, self.VTS_PROFILING_TRACING_PATH, "")
-            self.ProcessTraceDataForTestCase(self.dut, profiling_trace_path)
-            profiling_utils.DisableVTSProfiling(self.dut.shell.one)
+        if self.profiling.enabled:
+            self.profiling.ProcessTraceDataForTestCase(self.dut)
+            self.profiling.DisableVTSProfiling(self.dut.shell.one)
 
     def tearDownClass(self):
         """To be executed when all test cases are finished."""
-        if getattr(self, keys.ConfigKeys.IKEY_ENABLE_COVERAGE, False):
-            self.SetCoverageData(coverage_utils.GetGcdaDict(self.dut))
+        if self.coverage.enabled:
+            self.coverage.SetCoverageData(dut=self.dut, isGlobal=True)
 
-        if self.enable_profiling:
-            self.ProcessAndUploadTraceData()
+        if self.profiling.enabled:
+            self.profiling.ProcessAndUploadTraceData()
 
     def testGetCecVersion1(self):
         """A simple test case which queries the cec version."""
