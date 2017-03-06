@@ -17,8 +17,6 @@
 
 import os
 
-WARNING_HEADER = '// This file was auto-generated. Do not edit manually.\n'
-
 def HalNameDir(hal_name):
     """Returns directory name corresponding to hal name."""
     return hal_name.replace('.', '/')
@@ -49,7 +47,7 @@ def WriteBuildRule(file_path, build_rule):
         bp_file.write(build_rule)
 
 
-def OnlySubdirsBpRule(subdirs):
+def OnlySubdirsBpRule(warning_header, subdirs):
     """Returns a .bp rule containing only subdirs field.
 
     For example, 'subdirs = ["*"]' bp rule tells soong to look in all
@@ -58,7 +56,7 @@ def OnlySubdirsBpRule(subdirs):
     Args:
         subdirs: list of sub-directories.
     """
-    result = WARNING_HEADER
+    result = warning_header
 
     result += 'subdirs = [\n'
     for subdir in subdirs:
