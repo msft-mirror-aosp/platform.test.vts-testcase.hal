@@ -19,16 +19,14 @@ import logging
 import time
 
 from vts.runners.host import asserts
-from vts.runners.host import base_test_with_webdb
+from vts.runners.host import base_test
 from vts.runners.host import const
 from vts.runners.host import keys
 from vts.runners.host import test_runner
 from vts.utils.python.controllers import android_device
-from vts.utils.python.profiling import profiling_utils
-from vts.utils.python.coverage import coverage_utils
 
 
-class VtsHalAutomotiveVehicleV2_0HostTest(base_test_with_webdb.BaseTestWithWebDbClass):
+class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
     """A simple testcase for the VEHICLE HIDL HAL."""
 
     def setUpClass(self):
@@ -42,8 +40,9 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test_with_webdb.BaseTestWithWebDb
         system_uid = results[const.STDOUT][0].strip()
         logging.info("system_uid: %s", system_uid)
 
-        if getattr(self, keys.ConfigKeys.IKEY_ENABLE_COVERAGE, False):
-            coverage_utils.InitializeDeviceCoverage(self.dut)
+        if self.coverage.enabled:
+            self.coverage.LoadArtifacts()
+            self.coverage.InitializeDeviceCoverage(self.dut)
 
         self.dut.hal.InitHidlHal(
             target_type="vehicle",
@@ -66,22 +65,20 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test_with_webdb.BaseTestWithWebDb
         If profiling is enabled for the test, collect the profiling data
         and disable profiling after the test is done.
         """
-        if self.enable_profiling:
-            self.ProcessAndUploadTraceData()
+        if self.profiling.enabled:
+            self.profiling.ProcessAndUploadTraceData()
 
-        if getattr(self, keys.ConfigKeys.IKEY_ENABLE_COVERAGE, False):
-            self.SetCoverageData(coverage_utils.GetGcdaDict(self.dut))
+        if self.coverage.enabled:
+            self.coverage.SetCoverageData(dut=self.dut, isGlobal=True)
 
     def setUpTest(self):
-        if self.enable_profiling:
-            profiling_utils.EnableVTSProfiling(self.dut.shell.one)
+        if self.profiling.enabled:
+            self.profiling.EnableVTSProfiling(self.dut.shell.one)
 
     def tearDownTest(self):
-        if self.enable_profiling:
-            profiling_trace_path = getattr(
-                self, self.VTS_PROFILING_TRACING_PATH, "")
-            self.ProcessTraceDataForTestCase(self.dut, profiling_trace_path)
-            profiling_utils.DisableVTSProfiling(self.dut.shell.one)
+        if self.profiling.enabled:
+            self.profiling.ProcessTraceDataForTestCase(self.dut)
+            self.profiling.DisableVTSProfiling(self.dut.shell.one)
 
     def testListProperties(self):
         """Checks whether some PropConfigs are returned.

@@ -19,13 +19,12 @@ import logging
 import time
 
 from vts.runners.host import asserts
-from vts.runners.host import base_test_with_webdb
+from vts.runners.host import base_test
 from vts.runners.host import test_runner
 from vts.utils.python.controllers import android_device
-from vts.utils.python.profiling import profiling_utils
 
 
-class VibratorHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
+class VibratorHidlTest(base_test.BaseTestClass):
     """A simple testcase for the VIBRATOR HIDL HAL."""
 
     def setUpClass(self):
@@ -51,19 +50,17 @@ class VibratorHidlTest(base_test_with_webdb.BaseTestWithWebDbClass):
         """ If profiling is enabled for the test, collect the profiling data
             and disable profiling after the test is done.
         """
-        if self.enable_profiling:
-            self.ProcessAndUploadTraceData()
+        if self.profiling.enabled:
+            self.profiling.ProcessAndUploadTraceData()
 
     def setUpTest(self):
-        if self.enable_profiling:
-            profiling_utils.EnableVTSProfiling(self.dut.shell.one)
+        if self.profiling.enabled:
+            self.profiling.EnableVTSProfiling(self.dut.shell.one)
 
     def tearDownTest(self):
-        if self.enable_profiling:
-            profiling_trace_path = getattr(
-                self, self.VTS_PROFILING_TRACING_PATH, "")
-            self.ProcessTraceDataForTestCase(self.dut, profiling_trace_path)
-            profiling_utils.DisableVTSProfiling(self.dut.shell.one)
+        if self.profiling.enabled:
+            self.profiling.ProcessTraceDataForTestCase(self.dut)
+            self.profiling.DisableVTSProfiling(self.dut.shell.one)
 
     def testVibratorBasic(self):
         """A simple test case which just calls each registered function."""
