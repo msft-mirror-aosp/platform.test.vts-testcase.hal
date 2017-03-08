@@ -484,6 +484,10 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
                                 (c["prop"], a["areaId"],
                                  valType, v, a[valBoundNames[1]]))
 
+    def testDebugDump(self):
+        """Verifies that call to IVehicle#debugDump is not failing"""
+        dumpStr = self.vehicle.debugDump()
+        asserts.assertNotEqual(None, dumpStr)
 
 if __name__ == "__main__":
     test_runner.main()
