@@ -189,7 +189,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
             areaId: the numeric identifier of the vehicle area to set the
                     property for. 0, or omitted, for global.
         """
-        self.setVhalProperty(propertyId, {"int32Values" : [value]})
+        self.setVhalProperty(propertyId, {"int32Values" : [value]}, areaId=areaId)
 
         propValue = self.readVhalProperty(propertyId)
         asserts.assertEqual(1, len(propValue["value"]["int32Values"]))
@@ -321,7 +321,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
             return
 
         zones = self.extractZonesAsList(hvacPowerOnConfig['supportedAreas'])
-        asserts.assertLess(0, len(zones))
+        asserts.assertLess(0, len(zones), "supportedAreas for HVAC_POWER_ON property is invalid")
 
         # TODO(pavelm): consider to check for all zones
         zone = zones[0]
@@ -483,6 +483,112 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
                             "Prop 0x%x Area 0x%X %s > max: %s > %s" %
                                 (c["prop"], a["areaId"],
                                  valType, v, a[valBoundNames[1]]))
+
+    def getValueIfPropSupported(self, propertyId):
+        """Returns tuple of boolean (indicating value supported or not) and the value itself"""
+        if (propertyId in self.propToConfig):
+            propValue = self.readVhalProperty(propertyId)
+            asserts.assertNotEqual(None, propValue, "expected value, prop: 0x%x" % propertyId)
+            asserts.assertEqual(propertyId, propValue['prop'])
+            return True, self.extractValue(propValue)
+        else:
+            return False, None
+
+    def testInfoVinMakeModel(self):
+        """Verifies INFO_VIN, INFO_MAKE, INFO_MODEL properties"""
+        stringProperties = set([
+            self.vtypes.VehicleProperty.INFO_VIN,
+            self.vtypes.VehicleProperty.INFO_MAKE,
+            self.vtypes.VehicleProperty.INFO_MODEL])
+        for prop in stringProperties:
+            supported, val = self.getValueIfPropSupported(prop)
+            if supported:
+                asserts.assertEqual(str, type(val), "prop: 0x%x" % prop)
+                asserts.assertLess(0, (len(val)), "prop: 0x%x" % prop)
+
+    def testInfoModelYear(self):
+        """Verifies INFO_MODEL_YEAR property"""
+        supported, val = self.getValueIfPropSupported(self.vtypes.VehicleProperty.INFO_MODEL_YEAR)
+        if supported:
+            asserts.assertEqual(int, type(val))
+            asserts.assertLess(1901, val)
+
+    def testInfoFuelCapacity(self):
+        """Verifies INFO_FUEL_CAPACITY property"""
+        supported, val = self.getValueIfPropSupported(
+                self.vtypes.VehicleProperty.INFO_FUEL_CAPACITY)
+        if supported:
+            asserts.assertEqual(float, type(val))
+            asserts.assertLess(1000, val)    # Assumed that fuel tank is at least 1 liter
+            asserts.assertLess(val, 1000000) # and less than 1000 liters
+
+    def testPerfOdometer(self):
+        """Verifies PERF_ODOMETER property"""
+        supported, val = self.getValueIfPropSupported(self.vtypes.VehicleProperty.PERF_ODOMETER)
+        if supported:
+            asserts.assertEqual(float, type(val))
+            asserts.assertTrue(val >= 0, "Odomoter can not be negative")
+
+    def testVehicleSpeed(self):
+        """Verifies PERF_VEHICLE_SPEED property"""
+        supported, val = self.getValueIfPropSupported(
+                self.vtypes.VehicleProperty.PERF_VEHICLE_SPEED)
+        if supported:
+            asserts.assertEqual(float, type(val))
+            asserts.assertLess(val, 150, "speed is too high")  # Speed is too high 150 m/s = 330 mph
+            asserts.assertTrue(val >= 0, "Speed can not be negative")
+
+    def testEngineCoolantTemp(self):
+        """Verifies ENGINE_COOLANT_TEMP property"""
+        supported, val = self.getValueIfPropSupported(
+                self.vtypes.VehicleProperty.ENGINE_COOLANT_TEMP)
+        if supported:
+            asserts.assertEqual(float, type(val))
+            asserts.assertLess(val, 400, "coolant temp is too high") # temp in celcsius
+            asserts.assertLess(-70, val, "coolant temp is too low")
+
+    def testEngineOilTemp(self):
+        """Verifies ENGINE_OIL_TEMP property"""
+        supported, val = self.getValueIfPropSupported(
+                self.vtypes.VehicleProperty.ENGINE_OIL_TEMP)
+        if supported:
+            asserts.assertEqual(float, type(val))
+            asserts.assertLess(val, 400, "engine oil temp is too high") # temp in celcsius
+            asserts.assertLess(-70, val, "engine oil temp is too low")
+
+    def extractValue(self, propValue):
+        """Extracts value depending on data type of the property"""
+        if propValue == None:
+            return None
+
+        # Extract data type
+        dataType = propValue['prop'] & self.vtypes.VehiclePropertyType.MASK
+        val = propValue['value']
+        if self.vtypes.VehiclePropertyType.STRING == dataType:
+            asserts.assertNotEqual(None, val['stringValue'])
+            return val['stringValue']
+        elif self.vtypes.VehiclePropertyType.INT32 == dataType or \
+                self.vtypes.VehiclePropertyType.BOOLEAN == dataType:
+            asserts.assertEqual(1, len(val["int32Values"]))
+            return val["int32Values"][0]
+        elif self.vtypes.VehiclePropertyType.INT64 == dataType:
+            asserts.assertEqual(1, len(val["int64Values"]))
+            return val["int64Values"][0]
+        elif self.vtypes.VehiclePropertyType.FLOAT == dataType:
+            asserts.assertEqual(1, len(val["floatValues"]))
+            return val["floatValues"][0]
+        elif self.vtypes.VehiclePropertyType.INT32_VEC == dataType:
+            asserts.assertLess(0, len(val["int32Values"]))
+            return val["int32Values"]
+        elif self.vtypes.VehiclePropertyType.FLOAT_VEC == dataType:
+            asserts.assertLess(0, len(val["floatValues"]))
+            return val["floatValues"]
+        elif self.vtypes.VehiclePropertyType.BYTES == dataType:
+            asserts.assertLess(0, len(val["bytes"]))
+            return val["bytes"]
+        else:
+            return val
+
 
     def testDebugDump(self):
         """Verifies that call to IVehicle#debugDump is not failing"""
