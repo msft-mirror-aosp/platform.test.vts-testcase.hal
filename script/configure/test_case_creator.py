@@ -303,10 +303,16 @@ class TestCaseCreator(object):
                        'value': self._test_name})
 
         if self._test_type == 'target':
-            test_binary = TEST_BINEARY_TEMPLATE.format(
+            test_binary = TEST_BINEARY_TEMPLATE_32.format(
                 test_name=self._test_module_name + 'Test')
             ET.SubElement(test, 'option', {
-                'name': 'binary-test-sources',
+                'name': 'binary-test-source',
+                'value': test_binary
+            })
+            test_binary = TEST_BINEARY_TEMPLATE_64.format(
+                test_name=self._test_module_name + 'Test')
+            ET.SubElement(test, 'option', {
+                'name': 'binary-test-source',
                 'value': test_binary
             })
             ET.SubElement(test, 'option', {
@@ -402,10 +408,9 @@ include test/vts/tools/build/Android.host_config.mk
 XML_HEADER = """<?xml version="1.0" encoding="utf-8"?>
 """
 
-TEST_BINEARY_TEMPLATE = """
-          _32bit::DATA/nativetest/{test_name}/{test_name},
-          _64bit::DATA/nativetest64/{test_name}/{test_name},
-          """
+TEST_BINEARY_TEMPLATE_32 = '_32bit::DATA/nativetest/{test_name}/{test_name}'
+TEST_BINEARY_TEMPLATE_64 = '_64bit::DATA/nativetest64/{test_name}/{test_name}'
+
 TEST_SCRIPT_TEMPLATE = 'vts/testcases/hal/{hal_path}/{hal_version}/host/{test_name}'
 
 VTS_SPEC_PUSH_TEMPLATE = 'spec/hardware/interfaces/{hal_path}/{hal_version}/vts/{vts_file}->/data/local/tmp/spec/{vts_file}'
