@@ -20,10 +20,8 @@
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="ThermalHidlTargetStressTest" />
-        <option name="binary-test-sources" value="
-            _32bit::DATA/nativetest/thermal_hidl_stress_test/thermal_hidl_stress_test,
-            _64bit::DATA/nativetest64/thermal_hidl_stress_test/thermal_hidl_stress_test,
-            "/>
+        <option name="binary-test-source" value="_32bit::DATA/nativetest/thermal_hidl_stress_test/thermal_hidl_stress_test" />
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/thermal_hidl_stress_test/thermal_hidl_stress_test" />
         <option name="binary-test-type" value="gtest" />
         <option name="test-timeout" value="1m" />
     </test>

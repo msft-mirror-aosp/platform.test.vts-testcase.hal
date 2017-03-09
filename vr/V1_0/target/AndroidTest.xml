@@ -20,10 +20,8 @@
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalVrV1_0Target"/>
-        <option name="binary-test-sources" value="
-          _32bit::DATA/nativetest/VtsHalVrV1_0TargetTest/VtsHalVrV1_0TargetTest,
-          _64bit::DATA/nativetest64/VtsHalVrV1_0TargetTest/VtsHalVrV1_0TargetTest,
-          "/>
+        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalVrV1_0TargetTest/VtsHalVrV1_0TargetTest" />
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalVrV1_0TargetTest/VtsHalVrV1_0TargetTest" />
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <!-- Uncomment this and comment 'precondition-feature' to run this test
              only on devices using binderized VR HALs.

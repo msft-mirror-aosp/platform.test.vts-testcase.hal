@@ -20,10 +20,8 @@
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalContexthubV1_0Target"/>
-        <option name="binary-test-sources" value="
-          _32bit::DATA/nativetest/VtsHalContexthubV1_0TargetTest/VtsHalContexthubV1_0TargetTest,
-          _64bit::DATA/nativetest64/VtsHalContexthubV1_0TargetTest/VtsHalContexthubV1_0TargetTest,
-          "/>
+        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalContexthubV1_0TargetTest/VtsHalContexthubV1_0TargetTest" />
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalContexthubV1_0TargetTest/VtsHalContexthubV1_0TargetTest" />
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="binary-test-disable-framework" value="true" />
         <option name="precondition-lshal" value="android.hardware.contexthub@1.0"/>

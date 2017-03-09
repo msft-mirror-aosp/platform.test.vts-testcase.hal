@@ -20,10 +20,8 @@
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalSoundtriggerV2_0Target"/>
-        <option name="binary-test-sources" value="
-          _32bit::DATA/nativetest/VtsHalSoundtriggerV2_0TargetTest/VtsHalSoundtriggerV2_0TargetTest,
-          _64bit::DATA/nativetest64/VtsHalSoundtriggerV2_0TargetTest/VtsHalSoundtriggerV2_0TargetTest,
-          "/>
+        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalSoundtriggerV2_0TargetTest/VtsHalSoundtriggerV2_0TargetTest" />
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalSoundtriggerV2_0TargetTest/VtsHalSoundtriggerV2_0TargetTest" />
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="precondition-lshal" value="android.hardware.soundtrigger@2.0"/>
         <option name="precondition-file-path-prefix" value="/*/lib/hw/sound_trigger.primary." />

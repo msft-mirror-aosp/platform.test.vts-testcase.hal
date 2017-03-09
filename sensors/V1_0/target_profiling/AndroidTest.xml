@@ -23,10 +23,8 @@
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalSensorsV1_0TargetProfiling"/>
-        <option name="binary-test-sources" value="
-          _32bit::DATA/nativetest/VtsHalSensorsV1_0TargetTest/VtsHalSensorsV1_0TargetTest,
-          _64bit::DATA/nativetest64/VtsHalSensorsV1_0TargetTest/VtsHalSensorsV1_0TargetTest,
-          "/>
+        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalSensorsV1_0TargetTest/VtsHalSensorsV1_0TargetTest" />
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalSensorsV1_0TargetTest/VtsHalSensorsV1_0TargetTest" />
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="enable-profiling" value="true"/>
         <option name="precondition-lshal" value="android.hardware.sensors@1.0"/>
