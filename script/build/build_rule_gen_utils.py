@@ -63,3 +63,17 @@ def OnlySubdirsBpRule(warning_header, subdirs):
         result += '    "%s",\n' % subdir
     result += ']\n'
     return result
+
+def RemoveFilesInDirIf(dir_path, condition):
+    """Removes all files under directory under given condition.
+
+    Args:
+        dir_path: string, path to directory
+        condition: boolean function takes absolute file path,
+            returns True iff file needs to be removed.
+    """
+    for base, _, files in os.walk(dir_path):
+        for f in files:
+            abs_path = os.path.join(base, f)
+            if condition(abs_path):
+                os.remove(abs_path)
