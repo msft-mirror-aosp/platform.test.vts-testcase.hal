@@ -82,14 +82,14 @@ class TvCecHidlTest(base_test.BaseTestClass):
         """A simple test case which sets logical address and clears it."""
         result = self.dut.hal.tv_cec.addLogicalAddress(
                 self.vtypes.CecLogicalAddress.PLAYBACK_2)
-        asserts.assertEqual(self.vtypes.Result.SUCCESS, status)
+        asserts.assertEqual(self.vtypes.Result.SUCCESS, result)
         logging.info("addLogicalAddress result: %s", result)
 
         self.dut.hal.tv_cec.clearLogicalAddress()
 
         result = self.dut.hal.tv_cec.addLogicalAddress(
                 self.vtypes.CecLogicalAddress.PLAYBACK_3)
-        asserts.assertEqual(self.vtypes.Result.SUCCESS, status)
+        asserts.assertEqual(self.vtypes.Result.SUCCESS, result)
         logging.info("addLogicalAddress result: %s", result)
 
     def testGetPhysicalAddress(self):
