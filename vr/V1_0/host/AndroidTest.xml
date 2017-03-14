@@ -17,7 +17,7 @@
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
         <option name="push-group" value="HalHidlHostTest.push"/>
         <option name="cleanup" value="true"/>
-        <option name="push" value="spec/hardware/interfaces/vr/1.0/vts/Vr.vts->/data/local/tmp/spec/Vr.vts"/>
+        <option name="push" value="spec/hardware/interfaces/vr/1.0/vts/Vr.vts->/data/local/tmp/spec/android/hardware/vr/1.0/Vr.vts"/>
         <option name="push" value="DATA/lib/android.hardware.vr.vts.driver@1.0.so->/data/local/tmp/32/android.hardware.vr.vts.driver@1.0.so"/>
         <option name="push" value="DATA/lib64/android.hardware.vr.vts.driver@1.0.so->/data/local/tmp/64/android.hardware.vr.vts.driver@1.0.so"/>
     </target_preparer>
