@@ -250,10 +250,12 @@ class TestCaseCreator(object):
                            'value': 'true'})
             vts_spec_lists = self._vts_spec_parser.VtsSpecNames(
                 self._hal_name, self._hal_version)
+            package, _ = self._hal_package_name.split('@')
             for vts_spec in vts_spec_lists:
                 push_spec = VTS_SPEC_PUSH_TEMPLATE.format(
                     hal_path=self._hal_name.replace('.', '/'),
                     hal_version=self._hal_version,
+                    package_path=package.replace('.', '/'),
                     vts_file=vts_spec)
                 ET.SubElement(file_pusher, 'option',
                               {'name': 'push',
@@ -413,6 +415,8 @@ TEST_BINEARY_TEMPLATE_64 = '_64bit::DATA/nativetest64/{test_name}/{test_name}'
 
 TEST_SCRIPT_TEMPLATE = 'vts/testcases/hal/{hal_path}/{hal_version}/host/{test_name}'
 
-VTS_SPEC_PUSH_TEMPLATE = 'spec/hardware/interfaces/{hal_path}/{hal_version}/vts/{vts_file}->/data/local/tmp/spec/{vts_file}'
+VTS_SPEC_PUSH_TEMPLATE = (
+    'spec/hardware/interfaces/{hal_path}/{hal_version}/vts/{vts_file}->'
+    '/data/local/tmp/spec/{package_path}/{hal_version}/{vts_file}')
 VTS_LIB_PUSH_TEMPLATE_32 = 'DATA/lib/{lib_name}->/data/local/tmp/32/{lib_name}'
 VTS_LIB_PUSH_TEMPLATE_64 = 'DATA/lib64/{lib_name}->/data/local/tmp/64/{lib_name}'
