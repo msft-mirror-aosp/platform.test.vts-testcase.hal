@@ -26,6 +26,16 @@ from configure.test_case_creator import TestCaseCreator
 HAL_PACKAGE_PREFIX = 'android.hardware.'
 HAL_PACKAGE_NAME_PATTERN = '(([a-zA-Z_0-9]*)(?:[.][a-zA-Z_0-9]*)*)@([0-9]+)[.]([0-9]+)'
 TEST_TIME_OUT_PATTERN = '(([0-9]+)(m|s|h))+'
+"""Generate Android.mk and AndroidTest.xml files for given hal
+
+Usage:
+  python launch_hal_test.py [--test_type=host/target] [--time_out=estimated_test_time] [--enable_profiling] hal_package name
+
+Example:
+  python launch_hal_test.py android.hardware.nfc@1.0
+  python launch_hal_test.py --enable_profiling android.hardware.nfc@1.0
+  python launch_hal_test.py --test_type=host --time_out=5m android.hardware.nfc@1.0
+"""
 
 
 def main():
