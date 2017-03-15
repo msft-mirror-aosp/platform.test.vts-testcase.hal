@@ -143,13 +143,13 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
         """
         vp = self.vtypes.Py2Pb("VehiclePropValue",
                                self.emptyValueProperty(propertyId, areaId))
-        logging.info("0x%08X get request: %s", propertyId, vp)
+        logging.info("0x%x get request: %s", propertyId, vp)
         status, value = self.vehicle.get(vp)
-        logging.info("0x%08X get response: %s, %s", propertyId, status, value)
+        logging.info("0x%x get response: %s, %s", propertyId, status, value)
         if self.vtypes.StatusCode.OK == status:
             return value
         else:
-            logging.warning("attempt to read property 0x%08X returned error %d",
+            logging.warning("attempt to read property 0x%x returned error %d",
                             propertyId, status)
 
     def setVhalProperty(self, propertyId, value, areaId=0,
@@ -191,7 +191,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
         """
         self.setVhalProperty(propertyId, {"int32Values" : [value]}, areaId=areaId)
 
-        propValue = self.readVhalProperty(propertyId)
+        propValue = self.readVhalProperty(propertyId, areaId=areaId)
         asserts.assertEqual(1, len(propValue["value"]["int32Values"]))
         asserts.assertEqual(value, propValue["value"]["int32Values"][0])
 
@@ -506,55 +506,56 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
                 asserts.assertEqual(str, type(val), "prop: 0x%x" % prop)
                 asserts.assertLess(0, (len(val)), "prop: 0x%x" % prop)
 
-    def testInfoModelYear(self):
-        """Verifies INFO_MODEL_YEAR property"""
-        supported, val = self.getValueIfPropSupported(self.vtypes.VehicleProperty.INFO_MODEL_YEAR)
-        if supported:
-            asserts.assertEqual(int, type(val))
-            asserts.assertLess(1901, val)
+    def testGlobalFloatProperties(self):
+        """Verifies that values of global float properties are in the correct range"""
+        floatProperties = {
+            self.vtypes.VehicleProperty.ENV_CABIN_TEMPERATURE: (-50, 100),  # celsius
+            self.vtypes.VehicleProperty.ENV_OUTSIDE_TEMPERATURE: (-50, 100),  # celsius
+            self.vtypes.VehicleProperty.ENGINE_RPM : (0, 30000),  # RPMs
+            self.vtypes.VehicleProperty.ENGINE_OIL_TEMP : (-50, 150),  # celsius
+            self.vtypes.VehicleProperty.ENGINE_COOLANT_TEMP : (-50, 150),  #
+            self.vtypes.VehicleProperty.PERF_VEHICLE_SPEED : (0, 150),  # m/s, 150 m/s = 330 mph
+            self.vtypes.VehicleProperty.PERF_ODOMETER : (0, 1000000),  # km
+            self.vtypes.VehicleProperty.INFO_FUEL_CAPACITY : (0, 1000000),  # milliliter
+            self.vtypes.VehicleProperty.INFO_MODEL_YEAR : (1901, 2101),  # year
+        }
 
-    def testInfoFuelCapacity(self):
-        """Verifies INFO_FUEL_CAPACITY property"""
-        supported, val = self.getValueIfPropSupported(
-                self.vtypes.VehicleProperty.INFO_FUEL_CAPACITY)
-        if supported:
-            asserts.assertEqual(float, type(val))
-            asserts.assertLess(1000, val)    # Assumed that fuel tank is at least 1 liter
-            asserts.assertLess(val, 1000000) # and less than 1000 liters
+        for prop, validRange in floatProperties.iteritems():
+            supported, val = self.getValueIfPropSupported(prop)
+            if supported:
+                asserts.assertEqual(float, type(val))
+                self.assertValueInRangeForProp(val, validRange[0], validRange[1], prop)
 
-    def testPerfOdometer(self):
-        """Verifies PERF_ODOMETER property"""
-        supported, val = self.getValueIfPropSupported(self.vtypes.VehicleProperty.PERF_ODOMETER)
-        if supported:
-            asserts.assertEqual(float, type(val))
-            asserts.assertTrue(val >= 0, "Odomoter can not be negative")
+    def testGlobalBoolProperties(self):
+        """Verifies that values of global boolean properties are in the correct range"""
+        booleanProperties = set([
+            self.vtypes.VehicleProperty.PARKING_BRAKE_ON,
+            self.vtypes.VehicleProperty.FUEL_LEVEL_LOW,
+            self.vtypes.VehicleProperty.NIGHT_MODE,
+            self.vtypes.VehicleProperty.DOOR_LOCK,
+            self.vtypes.VehicleProperty.MIRROR_LOCK,
+            self.vtypes.VehicleProperty.MIRROR_FOLD,
+            self.vtypes.VehicleProperty.SEAT_BELT_BUCKLED,
+            self.vtypes.VehicleProperty.WINDOW_LOCK,
+        ])
+        for prop in booleanProperties:
+            self.verifyEnumPropIfSupported(prop, [0, 1])
 
-    def testVehicleSpeed(self):
-        """Verifies PERF_VEHICLE_SPEED property"""
-        supported, val = self.getValueIfPropSupported(
-                self.vtypes.VehicleProperty.PERF_VEHICLE_SPEED)
-        if supported:
-            asserts.assertEqual(float, type(val))
-            asserts.assertLess(val, 150, "speed is too high")  # Speed is too high 150 m/s = 330 mph
-            asserts.assertTrue(val >= 0, "Speed can not be negative")
+    def testGlobalEnumProperties(self):
+        """Verifies that values of global enum properties are in the correct range"""
+        enumProperties = {
+            self.vtypes.VehicleProperty.GEAR_SELECTION : self.vtypes.VehicleGear,
+            self.vtypes.VehicleProperty.CURRENT_GEAR : self.vtypes.VehicleGear,
+            self.vtypes.VehicleProperty.TURN_SIGNAL_STATE : self.vtypes.VehicleTurnSignal,
+            self.vtypes.VehicleProperty.IGNITION_STATE : self.vtypes.VehicleIgnitionState,
+        }
+        for prop, enum in enumProperties.iteritems():
+            self.verifyEnumPropIfSupported(prop, vars(enum).values())
 
-    def testEngineCoolantTemp(self):
-        """Verifies ENGINE_COOLANT_TEMP property"""
-        supported, val = self.getValueIfPropSupported(
-                self.vtypes.VehicleProperty.ENGINE_COOLANT_TEMP)
-        if supported:
-            asserts.assertEqual(float, type(val))
-            asserts.assertLess(val, 400, "coolant temp is too high") # temp in celcsius
-            asserts.assertLess(-70, val, "coolant temp is too low")
-
-    def testEngineOilTemp(self):
-        """Verifies ENGINE_OIL_TEMP property"""
-        supported, val = self.getValueIfPropSupported(
-                self.vtypes.VehicleProperty.ENGINE_OIL_TEMP)
-        if supported:
-            asserts.assertEqual(float, type(val))
-            asserts.assertLess(val, 400, "engine oil temp is too high") # temp in celcsius
-            asserts.assertLess(-70, val, "engine oil temp is too low")
+    def testDebugDump(self):
+        """Verifies that call to IVehicle#debugDump is not failing"""
+        dumpStr = self.vehicle.debugDump()
+        asserts.assertNotEqual(None, dumpStr)
 
     def extractValue(self, propValue):
         """Extracts value depending on data type of the property"""
@@ -589,11 +590,32 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
         else:
             return val
 
+    def verifyEnumPropIfSupported(self, propertyId, validValues):
+        """Verifies that if given property supported it is one of the value in validValues set"""
+        supported, val = self.getValueIfPropSupported(propertyId)
+        if supported:
+            asserts.assertEqual(int, type(val))
+            self.assertIntValueInRangeForProp(val, validValues, propertyId)
 
-    def testDebugDump(self):
-        """Verifies that call to IVehicle#debugDump is not failing"""
-        dumpStr = self.vehicle.debugDump()
-        asserts.assertNotEqual(None, dumpStr)
+    def assertLessOrEqual(self, first, second, msg=None):
+        """Asserts that first <= second"""
+        if second < first:
+            fullMsg = "%s is not less or equal to %s" % (first, second)
+            if msg:
+                fullMsg = "%s %s" % (fullMsg, msg)
+            fail(fullMsg)
+
+    def assertIntValueInRangeForProp(self, value, validValues, prop):
+        """Asserts that given value is in the validValues range"""
+        asserts.assertTrue(value in validValues,
+                "Invalid value %d for property: 0x%x, expected one of: %s" % (value, prop, validValues))
+
+    def assertValueInRangeForProp(self, value, rangeBegin, rangeEnd, prop):
+        """Asserts that given value is in the range [rangeBegin, rangeEnd]"""
+        msg = "Value %s is out of range [%s, %s] for property 0x%x" % (value, rangeBegin, rangeEnd, prop)
+        self.assertLessOrEqual(rangeBegin, value, msg)
+        self.assertLessOrEqual(value, rangeEnd,  msg)
+
 
 if __name__ == "__main__":
     test_runner.main()
