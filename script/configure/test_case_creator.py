@@ -30,6 +30,7 @@ from xml.sax.saxutils import unescape
 
 VTS_TEST_CASE_PATH = 'test/vts-testcase/hal'
 HAL_INTERFACE_PATH = 'hardware/interfaces'
+HAL_TRACE_PATH = 'test/vts-testcase/hal-trace'
 HAL_PACKAGE_PREFIX = 'android.hardware.'
 
 ANDROID_MK_FILE_NAME = 'Android.mk'
@@ -77,6 +78,7 @@ class TestCaseCreator(object):
                        test_type,
                        time_out='1m',
                        is_profiling=False,
+                       is_replay=False,
                        stop_runtime=False,
                        update_only=False):
         """Create the necessary configuration files to launch a test case.
@@ -94,13 +96,15 @@ class TestCaseCreator(object):
         self._test_type = test_type
         self._time_out = time_out
         self._is_profiling = is_profiling
+        self._is_replay = is_replay
         self._stop_runtime = stop_runtime
 
         self._test_module_name = self.GetVtsHalTestModuleName()
+        self._test_name = self._test_module_name
+        if is_replay:
+            self._test_name = self._test_module_name + 'Replay'
         if is_profiling:
             self._test_name = self._test_module_name + 'Profiling'
-        else:
-            self._test_name = self._test_module_name
 
         self._test_dir = self.GetHalTestCasePath()
         # Check whether the host side test script and target test binary is available.
@@ -153,6 +157,14 @@ class TestCaseCreator(object):
         return 'VtsHal' + hal_name_upper_camel + self.GetHalVersionToken(
         ) + self._test_type.title()
 
+    def GetVtsHalReplayTraceFiles(self):
+        """Get the trace files for replay test."""
+        trace_files = []
+        for filename in os.listdir(self.GetHalTracePath()):
+            if filename.endswith(".trace"):
+                trace_files.append(filename)
+        return trace_files
+
     def GetHalPath(self):
         """Get the hal path based on hal name."""
         return self._hal_name.replace('.', '/')
@@ -169,11 +181,18 @@ class TestCaseCreator(object):
     def GetHalTestCasePath(self, ignore_profiling=False):
         """Get the directory that stores the test case."""
         test_dir = self._test_type
+        if self._is_replay:
+            test_dir = test_dir + '_replay'
         if self._is_profiling and not ignore_profiling:
             test_dir = test_dir + '_profiling'
         return os.path.join(self._build_top, VTS_TEST_CASE_PATH,
                             self.GetHalPath(),
                             self.GetHalVersionToken(), test_dir)
+
+    def GetHalTracePath(self):
+        """Get the directory that stores the hal trace files."""
+        return os.path.join(self._build_top, HAL_TRACE_PATH,
+                            self.GetHalPath(), self.GetHalVersionToken())
 
     def CreateAndroidMk(self):
         """Create Android.mk."""
@@ -222,29 +241,38 @@ class TestCaseCreator(object):
           file_pusher: parent xml element for push file configure.
         """
         if self._test_type == 'target':
-            if self._is_profiling:
-                ET.SubElement(file_pusher, 'option',
-                              {'name': 'push-group',
-                               'value': 'HalHidlTargetProfilingTest.push'})
+            if self._is_replay:
+                ET.SubElement(file_pusher, 'option', {
+                    'name': 'push-group',
+                    'value': 'HalHidlHostTest.push'
+                })
+            elif self._is_profiling:
+                ET.SubElement(file_pusher, 'option', {
+                    'name': 'push-group',
+                    'value': 'HalHidlTargetProfilingTest.push'
+                })
             else:
-                ET.SubElement(file_pusher, 'option',
-                              {'name': 'push-group',
-                               'value': 'HalHidlTargetTest.push'})
+                ET.SubElement(file_pusher, 'option', {
+                    'name': 'push-group',
+                    'value': 'HalHidlTargetTest.push'
+                })
         else:
             if self._is_profiling:
-                ET.SubElement(file_pusher, 'option',
-                              {'name': 'push-group',
-                               'value': 'HalHidlHostProfilingTest.push'})
+                ET.SubElement(file_pusher, 'option', {
+                    'name': 'push-group',
+                    'value': 'HalHidlHostProfilingTest.push'
+                })
             else:
-                ET.SubElement(file_pusher, 'option',
-                              {'name': 'push-group',
-                               'value': 'HalHidlHostTest.push'})
+                ET.SubElement(file_pusher, 'option', {
+                    'name': 'push-group',
+                    'value': 'HalHidlHostTest.push'
+                })
 
         imported_package_lists = self._vts_spec_parser.ImportedPackagesList(
             self._hal_name, self._hal_version)
         imported_package_lists.append(self._hal_package_name)
         # Generate additional push files e.g driver/profiler/vts_spec
-        if self._test_type == 'host':
+        if self._test_type == 'host' or self._is_replay:
             ET.SubElement(file_pusher, 'option',
                           {'name': 'cleanup',
                            'value': 'true'})
@@ -305,22 +333,42 @@ class TestCaseCreator(object):
                        'value': self._test_name})
 
         if self._test_type == 'target':
-            test_binary = TEST_BINEARY_TEMPLATE_32.format(
-                test_name=self._test_module_name + 'Test')
-            ET.SubElement(test, 'option', {
-                'name': 'binary-test-source',
-                'value': test_binary
-            })
-            test_binary = TEST_BINEARY_TEMPLATE_64.format(
-                test_name=self._test_module_name + 'Test')
-            ET.SubElement(test, 'option', {
-                'name': 'binary-test-source',
-                'value': test_binary
-            })
-            ET.SubElement(test, 'option', {
-                'name': 'binary-test-type',
-                'value': 'hal_hidl_gtest'
-            })
+            if self._is_replay:
+                ET.SubElement(test, 'option', {
+                    'name': 'binary-test-type',
+                    'value': 'hal_hidl_replay_test'
+                })
+                for trace in self.GetVtsHalReplayTraceFiles():
+                    ET.SubElement(
+                        test,
+                        'option', {
+                            'name': 'hal-hidl-replay-test-trace-path',
+                            'value': TEST_TRACE_TEMPLATE.format(
+                                hal_path=self.GetHalPath(),
+                                hal_version=self.GetHalVersionToken(),
+                                trace_file=trace)
+                        })
+                ET.SubElement(test, 'option', {
+                    'name': 'hal-hidl-package-name',
+                    'value': self._hal_package_name
+                })
+            else:
+                test_binary = TEST_BINEARY_TEMPLATE_32.format(
+                    test_name=self._test_module_name + 'Test')
+                ET.SubElement(test, 'option', {
+                    'name': 'binary-test-source',
+                    'value': test_binary
+                })
+                test_binary = TEST_BINEARY_TEMPLATE_64.format(
+                    test_name=self._test_module_name + 'Test')
+                ET.SubElement(test, 'option', {
+                    'name': 'binary-test-source',
+                    'value': test_binary
+                })
+                ET.SubElement(test, 'option', {
+                    'name': 'binary-test-type',
+                    'value': 'hal_hidl_gtest'
+                })
         else:
             test_script = TEST_SCRIPT_TEMPLATE.format(
                 hal_path=self.GetHalPath(),
@@ -414,7 +462,7 @@ TEST_BINEARY_TEMPLATE_32 = '_32bit::DATA/nativetest/{test_name}/{test_name}'
 TEST_BINEARY_TEMPLATE_64 = '_64bit::DATA/nativetest64/{test_name}/{test_name}'
 
 TEST_SCRIPT_TEMPLATE = 'vts/testcases/hal/{hal_path}/{hal_version}/host/{test_name}'
-
+TEST_TRACE_TEMPLATE = 'test/vts-testcase/hal-trace/{hal_path}/{hal_version}/{trace_file}'
 VTS_SPEC_PUSH_TEMPLATE = (
     'spec/hardware/interfaces/{hal_path}/{hal_version}/vts/{vts_file}->'
     '/data/local/tmp/spec/{package_path}/{hal_version}/{vts_file}')
