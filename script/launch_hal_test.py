@@ -57,6 +57,12 @@ def main():
         required=False,
         help='Whether to create profiling test.')
     parser.add_argument(
+        '--replay',
+        dest='is_replay',
+        action='store_true',
+        required=False,
+        help='Whether this is a replay test.')
+    parser.add_argument(
         '--stop_runtime',
         dest='stop_runtime',
         action='store_true',
@@ -81,6 +87,9 @@ def main():
     elif args.test_type != 'target' and args.test_type != 'host':
         print 'Unsupported test type. Exiting...'
         sys.exit(1)
+    elif args.test_type == 'host' and args.is_replay:
+        print 'Host side replay test is not supported yet. Exiting...'
+        sys.exit(1)
 
     if not args.time_out:
         args.time_out = '1m'
@@ -94,7 +103,10 @@ def main():
     vts_spec_parser = VtsSpecParser()
     test_case_creater = TestCaseCreator(vts_spec_parser, args.hal_package_name)
     if not test_case_creater.LaunchTestCase(
-            args.test_type, args.time_out, stop_runtime=args.stop_runtime):
+            args.test_type,
+            args.time_out,
+            is_replay=args.is_replay,
+            stop_runtime=args.stop_runtime):
         print('Error: Failed to launch test for %s. Exiting...' %
               args.hal_package_name)
         sys.exit(1)
@@ -104,6 +116,7 @@ def main():
         if not test_case_creater.LaunchTestCase(
                 args.test_type,
                 args.time_out,
+                is_replay=args.is_replay,
                 is_profiling=True,
                 stop_runtime=args.stop_runtime):
             print('Error: Failed to launch profiling test for %s. Exiting...' %
