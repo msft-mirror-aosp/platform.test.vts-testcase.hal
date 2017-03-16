@@ -24,6 +24,6 @@
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalAudioV2_0TargetTest/VtsHalAudioV2_0TargetTest" />
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="precondition-lshal" value="android.hardware.audio@2.0"/>
-        <option name="test-timeout" value="2m"/>
+        <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
