@@ -16,6 +16,7 @@
 #
 
 import logging
+import time
 
 from vts.proto import ComponentSpecificationMessage_pb2 as CompSpecMsg
 from vts.runners.host import asserts
@@ -54,6 +55,8 @@ class TvCecHidlTest(base_test.BaseTestClass):
             target_component_name="IHdmiCec",
             bits=64 if self.dut.is64Bit else 32)
 
+        time.sleep(1) # Wait for hal to be ready
+
         self.vtypes = self.dut.hal.tv_cec.GetHidlTypeInterface("types")
         logging.info("tv_cec types: %s", self.vtypes)
 
@@ -78,15 +81,9 @@ class TvCecHidlTest(base_test.BaseTestClass):
         if self.profiling.enabled:
             self.profiling.ProcessAndUploadTraceData()
 
-    def testAddAndClearLogicalAddress(self):
+    def testClearAndAddLogicalAddress(self):
         """A simple test case which sets logical address and clears it."""
-        result = self.dut.hal.tv_cec.addLogicalAddress(
-                self.vtypes.CecLogicalAddress.PLAYBACK_2)
-        asserts.assertEqual(self.vtypes.Result.SUCCESS, result)
-        logging.info("addLogicalAddress result: %s", result)
-
         self.dut.hal.tv_cec.clearLogicalAddress()
-
         result = self.dut.hal.tv_cec.addLogicalAddress(
                 self.vtypes.CecLogicalAddress.PLAYBACK_3)
         asserts.assertEqual(self.vtypes.Result.SUCCESS, result)
