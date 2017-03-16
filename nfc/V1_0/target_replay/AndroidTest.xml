@@ -15,19 +15,22 @@
 -->
 <configuration description="Config for VTS VtsHalNfcV1_0TargetReplay test cases">
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
-        <option name="push-group" value="HalHidlTargetTest.push"/>
-        <option name="cleanup" value="true" />
-        <option name="push" value="spec/hardware/interfaces/nfc/1.0/vts/Nfc.vts->/data/local/tmp/spec/target.vts" />
+        <option name="push-group" value="HalHidlHostTest.push"/>
+        <option name="cleanup" value="true"/>
+        <option name="push" value="spec/hardware/interfaces/nfc/1.0/vts/Nfc.vts->/data/local/tmp/spec/android/hardware/nfc/1.0/Nfc.vts"/>
+        <option name="push" value="spec/hardware/interfaces/nfc/1.0/vts/NfcClientCallback.vts->/data/local/tmp/spec/android/hardware/nfc/1.0/NfcClientCallback.vts"/>
+        <option name="push" value="spec/hardware/interfaces/nfc/1.0/vts/types.vts->/data/local/tmp/spec/android/hardware/nfc/1.0/types.vts"/>
         <option name="push" value="DATA/lib/android.hardware.nfc.vts.driver@1.0.so->/data/local/tmp/32/android.hardware.nfc.vts.driver@1.0.so"/>
         <option name="push" value="DATA/lib64/android.hardware.nfc.vts.driver@1.0.so->/data/local/tmp/64/android.hardware.nfc.vts.driver@1.0.so"/>
     </target_preparer>
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
-        <option name="test-module-name" value="VtsHalNfcV1_0TargetReplay" />
-        <option name="binary-test-type" value="hal_hidl_replay_test" />
-        <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/nfc/V1_0/android.hardware.nfc@1.0_sailfish_1.vts.trace" />
-        <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/nfc/V1_0/android.hardware.nfc@1.0_sailfish_2.vts.trace" />
-        <option name="hal-hidl-package-name" value="android.hardware.nfc@1.0" />
-        <option name="test-timeout" value="3m" />
+        <option name="test-module-name" value="VtsHalNfcV1_0TargetReplay"/>
+        <option name="binary-test-type" value="hal_hidl_replay_test"/>
+        <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/nfc/V1_0/android.hardware.nfc@1.0_sailfish_2.vts.trace"/>
+        <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/nfc/V1_0/android.hardware.nfc@1.0_sailfish_1.vts.trace"/>
+        <option name="hal-hidl-package-name" value="android.hardware.nfc@1.0"/>
+        <option name="precondition-lshal" value="android.hardware.nfc@1.0"/>
+        <option name="test-timeout" value="3m"/>
     </test>
 </configuration>
