@@ -28,6 +28,6 @@
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="enable-profiling" value="true"/>
         <option name="precondition-lshal" value="android.hardware.wifi@1.0"/>
-        <option name="test-timeout" value="1m"/>
+        <option name="test-timeout" value="10m"/>
     </test>
 </configuration>
