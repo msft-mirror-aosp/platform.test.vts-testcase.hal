@@ -44,6 +44,9 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
             self.coverage.LoadArtifacts()
             self.coverage.InitializeDeviceCoverage(self.dut)
 
+        if self.profiling.enabled:
+            self.profiling.EnableVTSProfiling(self.dut.shell.one)
+
         self.dut.hal.InitHidlHal(
             target_type="vehicle",
             target_basepaths=self.dut.libPaths,
@@ -66,24 +69,17 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
         and disable profiling after the test is done.
         """
         if self.profiling.enabled:
+            self.profiling.ProcessTraceDataForTestCase(self.dut)
             self.profiling.ProcessAndUploadTraceData()
 
         if self.coverage.enabled:
             self.coverage.SetCoverageData(dut=self.dut, isGlobal=True)
 
     def setUpTest(self):
-        if self.profiling.enabled:
-            self.profiling.EnableVTSProfiling(self.dut.shell.one)
-
         self.propToConfig = {}
         for config in self.vehicle.getAllPropConfigs():
             self.propToConfig[config['prop']] = config
         self.configList = self.propToConfig.values()
-
-    def tearDownTest(self):
-        if self.profiling.enabled:
-            self.profiling.ProcessTraceDataForTestCase(self.dut)
-            self.profiling.DisableVTSProfiling(self.dut.shell.one)
 
     def testListProperties(self):
         """Checks whether some PropConfigs are returned.
