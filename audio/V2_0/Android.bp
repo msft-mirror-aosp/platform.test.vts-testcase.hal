@@ -72,6 +72,7 @@ cc_library_shared {
         "libcutils",
         "libvts_common",
         "libvts_datatype",
+        "libvts_drivercomm",
         "libvts_measurement",
         "libvts_multidevice_proto",
         "libcamera_metadata",
