@@ -612,6 +612,69 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
         self.assertLessOrEqual(rangeBegin, value, msg)
         self.assertLessOrEqual(value, rangeEnd,  msg)
 
+    def getPropConfig(self, propertyId):
+        return self.propToConfig[propertyId]
+
+    def isPropSupported(self, propertyId):
+        return self.getPropConfig(propertyId) is not None
+
+    def testEngineOilTemp(self):
+        """tests engine oil temperature.
+
+        This also tests an HIDL async callback.
+        """
+        self.onPropertyEventCalled = 0
+        self.onPropertySetCalled = 0
+        self.onPropertySetErrorCalled = 0
+
+        def onPropertyEvent(vehiclePropValues):
+            logging.info("onPropertyEvent received: %s", vehiclePropValues)
+            self.onPropertyEventCalled += 1
+
+        def onPropertySet(vehiclePropValue):
+            logging.info("onPropertySet notification received: %s", vehiclePropValue)
+            self.onPropertySetCalled += 1
+
+        def onPropertySetError(erroCode, propId, areaId):
+            logging.info("onPropertySetError, error: %d, prop: 0x%x, area: 0x%x",
+                         erroCode, prop, area)
+            self.onPropertySetErrorCalled += 1
+
+        config = self.getPropConfig(self.vtypes.VehicleProperty.ENGINE_OIL_TEMP)
+        if (config is None):
+            logging.info("ENGINE_OIL_TEMP property is not supported")
+            return  # Property not supported, we are done here.
+
+        propValue = self.readVhalProperty(self.vtypes.VehicleProperty.ENGINE_OIL_TEMP)
+        asserts.assertEqual(1, len(propValue['value']['floatValues']))
+        oilTemp = propValue['value']['floatValues'][0]
+        logging.info("Current oil temperature: %f C", oilTemp)
+        asserts.assertLess(oilTemp, 200)    # Check it is in reasinable range
+        asserts.assertLess(-50, oilTemp)
+
+        if (config["changeMode"] == self.vtypes.VehiclePropertyChangeMode.CONTINUOUS):
+            logging.info("ENGINE_OIL_TEMP is continuous property, subscribing...")
+            callback = self.vehicle.GetHidlCallbackInterface("IVehicleCallback",
+                onPropertyEvent=onPropertyEvent,
+                onPropertySet=onPropertySet,
+                onPropertySetError=onPropertySetError)
+
+            subscribeOptions = {
+                "propId" : self.vtypes.VehicleProperty.ENGINE_OIL_TEMP,
+                "vehicleAreas" : 0,
+                "sampleRate" : 10.0,  # Hz
+                "flags" : self.vtypes.SubscribeFlags.HAL_EVENT,
+            }
+            pbSubscribeOptions = self.vtypes.Py2Pb("SubscribeOptions", subscribeOptions)
+
+            self.vehicle.subscribe(callback, [pbSubscribeOptions])
+            for _ in range(5):
+                if (self.onPropertyEventCalled > 0 or
+                    self.onPropertySetCalled > 0 or
+                    self.onPropertySetErrorCalled > 0):
+                    return
+                time.sleep(1)
+            asserts.fail("Callback not called in 5 seconds.")
 
 if __name__ == "__main__":
     test_runner.main()
