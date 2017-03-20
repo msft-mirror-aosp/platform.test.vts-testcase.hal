@@ -19,7 +19,7 @@ import logging
 import time
 
 from vts.runners.host import asserts
-from vts.runners.host import base_test_with_webdb
+from vts.runners.host import base_test
 from vts.runners.host import test_runner
 from vts.utils.python.controllers import android_device
 
