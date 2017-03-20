@@ -1,3 +1,6 @@
+// This file was auto-generated. Do not edit manually.
+// Use test/vts-testcase/hal/update_makefiles.py to generate this file.
+
 subdirs = [
     "bar/V1_0",
     "baz/V1_0",
@@ -11,4 +14,5 @@ subdirs = [
     "versioning/V1_0",
     "versioning/V2_2",
     "versioning/V2_3",
+    "versioning/V2_4",
 ]
