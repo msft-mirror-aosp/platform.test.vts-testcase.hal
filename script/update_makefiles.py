@@ -21,7 +21,7 @@ Among .bp and .mk files affected are:
 2. files matching: test/vts-testcase/hal/<hal_name>/<hal_version>/Android.bp
 
 Usage:
-  cd test/vts-testcase/hal && python update_makefiles.py
+  cd test/vts-testcase/hal; ./script/update_makefiles.py
 """
 
 from build.build_rule_gen import BuildRuleGen
