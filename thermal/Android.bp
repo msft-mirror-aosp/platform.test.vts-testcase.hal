@@ -1,4 +1,6 @@
+// This file was auto-generated. Do not edit manually.
+// Use test/vts-testcase/hal/update_makefiles.py to generate this file.
+
 subdirs = [
     "V1_0",
-    "V1_0/target_stress",
 ]
