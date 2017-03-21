@@ -169,6 +169,8 @@ class BuildRuleGen(object):
             for package in imported_packages:
                 prefix = 'android.hardware.'
                 if package.startswith(prefix):
+                    # TODO(b/36475863)
+                    result.append('"%s",' % package)
                     vts_driver_name = package.replace('@', '.vts.driver@')
                     result.append('"%s",' % vts_driver_name)
                 else:
@@ -191,6 +193,7 @@ class BuildRuleGen(object):
             for package in imported_packages:
                 prefix = 'android.hardware.'
                 if package.startswith(prefix):
+                    result.append('"%s",' % package)
                     vts_driver_name = package + "-vts.profiler"
                     result.append('"%s",' % vts_driver_name)
                 else:
