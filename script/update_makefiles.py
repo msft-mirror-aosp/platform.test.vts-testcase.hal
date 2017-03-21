@@ -29,15 +29,9 @@ import os
 import sys
 
 if __name__ == "__main__":
-    usage = (
-    'Updates .bp and .mk files under test/vts-testcase/hal.\n'
-    'Among .bp and .mk files affected are:\n'
-    '1. test/vts-testcase/hal/Android.bp\n'
-    '2. files matching: test/vts-testcase/hal/<hal_name>/<hal_version>/Android.bp\n\n'
-    'Usage:\n'
-    '  cd test/vts-testcase/hal && python update_makefiles.py\n')
-
-
     print 'Updating build rules.'
-    build_rule_gen = BuildRuleGen()
+    warning_header = (
+        '// This file was auto-generated. Do not edit manually.\n'
+        '// Use test/vts-testcase/hal/update_makefiles.py to generate this file.\n\n')
+    build_rule_gen = BuildRuleGen(warning_header)
     build_rule_gen.UpdateBuildRule()
