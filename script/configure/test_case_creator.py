@@ -240,6 +240,11 @@ class TestCaseCreator(object):
         Args:
           file_pusher: parent xml element for push file configure.
         """
+        ET.SubElement(file_pusher, 'option', {
+            'name': 'abort-on-push-failure',
+            'value': 'false'
+        })
+
         if self._test_type == 'target':
             if self._is_replay:
                 ET.SubElement(file_pusher, 'option', {
