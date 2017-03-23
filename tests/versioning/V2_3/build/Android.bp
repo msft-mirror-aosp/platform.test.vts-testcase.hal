@@ -16,7 +16,7 @@ hal2vts {
 
 // Build VTS driver.
 genrule {
-    name: "android.hardware.tests.versioning.vts.driver@2.3_genc++",
+    name: "android.hardware.tests.versioning@2.3-vts.driver_genc++",
     tools: ["hidl-gen", "vtsc"],
     cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.tests.versioning@2.3 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/tests/versioning/2.3/ $(genDir)/android/hardware/tests/versioning/2.3/",
     srcs: [
@@ -30,7 +30,7 @@ genrule {
 }
 
 genrule {
-    name: "android.hardware.tests.versioning.vts.driver@2.3_genc++_headers",
+    name: "android.hardware.tests.versioning@2.3-vts.driver_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
     cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.tests.versioning@2.3 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/tests/versioning/2.3/ $(genDir)/android/hardware/tests/versioning/2.3/",
     srcs: [
@@ -44,10 +44,10 @@ genrule {
 }
 
 cc_library_shared {
-    name: "android.hardware.tests.versioning.vts.driver@2.3",
-    generated_sources: ["android.hardware.tests.versioning.vts.driver@2.3_genc++"],
-    generated_headers: ["android.hardware.tests.versioning.vts.driver@2.3_genc++_headers"],
-    export_generated_headers: ["android.hardware.tests.versioning.vts.driver@2.3_genc++_headers"],
+    name: "android.hardware.tests.versioning@2.3-vts.driver",
+    generated_sources: ["android.hardware.tests.versioning@2.3-vts.driver_genc++"],
+    generated_headers: ["android.hardware.tests.versioning@2.3-vts.driver_genc++_headers"],
+    export_generated_headers: ["android.hardware.tests.versioning@2.3-vts.driver_genc++_headers"],
     shared_libs: [
         "libhidlbase",
         "libhidltransport",
@@ -64,16 +64,16 @@ cc_library_shared {
         "libprotobuf-cpp-full",
         "android.hardware.tests.versioning@2.3",
         "android.hardware.tests.versioning@1.0",
-        "android.hardware.tests.versioning.vts.driver@1.0",
+        "android.hardware.tests.versioning@1.0-vts.driver",
         "android.hardware.tests.versioning@2.2",
-        "android.hardware.tests.versioning.vts.driver@2.2",
+        "android.hardware.tests.versioning@2.2-vts.driver",
         "android.hidl.base@1.0",
     ],
     export_shared_lib_headers: [
         "android.hardware.tests.versioning@1.0",
-        "android.hardware.tests.versioning.vts.driver@1.0",
+        "android.hardware.tests.versioning@1.0-vts.driver",
         "android.hardware.tests.versioning@2.2",
-        "android.hardware.tests.versioning.vts.driver@2.2",
+        "android.hardware.tests.versioning@2.2-vts.driver",
         "android.hidl.base@1.0",
     ],
 }
