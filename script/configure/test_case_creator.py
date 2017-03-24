@@ -295,8 +295,7 @@ class TestCaseCreator(object):
                                'value': push_spec})
             for imported_package in imported_package_lists:
                 if imported_package.startswith(HAL_PACKAGE_PREFIX):
-                    dirver_package_name = imported_package.replace(
-                        '@', '.vts.driver@') + '.so'
+                    dirver_package_name = imported_package + '-vts.driver.so'
                     push_driver = VTS_LIB_PUSH_TEMPLATE_32.format(
                         lib_name=dirver_package_name)
                     ET.SubElement(file_pusher, 'option',
