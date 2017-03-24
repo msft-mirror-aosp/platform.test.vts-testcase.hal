@@ -153,13 +153,14 @@ class BuildRuleGen(object):
                                vts_spec, extension))
             return '\n        '.join(result)
 
-        def ImportedDriverPackages(imported_packages):
+        def ImportedPackages(vts_pkg_type, imported_packages):
             """Formats list of imported packages into a string.
 
             Formats list of imported packages for given hal_name, hal_version
             into a string that can be inserted into build template.
 
             Args:
+              vts_pkg_type: string 'driver' or 'profiler'
               imported_packages: list of imported packages
 
             Returns:
@@ -171,31 +172,8 @@ class BuildRuleGen(object):
                 if package.startswith(prefix):
                     # TODO(b/36475863)
                     result.append('"%s",' % package)
-                    vts_driver_name = package.replace('@', '.vts.driver@')
-                    result.append('"%s",' % vts_driver_name)
-                else:
-                    result.append('"%s",' % package)
-            return '\n        '.join(result)
-
-        def ImportedProfilerPackages(imported_packages):
-            """Formats list of imported packages into a string.
-
-            Formats list of imported packages for given hal_name, hal_version
-            into a string that can be inserted into build template.
-
-            Args:
-              imported_packages: list of imported packages
-
-            Returns:
-              string, to be inserted into build template.
-            """
-            result = []
-            for package in imported_packages:
-                prefix = 'android.hardware.'
-                if package.startswith(prefix):
-                    result.append('"%s",' % package)
-                    vts_driver_name = package + "-vts.profiler"
-                    result.append('"%s",' % vts_driver_name)
+                    vts_pkg_name = package + '-vts.' + vts_pkg_type
+                    result.append('"%s",' % vts_pkg_name)
                 else:
                     result.append('"%s",' % package)
             return '\n        '.join(result)
@@ -218,10 +196,10 @@ class BuildRuleGen(object):
             hal_name, hal_version)
         build_rule = build_rule.replace(
             '{IMPORTED_DRIVER_PACKAGES}',
-            ImportedDriverPackages(imported_packages))
+            ImportedPackages('driver', imported_packages))
         build_rule = build_rule.replace(
             '{IMPORTED_PROFILER_PACKAGES}',
-            ImportedProfilerPackages(imported_packages))
+            ImportedPackages('profiler', imported_packages))
 
         return build_rule
 
