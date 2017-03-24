@@ -14,7 +14,7 @@ hal2vts {
 
 // Build VTS driver.
 genrule {
-    name: "android.hardware.camera.metadata.vts.driver@3.2_genc++",
+    name: "android.hardware.camera.metadata@3.2-vts.driver_genc++",
     tools: ["hidl-gen", "vtsc"],
     cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.camera.metadata@3.2 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/camera/metadata/3.2/ $(genDir)/android/hardware/camera/metadata/3.2/",
     srcs: [
@@ -26,7 +26,7 @@ genrule {
 }
 
 genrule {
-    name: "android.hardware.camera.metadata.vts.driver@3.2_genc++_headers",
+    name: "android.hardware.camera.metadata@3.2-vts.driver_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
     cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.camera.metadata@3.2 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/camera/metadata/3.2/ $(genDir)/android/hardware/camera/metadata/3.2/",
     srcs: [
@@ -38,10 +38,10 @@ genrule {
 }
 
 cc_library_shared {
-    name: "android.hardware.camera.metadata.vts.driver@3.2",
-    generated_sources: ["android.hardware.camera.metadata.vts.driver@3.2_genc++"],
-    generated_headers: ["android.hardware.camera.metadata.vts.driver@3.2_genc++_headers"],
-    export_generated_headers: ["android.hardware.camera.metadata.vts.driver@3.2_genc++_headers"],
+    name: "android.hardware.camera.metadata@3.2-vts.driver",
+    generated_sources: ["android.hardware.camera.metadata@3.2-vts.driver_genc++"],
+    generated_headers: ["android.hardware.camera.metadata@3.2-vts.driver_genc++_headers"],
+    export_generated_headers: ["android.hardware.camera.metadata@3.2-vts.driver_genc++_headers"],
     shared_libs: [
         "libhidlbase",
         "libhidltransport",

@@ -21,8 +21,8 @@
         <option name="push" value="spec/hardware/interfaces/contexthub/1.0/vts/Contexthub.vts->/data/local/tmp/spec/android/hardware/contexthub/1.0/Contexthub.vts"/>
         <option name="push" value="spec/hardware/interfaces/contexthub/1.0/vts/ContexthubCallback.vts->/data/local/tmp/spec/android/hardware/contexthub/1.0/ContexthubCallback.vts"/>
         <option name="push" value="spec/hardware/interfaces/contexthub/1.0/vts/types.vts->/data/local/tmp/spec/android/hardware/contexthub/1.0/types.vts"/>
-        <option name="push" value="DATA/lib/android.hardware.contexthub.vts.driver@1.0.so->/data/local/tmp/32/android.hardware.contexthub.vts.driver@1.0.so"/>
-        <option name="push" value="DATA/lib64/android.hardware.contexthub.vts.driver@1.0.so->/data/local/tmp/64/android.hardware.contexthub.vts.driver@1.0.so"/>
+        <option name="push" value="DATA/lib/android.hardware.contexthub@1.0-vts.driver.so->/data/local/tmp/32/android.hardware.contexthub@1.0-vts.driver.so"/>
+        <option name="push" value="DATA/lib64/android.hardware.contexthub@1.0-vts.driver.so->/data/local/tmp/64/android.hardware.contexthub@1.0-vts.driver.so"/>
     </target_preparer>
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">

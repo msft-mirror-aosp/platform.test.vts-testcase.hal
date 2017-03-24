@@ -28,7 +28,7 @@ hal2vts {
 
 // Build VTS driver.
 genrule {
-    name: "android.hardware.audio.effect.vts.driver@2.0_genc++",
+    name: "android.hardware.audio.effect@2.0-vts.driver_genc++",
     tools: ["hidl-gen", "vtsc"],
     cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.audio.effect@2.0 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/audio/effect/2.0/ $(genDir)/android/hardware/audio/effect/2.0/",
     srcs: [
@@ -54,7 +54,7 @@ genrule {
 }
 
 genrule {
-    name: "android.hardware.audio.effect.vts.driver@2.0_genc++_headers",
+    name: "android.hardware.audio.effect@2.0-vts.driver_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
     cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.audio.effect@2.0 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/audio/effect/2.0/ $(genDir)/android/hardware/audio/effect/2.0/",
     srcs: [
@@ -80,10 +80,10 @@ genrule {
 }
 
 cc_library_shared {
-    name: "android.hardware.audio.effect.vts.driver@2.0",
-    generated_sources: ["android.hardware.audio.effect.vts.driver@2.0_genc++"],
-    generated_headers: ["android.hardware.audio.effect.vts.driver@2.0_genc++_headers"],
-    export_generated_headers: ["android.hardware.audio.effect.vts.driver@2.0_genc++_headers"],
+    name: "android.hardware.audio.effect@2.0-vts.driver",
+    generated_sources: ["android.hardware.audio.effect@2.0-vts.driver_genc++"],
+    generated_headers: ["android.hardware.audio.effect@2.0-vts.driver_genc++_headers"],
+    export_generated_headers: ["android.hardware.audio.effect@2.0-vts.driver_genc++_headers"],
     shared_libs: [
         "libhidlbase",
         "libhidltransport",
@@ -100,12 +100,12 @@ cc_library_shared {
         "libprotobuf-cpp-full",
         "android.hardware.audio.effect@2.0",
         "android.hardware.audio.common@2.0",
-        "android.hardware.audio.common.vts.driver@2.0",
+        "android.hardware.audio.common@2.0-vts.driver",
         "android.hidl.base@1.0",
     ],
     export_shared_lib_headers: [
         "android.hardware.audio.common@2.0",
-        "android.hardware.audio.common.vts.driver@2.0",
+        "android.hardware.audio.common@2.0-vts.driver",
         "android.hidl.base@1.0",
     ],
 }

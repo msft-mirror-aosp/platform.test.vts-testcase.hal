@@ -21,8 +21,8 @@
         <option name="push" value="spec/hardware/interfaces/automotive/vehicle/2.0/vts/Vehicle.vts->/data/local/tmp/spec/android/hardware/automotive/vehicle/2.0/Vehicle.vts"/>
         <option name="push" value="spec/hardware/interfaces/automotive/vehicle/2.0/vts/VehicleCallback.vts->/data/local/tmp/spec/android/hardware/automotive/vehicle/2.0/VehicleCallback.vts"/>
         <option name="push" value="spec/hardware/interfaces/automotive/vehicle/2.0/vts/types.vts->/data/local/tmp/spec/android/hardware/automotive/vehicle/2.0/types.vts"/>
-        <option name="push" value="DATA/lib/android.hardware.automotive.vehicle.vts.driver@2.0.so->/data/local/tmp/32/android.hardware.automotive.vehicle.vts.driver@2.0.so"/>
-        <option name="push" value="DATA/lib64/android.hardware.automotive.vehicle.vts.driver@2.0.so->/data/local/tmp/64/android.hardware.automotive.vehicle.vts.driver@2.0.so"/>
+        <option name="push" value="DATA/lib/android.hardware.automotive.vehicle@2.0-vts.driver.so->/data/local/tmp/32/android.hardware.automotive.vehicle@2.0-vts.driver.so"/>
+        <option name="push" value="DATA/lib64/android.hardware.automotive.vehicle@2.0-vts.driver.so->/data/local/tmp/64/android.hardware.automotive.vehicle@2.0-vts.driver.so"/>
     </target_preparer>
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">

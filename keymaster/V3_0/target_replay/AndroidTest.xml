@@ -20,8 +20,8 @@
         <option name="cleanup" value="true"/>
         <option name="push" value="spec/hardware/interfaces/keymaster/3.0/vts/KeymasterDevice.vts->/data/local/tmp/spec/android/hardware/keymaster/3.0/KeymasterDevice.vts"/>
         <option name="push" value="spec/hardware/interfaces/keymaster/3.0/vts/types.vts->/data/local/tmp/spec/android/hardware/keymaster/3.0/types.vts"/>
-        <option name="push" value="DATA/lib/android.hardware.keymaster.vts.driver@3.0.so->/data/local/tmp/32/android.hardware.keymaster.vts.driver@3.0.so"/>
-        <option name="push" value="DATA/lib64/android.hardware.keymaster.vts.driver@3.0.so->/data/local/tmp/64/android.hardware.keymaster.vts.driver@3.0.so"/>
+        <option name="push" value="DATA/lib/android.hardware.keymaster@3.0-vts.driver.so->/data/local/tmp/32/android.hardware.keymaster@3.0-vts.driver.so"/>
+        <option name="push" value="DATA/lib64/android.hardware.keymaster@3.0-vts.driver.so->/data/local/tmp/64/android.hardware.keymaster@3.0-vts.driver.so"/>
     </target_preparer>
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">

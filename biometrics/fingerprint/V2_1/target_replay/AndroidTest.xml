@@ -21,8 +21,8 @@
         <option name="push" value="spec/hardware/interfaces/biometrics/fingerprint/2.1/vts/BiometricsFingerprint.vts->/data/local/tmp/spec/android/hardware/biometrics/fingerprint/2.1/BiometricsFingerprint.vts"/>
         <option name="push" value="spec/hardware/interfaces/biometrics/fingerprint/2.1/vts/BiometricsFingerprintClientCallback.vts->/data/local/tmp/spec/android/hardware/biometrics/fingerprint/2.1/BiometricsFingerprintClientCallback.vts"/>
         <option name="push" value="spec/hardware/interfaces/biometrics/fingerprint/2.1/vts/types.vts->/data/local/tmp/spec/android/hardware/biometrics/fingerprint/2.1/types.vts"/>
-        <option name="push" value="DATA/lib/android.hardware.biometrics.fingerprint.vts.driver@2.1.so->/data/local/tmp/32/android.hardware.biometrics.fingerprint.vts.driver@2.1.so"/>
-        <option name="push" value="DATA/lib64/android.hardware.biometrics.fingerprint.vts.driver@2.1.so->/data/local/tmp/64/android.hardware.biometrics.fingerprint.vts.driver@2.1.so"/>
+        <option name="push" value="DATA/lib/android.hardware.biometrics.fingerprint@2.1-vts.driver.so->/data/local/tmp/32/android.hardware.biometrics.fingerprint@2.1-vts.driver.so"/>
+        <option name="push" value="DATA/lib64/android.hardware.biometrics.fingerprint@2.1-vts.driver.so->/data/local/tmp/64/android.hardware.biometrics.fingerprint@2.1-vts.driver.so"/>
     </target_preparer>
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">

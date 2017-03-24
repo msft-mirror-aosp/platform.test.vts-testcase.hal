@@ -20,8 +20,8 @@
         <option name="cleanup" value="true"/>
         <option name="push" value="spec/hardware/interfaces/sensors/1.0/vts/Sensors.vts->/data/local/tmp/spec/android/hardware/sensors/1.0/Sensors.vts"/>
         <option name="push" value="spec/hardware/interfaces/sensors/1.0/vts/types.vts->/data/local/tmp/spec/android/hardware/sensors/1.0/types.vts"/>
-        <option name="push" value="DATA/lib/android.hardware.sensors.vts.driver@1.0.so->/data/local/tmp/32/android.hardware.sensors.vts.driver@1.0.so"/>
-        <option name="push" value="DATA/lib64/android.hardware.sensors.vts.driver@1.0.so->/data/local/tmp/64/android.hardware.sensors.vts.driver@1.0.so"/>
+        <option name="push" value="DATA/lib/android.hardware.sensors@1.0-vts.driver.so->/data/local/tmp/32/android.hardware.sensors@1.0-vts.driver.so"/>
+        <option name="push" value="DATA/lib64/android.hardware.sensors@1.0-vts.driver.so->/data/local/tmp/64/android.hardware.sensors@1.0-vts.driver.so"/>
     </target_preparer>
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">

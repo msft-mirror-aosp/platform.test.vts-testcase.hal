@@ -16,7 +16,7 @@ hal2vts {
 
 // Build VTS driver.
 genrule {
-    name: "android.hardware.biometrics.fingerprint.vts.driver@2.1_genc++",
+    name: "android.hardware.biometrics.fingerprint@2.1-vts.driver_genc++",
     tools: ["hidl-gen", "vtsc"],
     cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.biometrics.fingerprint@2.1 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/biometrics/fingerprint/2.1/ $(genDir)/android/hardware/biometrics/fingerprint/2.1/",
     srcs: [
@@ -30,7 +30,7 @@ genrule {
 }
 
 genrule {
-    name: "android.hardware.biometrics.fingerprint.vts.driver@2.1_genc++_headers",
+    name: "android.hardware.biometrics.fingerprint@2.1-vts.driver_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
     cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.biometrics.fingerprint@2.1 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/biometrics/fingerprint/2.1/ $(genDir)/android/hardware/biometrics/fingerprint/2.1/",
     srcs: [
@@ -44,10 +44,10 @@ genrule {
 }
 
 cc_library_shared {
-    name: "android.hardware.biometrics.fingerprint.vts.driver@2.1",
-    generated_sources: ["android.hardware.biometrics.fingerprint.vts.driver@2.1_genc++"],
-    generated_headers: ["android.hardware.biometrics.fingerprint.vts.driver@2.1_genc++_headers"],
-    export_generated_headers: ["android.hardware.biometrics.fingerprint.vts.driver@2.1_genc++_headers"],
+    name: "android.hardware.biometrics.fingerprint@2.1-vts.driver",
+    generated_sources: ["android.hardware.biometrics.fingerprint@2.1-vts.driver_genc++"],
+    generated_headers: ["android.hardware.biometrics.fingerprint@2.1-vts.driver_genc++_headers"],
+    export_generated_headers: ["android.hardware.biometrics.fingerprint@2.1-vts.driver_genc++_headers"],
     shared_libs: [
         "libhidlbase",
         "libhidltransport",

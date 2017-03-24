@@ -17,7 +17,7 @@ hal2vts {
 
 // Build VTS driver.
 genrule {
-    name: "android.hardware.broadcastradio.vts.driver@1.1_genc++",
+    name: "android.hardware.broadcastradio@1.1-vts.driver_genc++",
     tools: ["hidl-gen", "vtsc"],
     cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.broadcastradio@1.1 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/broadcastradio/1.1/ $(genDir)/android/hardware/broadcastradio/1.1/",
     srcs: [
@@ -32,7 +32,7 @@ genrule {
 }
 
 genrule {
-    name: "android.hardware.broadcastradio.vts.driver@1.1_genc++_headers",
+    name: "android.hardware.broadcastradio@1.1-vts.driver_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
     cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.broadcastradio@1.1 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/broadcastradio/1.1/ $(genDir)/android/hardware/broadcastradio/1.1/",
     srcs: [
@@ -47,10 +47,10 @@ genrule {
 }
 
 cc_library_shared {
-    name: "android.hardware.broadcastradio.vts.driver@1.1",
-    generated_sources: ["android.hardware.broadcastradio.vts.driver@1.1_genc++"],
-    generated_headers: ["android.hardware.broadcastradio.vts.driver@1.1_genc++_headers"],
-    export_generated_headers: ["android.hardware.broadcastradio.vts.driver@1.1_genc++_headers"],
+    name: "android.hardware.broadcastradio@1.1-vts.driver",
+    generated_sources: ["android.hardware.broadcastradio@1.1-vts.driver_genc++"],
+    generated_headers: ["android.hardware.broadcastradio@1.1-vts.driver_genc++_headers"],
+    export_generated_headers: ["android.hardware.broadcastradio@1.1-vts.driver_genc++_headers"],
     shared_libs: [
         "libhidlbase",
         "libhidltransport",
@@ -67,12 +67,12 @@ cc_library_shared {
         "libprotobuf-cpp-full",
         "android.hardware.broadcastradio@1.1",
         "android.hardware.broadcastradio@1.0",
-        "android.hardware.broadcastradio.vts.driver@1.0",
+        "android.hardware.broadcastradio@1.0-vts.driver",
         "android.hidl.base@1.0",
     ],
     export_shared_lib_headers: [
         "android.hardware.broadcastradio@1.0",
-        "android.hardware.broadcastradio.vts.driver@1.0",
+        "android.hardware.broadcastradio@1.0-vts.driver",
         "android.hidl.base@1.0",
     ],
 }
