@@ -75,7 +75,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
         if self.coverage.enabled:
             self.coverage.SetCoverageData(dut=self.dut, isGlobal=True)
 
-    def setUpTest(self):
+    def setUp(self):
         self.propToConfig = {}
         for config in self.vehicle.getAllPropConfigs():
             self.propToConfig[config['prop']] = config
