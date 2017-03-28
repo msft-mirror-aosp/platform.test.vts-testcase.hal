@@ -429,8 +429,10 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
         for c in self.configList:
             # Continuous properties need to have a sampling frequency.
             if c["changeMode"] & self.vtypes.VehiclePropertyChangeMode.CONTINUOUS != 0:
-                asserts.assertLess(0.0, c["minSampleRate"])
-                asserts.assertLess(0.0, c["maxSampleRate"])
+                asserts.assertLess(0.0, c["minSampleRate"],
+                                   "minSampleRate should be > 0. Config list: %s" % c)
+                asserts.assertLess(0.0, c["maxSampleRate"],
+                                   "maxSampleRate should be > 0. Config list: %s" % c)
                 asserts.assertFalse(c["minSampleRate"] > c["maxSampleRate"],
                                     "Prop 0x%x minSampleRate > maxSampleRate" %
                                         c["prop"])
