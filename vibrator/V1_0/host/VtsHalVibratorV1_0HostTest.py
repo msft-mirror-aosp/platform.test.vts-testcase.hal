@@ -67,7 +67,10 @@ class VibratorHidlTest(base_test.BaseTestClass):
         vibrator_types = self.dut.hal.vibrator.GetHidlTypeInterface("types")
         logging.info("vibrator_types: %s", vibrator_types)
         logging.info("OK: %s", vibrator_types.Status.OK)
-        logging.info("ERR: %s", vibrator_types.Status.ERR)
+        logging.info("UNKNOWN_ERROR: %s", vibrator_types.Status.UNKNOWN_ERROR)
+        logging.info("BAD_VALUE: %s", vibrator_types.Status.BAD_VALUE)
+        logging.info("UNSUPPORTED_OPERATION: %s",
+            vibrator_types.Status.UNSUPPORTED_OPERATION)
 
         result = self.dut.hal.vibrator.on(10000)
         logging.info("on result: %s", result)
