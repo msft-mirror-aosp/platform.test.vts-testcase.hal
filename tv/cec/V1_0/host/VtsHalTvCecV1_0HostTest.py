@@ -60,13 +60,13 @@ class TvCecHidlTest(base_test.BaseTestClass):
         self.vtypes = self.dut.hal.tv_cec.GetHidlTypeInterface("types")
         logging.info("tv_cec types: %s", self.vtypes)
 
-    def setUpTest(self):
+    def setUp(self):
         """Setup function that will be called every time before executing each
         test case in the test class."""
         if self.profiling.enabled:
             self.profiling.EnableVTSProfiling(self.dut.shell.one)
 
-    def tearDownTest(self):
+    def tearDown(self):
         """TearDown function that will be called every time after executing each
         test case in the test class."""
         if self.profiling.enabled:
