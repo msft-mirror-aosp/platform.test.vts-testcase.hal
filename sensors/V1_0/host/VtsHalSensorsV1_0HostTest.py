@@ -58,11 +58,11 @@ class SensorsHidlTest(base_test.BaseTestClass):
         if self.profiling.enabled:
             self.profiling.ProcessAndUploadTraceData()
 
-    def setUpTest(self):
+    def setUp(self):
         if self.profiling.enabled:
             self.profiling.EnableVTSProfiling(self.dut.shell.one)
 
-    def tearDownTest(self):
+    def tearDown(self):
         if self.profiling.enabled:
             self.profiling.ProcessTraceDataForTestCase(self.dut)
             self.profiling.DisableVTSProfiling(self.dut.shell.one)
