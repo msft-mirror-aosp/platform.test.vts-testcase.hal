@@ -96,7 +96,7 @@ class ContexthubHidlTest(base_test.BaseTestClass):
         if self.profiling.enabled:
             self.profiling.ProcessAndUploadTraceData()
 
-    def tearDownTest(self):
+    def tearDown(self):
         """Process trace data.
         """
         if self.profiling.enabled:
