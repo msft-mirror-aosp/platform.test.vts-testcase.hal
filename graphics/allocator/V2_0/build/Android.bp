@@ -9,8 +9,6 @@ hal2vts {
     ],
     out: [
         "android/hardware/graphics/allocator/2.0/Allocator.vts",
-        "android/hardware/graphics/allocator/2.0/AllocatorClient.vts",
-        "android/hardware/graphics/allocator/2.0/types.vts",
     ],
 }
 
@@ -24,8 +22,6 @@ genrule {
     ],
     out: [
         "android/hardware/graphics/allocator/2.0/Allocator.vts.cpp",
-        "android/hardware/graphics/allocator/2.0/AllocatorClient.vts.cpp",
-        "android/hardware/graphics/allocator/2.0/types.vts.cpp",
     ],
 }
 
@@ -38,8 +34,6 @@ genrule {
     ],
     out: [
         "android/hardware/graphics/allocator/2.0/Allocator.vts.h",
-        "android/hardware/graphics/allocator/2.0/AllocatorClient.vts.h",
-        "android/hardware/graphics/allocator/2.0/types.vts.h",
     ],
 }
 
@@ -63,13 +57,13 @@ cc_library_shared {
         "libcamera_metadata",
         "libprotobuf-cpp-full",
         "android.hardware.graphics.allocator@2.0",
-        "android.hardware.graphics.common@1.0",
-        "android.hardware.graphics.common@1.0-vts.driver",
+        "android.hardware.graphics.mapper@2.0",
+        "android.hardware.graphics.mapper@2.0-vts.driver",
         "android.hidl.base@1.0",
     ],
     export_shared_lib_headers: [
-        "android.hardware.graphics.common@1.0",
-        "android.hardware.graphics.common@1.0-vts.driver",
+        "android.hardware.graphics.mapper@2.0",
+        "android.hardware.graphics.mapper@2.0-vts.driver",
         "android.hidl.base@1.0",
     ],
 }
@@ -84,8 +78,6 @@ genrule {
     ],
     out: [
         "android/hardware/graphics/allocator/2.0/Allocator.vts.cpp",
-        "android/hardware/graphics/allocator/2.0/AllocatorClient.vts.cpp",
-        "android/hardware/graphics/allocator/2.0/types.vts.cpp",
     ],
 }
 
@@ -98,8 +90,6 @@ genrule {
     ],
     out: [
         "android/hardware/graphics/allocator/2.0/Allocator.vts.h",
-        "android/hardware/graphics/allocator/2.0/AllocatorClient.vts.h",
-        "android/hardware/graphics/allocator/2.0/types.vts.h",
     ],
 }
 
@@ -116,8 +106,8 @@ cc_library_shared {
         "libvts_multidevice_proto",
         "libprotobuf-cpp-full",
         "android.hardware.graphics.allocator@2.0",
-        "android.hardware.graphics.common@1.0",
-        "android.hardware.graphics.common@1.0-vts.profiler",
+        "android.hardware.graphics.mapper@2.0",
+        "android.hardware.graphics.mapper@2.0-vts.profiler",
         "android.hidl.base@1.0",
     ],
 }
