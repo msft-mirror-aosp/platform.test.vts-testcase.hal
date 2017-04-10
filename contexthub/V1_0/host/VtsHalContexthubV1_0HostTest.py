@@ -84,7 +84,6 @@ class ContexthubHidlTest(base_test.BaseTestClass):
             target_version=1.0,
             target_package="android.hardware.contexthub",
             target_component_name="IContexthub",
-            hw_binder_service_name="contexthub",
             bits=64 if self.dut.is64Bit else 32)
 
         self.types = self.dut.hal.contexthub.GetHidlTypeInterface("types")
