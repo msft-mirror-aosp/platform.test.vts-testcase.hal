@@ -63,8 +63,8 @@ def main():
         required=False,
         help='Whether this is a replay test.')
     parser.add_argument(
-        '--stop_runtime',
-        dest='stop_runtime',
+        '--disable_stop_runtime',
+        dest='disable_stop_runtime',
         action='store_true',
         required=False,
         help='Whether to stop framework before the test.')
@@ -100,13 +100,17 @@ def main():
             print 'Invalid test time out format. Exiting...'
             sys.exit(1)
 
+    stop_runtime = False
+    if args.test_type == 'target' and not args.disable_stop_runtime:
+        stop_runtime = True
+
     vts_spec_parser = VtsSpecParser()
     test_case_creater = TestCaseCreator(vts_spec_parser, args.hal_package_name)
     if not test_case_creater.LaunchTestCase(
             args.test_type,
             args.time_out,
             is_replay=args.is_replay,
-            stop_runtime=args.stop_runtime):
+            stop_runtime=stop_runtime):
         print('Error: Failed to launch test for %s. Exiting...' %
               args.hal_package_name)
         sys.exit(1)
@@ -118,7 +122,7 @@ def main():
                 args.time_out,
                 is_replay=args.is_replay,
                 is_profiling=True,
-                stop_runtime=args.stop_runtime):
+                stop_runtime=stop_runtime):
             print('Error: Failed to launch profiling test for %s. Exiting...' %
                   args.hal_package_name)
             sys.exit(1)
