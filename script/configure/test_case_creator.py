@@ -240,10 +240,9 @@ class TestCaseCreator(object):
         Args:
           file_pusher: parent xml element for push file configure.
         """
-        ET.SubElement(file_pusher, 'option', {
-            'name': 'abort-on-push-failure',
-            'value': 'false'
-        })
+        ET.SubElement(file_pusher, 'option',
+                      {'name': 'abort-on-push-failure',
+                       'value': 'false'})
 
         if self._test_type == 'target':
             if self._is_replay:
@@ -281,20 +280,25 @@ class TestCaseCreator(object):
             ET.SubElement(file_pusher, 'option',
                           {'name': 'cleanup',
                            'value': 'true'})
-            vts_spec_lists = self._vts_spec_parser.VtsSpecNames(
-                self._hal_name, self._hal_version)
-            package, _ = self._hal_package_name.split('@')
-            for vts_spec in vts_spec_lists:
-                push_spec = VTS_SPEC_PUSH_TEMPLATE.format(
-                    hal_path=self._hal_name.replace('.', '/'),
-                    hal_version=self._hal_version,
-                    package_path=package.replace('.', '/'),
-                    vts_file=vts_spec)
-                ET.SubElement(file_pusher, 'option',
-                              {'name': 'push',
-                               'value': push_spec})
             for imported_package in imported_package_lists:
                 if imported_package.startswith(HAL_PACKAGE_PREFIX):
+                    imported_package_str, imported_package_version = imported_package.split(
+                        '@')
+                    imported_package_name = imported_package_str[len(
+                        HAL_PACKAGE_PREFIX):]
+                    imported_vts_spec_lists = self._vts_spec_parser.VtsSpecNames(
+                        imported_package_name, imported_package_version)
+                    for vts_spec in imported_vts_spec_lists:
+                        push_spec = VTS_SPEC_PUSH_TEMPLATE.format(
+                            hal_path=imported_package_name.replace('.', '/'),
+                            hal_version=imported_package_version,
+                            package_path=imported_package_str.replace('.',
+                                                                      '/'),
+                            vts_file=vts_spec)
+                        ET.SubElement(file_pusher, 'option',
+                                      {'name': 'push',
+                                       'value': push_spec})
+
                     dirver_package_name = imported_package + '-vts.driver.so'
                     push_driver = VTS_LIB_PUSH_TEMPLATE_32.format(
                         lib_name=dirver_package_name)
@@ -373,6 +377,15 @@ class TestCaseCreator(object):
                     'name': 'binary-test-type',
                     'value': 'hal_hidl_gtest'
                 })
+                if self._stop_runtime:
+                    ET.SubElement(test, 'option', {
+                        'name': 'binary-test-disable-framework',
+                        'value': 'true'
+                    })
+                    ET.SubElement(test, 'option', {
+                        'name': 'binary-test-stop-native-servers',
+                        'value': 'true'
+                    })
         else:
             test_script = TEST_SCRIPT_TEMPLATE.format(
                 hal_path=self.GetHalPath(),
@@ -387,11 +400,6 @@ class TestCaseCreator(object):
                           {'name': 'enable-profiling',
                            'value': 'true'})
 
-        if self._stop_runtime:
-            ET.SubElement(test, 'option', {
-                'name': 'binary-test-disable-framework',
-                'value': 'true'
-            })
         ET.SubElement(test, 'option', {
             'name': 'precondition-lshal',
             'value': self._hal_package_name
@@ -409,12 +417,13 @@ class TestCaseCreator(object):
         Regurns:
           A pretty-printed XML string for the Element.
         """
-        doc = minidom.Document()
-        declaration = doc.toxml()
-        rough_string = ET.tostring(elem, 'utf-8')
-        reparsed = minidom.parseString(rough_string)
-        return unescape(
-            reparsed.toprettyxml(indent="    ")[len(declaration) + 1:])
+        if elem:
+            doc = minidom.Document()
+            declaration = doc.toxml()
+            rough_string = ET.tostring(elem, 'utf-8')
+            reparsed = minidom.parseString(rough_string)
+            return unescape(
+                reparsed.toprettyxml(indent="    ")[len(declaration) + 1:])
 
 
 LICENSE_STATEMENT_POUND = """#
