@@ -44,7 +44,7 @@ class TvInputHidlTest(base_test.BaseTestClass):
                                  target_version=1.0,
                                  target_package="android.hardware.tv.input",
                                  target_component_name="ITvInput",
-                                 bits=64 if self.dut.is64Bit else 32)
+                                 bits=int(self.abi_bitness))
 
         self.dut.shell.InvokeTerminal("one")
 
