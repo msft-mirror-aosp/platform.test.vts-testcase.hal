@@ -49,7 +49,7 @@ class SensorsHidlTest(base_test.BaseTestClass):
             target_package="android.hardware.sensors",
             target_component_name="ISensors",
             hw_binder_service_name=None,
-            bits=64 if self.dut.is64Bit else 32)
+            bits=int(self.abi_bitness))
 
     def tearDownClass(self):
         """ If profiling is enabled for the test, collect the profiling data
