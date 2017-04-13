@@ -53,7 +53,7 @@ class NfcHidlBasicTest(base_test.BaseTestClass):
             target_version=1.0,
             target_package="android.hardware.nfc",
             target_component_name="INfc",
-            bits=64 if self.dut.is64Bit else 32)
+            bits=int(self.abi_bitness))
 
         if self.coverage.enabled:
             self.coverage.LoadArtifacts()
