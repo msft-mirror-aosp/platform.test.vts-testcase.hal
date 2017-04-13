@@ -44,7 +44,7 @@ class VtsHalRadioV1_0HostTest(base_test.BaseTestClass):
             target_package="android.hardware.radio",
             target_component_name="IRadio",
             hw_binder_service_name="Radio",
-            bits=64 if self.dut.is64Bit else 32)
+            bits=int(self.abi_bitness))
 
         self.radio = self.dut.hal.radio  # shortcut
         self.radio_types = self.dut.hal.radio.GetHidlTypeInterface("types")

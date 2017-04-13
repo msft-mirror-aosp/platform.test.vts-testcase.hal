@@ -53,7 +53,7 @@ class TvCecHidlTest(base_test.BaseTestClass):
             target_version=1.0,
             target_package="android.hardware.tv.cec",
             target_component_name="IHdmiCec",
-            bits=64 if self.dut.is64Bit else 32)
+            bits=int(self.abi_bitness))
 
         time.sleep(1) # Wait for hal to be ready
 

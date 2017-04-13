@@ -44,7 +44,7 @@ class VibratorHidlTest(base_test.BaseTestClass):
             target_version=1.0,
             target_package="android.hardware.vibrator",
             target_component_name="IVibrator",
-            bits=64 if self.dut.is64Bit else 32)
+            bits=int(self.abi_bitness))
 
     def tearDownClass(self):
         """ If profiling is enabled for the test, collect the profiling data

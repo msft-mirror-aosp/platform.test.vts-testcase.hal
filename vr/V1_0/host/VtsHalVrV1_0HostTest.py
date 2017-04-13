@@ -45,7 +45,7 @@ class VrHidlTest(base_test.BaseTestClass):
             target_package="android.hardware.vr",
             target_component_name="IVr",
             hw_binder_service_name=None,
-            bits=64 if self.dut.is64Bit else 32)
+            bits=int(self.abi_bitness))
 
     def tearDownClass(self):
         """ If profiling is enabled for the test, collect the profiling data
