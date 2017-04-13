@@ -53,7 +53,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
             target_version=2.0,
             target_package="android.hardware.automotive.vehicle",
             target_component_name="IVehicle",
-            bits=64 if self.dut.is64Bit else 32)
+            bits=int(self.abi_bitness))
 
         self.vehicle = self.dut.hal.vehicle  # shortcut
         self.vehicle.SetCallerUid(system_uid)
