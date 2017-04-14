@@ -24,8 +24,6 @@
         <option name="push" value="DATA/lib64/android.hardware.camera.device@1.0-vts.profiler.so->/data/local/tmp/64/android.hardware.camera.device@1.0-vts.profiler.so"/>
         <option name="push" value="DATA/lib/android.hardware.camera.device@3.2-vts.profiler.so->/data/local/tmp/32/android.hardware.camera.device@3.2-vts.profiler.so"/>
         <option name="push" value="DATA/lib64/android.hardware.camera.device@3.2-vts.profiler.so->/data/local/tmp/64/android.hardware.camera.device@3.2-vts.profiler.so"/>
-        <option name="push" value="DATA/lib/android.hardware.graphics.allocator@2.0-vts.profiler.so->/data/local/tmp/32/android.hardware.graphics.allocator@2.0-vts.profiler.so"/>
-        <option name="push" value="DATA/lib64/android.hardware.graphics.allocator@2.0-vts.profiler.so->/data/local/tmp/64/android.hardware.graphics.allocator@2.0-vts.profiler.so"/>
         <option name="push" value="DATA/lib/android.hardware.graphics.common@1.0-vts.profiler.so->/data/local/tmp/32/android.hardware.graphics.common@1.0-vts.profiler.so"/>
         <option name="push" value="DATA/lib64/android.hardware.graphics.common@1.0-vts.profiler.so->/data/local/tmp/64/android.hardware.graphics.common@1.0-vts.profiler.so"/>
         <option name="push" value="DATA/lib/android.hardware.camera.provider@2.4-vts.profiler.so->/data/local/tmp/32/android.hardware.camera.provider@2.4-vts.profiler.so"/>
@@ -34,8 +32,10 @@
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalCameraProviderV2_4TargetProfiling"/>
-        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalCameraProviderV2_4TargetTest/VtsHalCameraProviderV2_4TargetTest" />
+        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalCameraProviderV2_4TargetTest/VtsHalCameraProviderV2_4TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
+        <option name="binary-test-disable-framework" value="true"/>
+        <option name="binary-test-stop-native-servers" value="true"/>
         <option name="enable-profiling" value="true"/>
         <option name="precondition-lshal" value="android.hardware.camera.provider@2.4"/>
         <option name="skip-on-64bit-abi" value="true"/>
