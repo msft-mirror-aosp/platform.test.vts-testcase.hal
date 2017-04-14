@@ -18,8 +18,6 @@
         <option name="abort-on-push-failure" value="false"/>
         <option name="push-group" value="HalHidlTargetProfilingTest.push"/>
         <option name="cleanup" value="true"/>
-        <option name="push" value="DATA/lib/android.hardware.graphics.allocator@2.0-vts.profiler.so->/data/local/tmp/32/android.hardware.graphics.allocator@2.0-vts.profiler.so"/>
-        <option name="push" value="DATA/lib64/android.hardware.graphics.allocator@2.0-vts.profiler.so->/data/local/tmp/64/android.hardware.graphics.allocator@2.0-vts.profiler.so"/>
         <option name="push" value="DATA/lib/android.hardware.graphics.common@1.0-vts.profiler.so->/data/local/tmp/32/android.hardware.graphics.common@1.0-vts.profiler.so"/>
         <option name="push" value="DATA/lib64/android.hardware.graphics.common@1.0-vts.profiler.so->/data/local/tmp/64/android.hardware.graphics.common@1.0-vts.profiler.so"/>
         <option name="push" value="DATA/lib/android.hardware.graphics.mapper@2.0-vts.profiler.so->/data/local/tmp/32/android.hardware.graphics.mapper@2.0-vts.profiler.so"/>
@@ -28,9 +26,11 @@
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalGraphicsMapperV2_0TargetProfiling"/>
-        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalGraphicsMapperV2_0TargetTest/VtsHalGraphicsMapperV2_0TargetTest" />
-        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalGraphicsMapperV2_0TargetTest/VtsHalGraphicsMapperV2_0TargetTest" />
+        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalGraphicsMapperV2_0TargetTest/VtsHalGraphicsMapperV2_0TargetTest"/>
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalGraphicsMapperV2_0TargetTest/VtsHalGraphicsMapperV2_0TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
+        <option name="binary-test-disable-framework" value="true"/>
+        <option name="binary-test-stop-native-servers" value="true"/>
         <option name="enable-profiling" value="true"/>
         <option name="precondition-lshal" value="android.hardware.graphics.mapper@2.0"/>
         <option name="test-timeout" value="1m"/>
