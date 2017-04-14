@@ -18,10 +18,12 @@
         <option name="abort-on-push-failure" value="false"/>
         <option name="push-group" value="HalHidlHostProfilingTest.push"/>
         <option name="cleanup" value="true"/>
+        <option name="push" value="spec/hardware/interfaces/audio/common/2.0/vts/types.vts->/data/local/tmp/spec/android/hardware/audio/common/2.0/types.vts"/>
+        <option name="push" value="DATA/lib/android.hardware.audio.common@2.0-vts.driver.so->/data/local/tmp/32/android.hardware.audio.common@2.0-vts.driver.so"/>
+        <option name="push" value="DATA/lib64/android.hardware.audio.common@2.0-vts.driver.so->/data/local/tmp/64/android.hardware.audio.common@2.0-vts.driver.so"/>
         <option name="push" value="spec/hardware/interfaces/tv/input/1.0/vts/TvInput.vts->/data/local/tmp/spec/android/hardware/tv/input/1.0/TvInput.vts"/>
         <option name="push" value="spec/hardware/interfaces/tv/input/1.0/vts/TvInputCallback.vts->/data/local/tmp/spec/android/hardware/tv/input/1.0/TvInputCallback.vts"/>
         <option name="push" value="spec/hardware/interfaces/tv/input/1.0/vts/types.vts->/data/local/tmp/spec/android/hardware/tv/input/1.0/types.vts"/>
-        <option name="push" value="DATA/lib/android.hardware.audio.common@2.0-vts.driver.so->/data/local/tmp/32/android.hardware.audio.common@2.0-vts.driver.so"/>
         <option name="push" value="DATA/lib/android.hardware.tv.input@1.0-vts.driver.so->/data/local/tmp/32/android.hardware.tv.input@1.0-vts.driver.so"/>
         <option name="push" value="DATA/lib/android.hardware.audio.common@2.0-vts.profiler.so->/data/local/tmp/32/android.hardware.audio.common@2.0-vts.profiler.so"/>
         <option name="push" value="DATA/lib/android.hardware.tv.input@1.0-vts.profiler.so->/data/local/tmp/32/android.hardware.tv.input@1.0-vts.profiler.so"/>
