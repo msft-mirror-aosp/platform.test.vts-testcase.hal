@@ -22,6 +22,7 @@ from vts.runners.host import asserts
 from vts.runners.host import base_test
 from vts.runners.host import test_runner
 from vts.utils.python.controllers import android_device
+from vts.utils.python.precondition import precondition_utils
 
 PASSTHROUGH_MODE_KEY = "passthrough_mode"
 
@@ -37,6 +38,11 @@ class NfcHidlBasicTest(base_test.BaseTestClass):
 
         self.dut.shell.InvokeTerminal("one")
         self.dut.shell.one.Execute("setenforce 0")  # SELinux permissive mode
+        if not precondition_utils.CanRunHidlHalTest(
+            self, self.dut, self.dut.shell.one):
+            self._skip_all_testcases = True
+            return
+
         self.dut.shell.one.Execute("svc nfc disable")  # Turn off
         time.sleep(5)
 
@@ -63,7 +69,8 @@ class NfcHidlBasicTest(base_test.BaseTestClass):
         """Turns off the framework-layer NFC service."""
         # Ideally, we would want to store the nfc service's state before
         # turning that off in setUpClass and restore the original state.
-        self.dut.shell.one.Execute("svc nfc disable")  # make sure it's off
+        if not self._skip_all_testcases:
+            self.dut.shell.one.Execute("svc nfc disable")  # make sure it's off
 
     def testBase(self):
         """A simple test case which just calls each registered function."""
