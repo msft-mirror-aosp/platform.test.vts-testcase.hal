@@ -23,6 +23,7 @@ from vts.runners.host import asserts
 from vts.runners.host import base_test
 from vts.runners.host import test_runner
 from vts.utils.python.controllers import android_device
+from vts.utils.python.precondition import precondition_utils
 
 
 class ContextHubCallback:
@@ -72,6 +73,11 @@ class ContexthubHidlTest(base_test.BaseTestClass):
 
         self.dut.shell.InvokeTerminal("one")
         self.dut.shell.one.Execute("setenforce 0")  # SELinux permissive mode
+        if not precondition_utils.CanRunHidlHalTest(
+            self, self.dut, self.dut.shell.one):
+            self._skip_all_testcases = True
+            return
+
         if self.profiling.enabled:
             self.profiling.EnableVTSProfiling(self.dut.shell.one)
 
@@ -93,7 +99,7 @@ class ContexthubHidlTest(base_test.BaseTestClass):
     def tearDownClass(self):
         # Restart the Android runtime
         #self.dut.shell.one.Execute("start")
-        if self.profiling.enabled:
+        if not self._skip_all_testcases and self.profiling.enabled:
             self.profiling.ProcessAndUploadTraceData()
 
     def tearDown(self):

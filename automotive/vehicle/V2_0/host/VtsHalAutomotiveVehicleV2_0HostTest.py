@@ -24,6 +24,7 @@ from vts.runners.host import const
 from vts.runners.host import keys
 from vts.runners.host import test_runner
 from vts.utils.python.controllers import android_device
+from vts.utils.python.precondition import precondition_utils
 
 
 class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
@@ -35,6 +36,10 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
 
         self.dut.shell.InvokeTerminal("one")
         self.dut.shell.one.Execute("setenforce 0")  # SELinux permissive mode
+        if not precondition_utils.CanRunHidlHalTest(
+            self, self.dut, self.dut.shell.one):
+            self._skip_all_testcases = True
+            return
 
         results = self.dut.shell.one.Execute("id -u system")
         system_uid = results[const.STDOUT][0].strip()
@@ -68,6 +73,9 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
         If profiling is enabled for the test, collect the profiling data
         and disable profiling after the test is done.
         """
+        if self._skip_all_testcases:
+            return
+
         if self.profiling.enabled:
             self.profiling.ProcessTraceDataForTestCase(self.dut)
             self.profiling.ProcessAndUploadTraceData()

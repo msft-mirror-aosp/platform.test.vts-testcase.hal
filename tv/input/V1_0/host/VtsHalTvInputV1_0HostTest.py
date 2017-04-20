@@ -23,6 +23,7 @@ from vts.runners.host import const
 from vts.runners.host import keys
 from vts.runners.host import test_runner
 from vts.utils.python.controllers import android_device
+from vts.utils.python.precondition import precondition_utils
 
 
 class TvInputHidlTest(base_test.BaseTestClass):
@@ -34,6 +35,10 @@ class TvInputHidlTest(base_test.BaseTestClass):
 
         self.dut.shell.InvokeTerminal("one")
         self.dut.shell.one.Execute("setenforce 0")  # SELinux permissive mode
+        if not precondition_utils.CanRunHidlHalTest(
+            self, self.dut, self.dut.shell.one):
+            self._skip_all_testcases = True
+            return
 
         if self.coverage.enabled:
             self.coverage.LoadArtifacts()
@@ -63,6 +68,9 @@ class TvInputHidlTest(base_test.BaseTestClass):
 
     def tearDownClass(self):
         """To be executed when all test cases are finished."""
+        if self._skip_all_testcases:
+            return
+
         if self.coverage.enabled:
             self.coverage.SetCoverageData(dut=self.dut, isGlobal=True)
 
