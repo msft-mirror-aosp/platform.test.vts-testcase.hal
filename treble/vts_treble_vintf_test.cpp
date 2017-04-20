@@ -115,18 +115,18 @@ TEST_F(VtsTrebleVintfTest, HalEntriesAreComplete) {
 // Tests that no HAL outside of the allowed set is specified as passthrough in
 // VINTF.
 TEST_F(VtsTrebleVintfTest, HalsAreBinderized) {
-  auto hal_names = vendor_manifest_->getHalNames();
-  for (const auto &hal_name : hal_names) {
-    cout << "Verifying transport method of: " << hal_name << endl;
-    auto versions = vendor_manifest_->getSupportedVersions(hal_name);
-    Version version = *versions.begin();
-    // TODO(b/36570950): Use explicitly stated interface and instance name from
-    // VINTF.
-    string iface = "default";
-    string instance = "default";
+  // Verifies that HAL is binderized unless it's allowed to be passthrough.
+  HalVerifyFn is_binderized = [this](const FQName &fq_name,
+                                     const string &instance_name) {
+    cout << "Verifying transport method of: " << fq_name.string() << endl;
+    string hal_name = fq_name.package();
+    Version version{fq_name.getPackageMajorVersion(),
+                    fq_name.getPackageMinorVersion()};
+    string iface_name = fq_name.name();
 
-    Transport transport =
-        vendor_manifest_->getTransport(hal_name, version, iface, instance);
+    Transport transport = vendor_manifest_->getTransport(
+        hal_name, version, iface_name, instance_name);
+
     EXPECT_NE(transport, Transport::EMPTY)
         << hal_name << " has no transport specified in VINTF.";
 
@@ -134,7 +134,9 @@ TEST_F(VtsTrebleVintfTest, HalsAreBinderized) {
       EXPECT_NE(kPassthroughHals.find(hal_name), kPassthroughHals.end())
           << hal_name << " can't be passthrough under Treble rules.";
     }
-  }
+  };
+
+  ForEachHalInstance(is_binderized);
 }
 
 // Tests that all HALs specified in the VINTF are available through service
