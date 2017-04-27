@@ -28,6 +28,30 @@ import VtsHalMediaOmxV1_0TestCase as omx_test_case
 class VtsHalMediaOmxV1_0Host(hal_hidl_gtest.HidlHalGTest):
     """Host test class to run the Media_Omx HAL."""
 
+    AUDIO_ENC_TEST = "AudioEncHidlTest"
+    AUDIO_DEC_TEST = "AudioDecHidlTest"
+    VIDEO_ENC_TEST = "VideoEncHidlTest"
+    VIDEO_DEC_TEST = "VideoDecHidlTest"
+
+    # Components and Roles which will be skipped.
+    blacklist_components = ["OMX.google.h264.encoder",
+                            "OMX.google.h264.decoder",
+                            "OMX.qcom.video.decoder.avc",
+                            "OMX.google.amrnb.encoder",
+                            "OMX.google.flac.encoder",
+                            "OMX.google.amrwb.encoder",
+                            "OMX.google.aac.encoder",
+                            "OMX.google.mp3.decoder",
+                            "OMX.google.amrnb.decoder"]
+    blacklist_roles = ["video_encoder.avc",
+                       "video_decoder.avc",
+                       "audio_encoder.amrnb",
+                       "audio_encoder.flac",
+                       "audio_encoder.amrwb",
+                       "audio_encoder.aac",
+                       "audio_decoder.mp3",
+                       "audio_decoder.amrnb"]
+
     def CreateTestCases(self):
         """Get all registered test components and create test case objects."""
         # Init the IOmx hal.
@@ -64,21 +88,31 @@ class VtsHalMediaOmxV1_0Host(hal_hidl_gtest.HidlHalGTest):
         Returns:
             A list of VtsHalMediaOmxV1_0TestCase objects
         """
-        gtest_cases = super(VtsHalMediaOmxV1_0Host, self).CreateTestCase(
-            path, tag)
+        gtest_cases = super(VtsHalMediaOmxV1_0Host, self).CreateTestCase(path,
+                                                                         tag)
         test_cases = []
 
         for gtest_case in gtest_cases:
             test_suite = gtest_case.GetFullName()
             for component, roles in self.components.iteritems():
                 for role in roles:
+                    if component in self.blacklist_components and role in self.blacklist_roles:
+                        continue
+                    if self.AUDIO_ENC_TEST in test_suite and not "audio_encoder" in role:
+                        continue
+                    if self.AUDIO_DEC_TEST in test_suite and not "audio_decoder" in role:
+                        continue
+                    if self.VIDEO_ENC_TEST in test_suite and not "video_encoder" in role:
+                        continue
+                    if self.VIDEO_DEC_TEST in test_suite and not "video_decoder" in role:
+                        continue
                     test_name = component + '_' + role
                     # TODO (zhuoyao): get instance name using lshal.
                     instance_name = "default"
                     test_case = omx_test_case.VtsHalMediaOmxV1_0TestCase(
                         component, role, instance_name, test_suite, test_name,
                         path)
-                test_cases.append(test_case)
+                    test_cases.append(test_case)
         logging.info("num of test_testcases: %s", len(test_cases))
         return test_cases
 
