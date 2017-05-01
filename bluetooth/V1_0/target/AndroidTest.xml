@@ -28,6 +28,6 @@
         <option name="binary-test-stop-native-servers" value="true"/>
         <option name="precondition-lshal" value="android.hardware.bluetooth@1.0"/>
         <option name="native-server-process-name" value="com.android.bluetooth"/>
-        <option name="test-timeout" value="1m"/>
+        <option name="test-timeout" value="3m"/>
     </test>
 </configuration>
