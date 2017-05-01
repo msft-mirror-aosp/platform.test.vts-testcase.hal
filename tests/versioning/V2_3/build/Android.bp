@@ -67,14 +67,12 @@ cc_library_shared {
         "android.hardware.tests.versioning@1.0-vts.driver",
         "android.hardware.tests.versioning@2.2",
         "android.hardware.tests.versioning@2.2-vts.driver",
-        "android.hidl.base@1.0",
     ],
     export_shared_lib_headers: [
         "android.hardware.tests.versioning@1.0",
         "android.hardware.tests.versioning@1.0-vts.driver",
         "android.hardware.tests.versioning@2.2",
         "android.hardware.tests.versioning@2.2-vts.driver",
-        "android.hidl.base@1.0",
     ],
 }
 
@@ -125,7 +123,6 @@ cc_library_shared {
         "android.hardware.tests.versioning@1.0-vts.profiler",
         "android.hardware.tests.versioning@2.2",
         "android.hardware.tests.versioning@2.2-vts.profiler",
-        "android.hidl.base@1.0",
     ],
 }
 
