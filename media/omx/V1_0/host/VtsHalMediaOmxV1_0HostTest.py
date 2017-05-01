@@ -34,23 +34,29 @@ class VtsHalMediaOmxV1_0Host(hal_hidl_gtest.HidlHalGTest):
     VIDEO_DEC_TEST = "VideoDecHidlTest"
 
     # Components and Roles which will be skipped.
-    blacklist_components = ["OMX.google.h264.encoder",
-                            "OMX.google.h264.decoder",
-                            "OMX.qcom.video.decoder.avc",
-                            "OMX.google.amrnb.encoder",
-                            "OMX.google.flac.encoder",
-                            "OMX.google.amrwb.encoder",
-                            "OMX.google.aac.encoder",
-                            "OMX.google.mp3.decoder",
-                            "OMX.google.amrnb.decoder"]
+    blacklist_components = ["OMX.qcom.video.decoder.avc",
+                            "OMX.qcom.video.encoder.avc.secure",
+                            "OMX.qcom.video.decoder.avc.secure",
+                            "OMX.qcom.video.decoder.mpeg4.secure",
+                            "OMX.qcom.video.decoder.mpeg4",
+                            "OMX.qcom.video.decoder.h263",
+                            "OMX.qcom.video.decoder.hevc",
+                            "OMX.qcom.video.decoder.mpeg2.secure",
+                            "OMX.qcom.video.decoder.mpeg2",
+                            "OMX.qcom.video.decoder.vp8",
+                            "OMX.qcom.video.decoder.vp9",
+                            "OMX.qcom.video.decoder.hevc.secure",
+                            "OMX.qcom.video.decoder.vp9.secure",
+                            "OMX.qcom.video.decoder.vp8.secure"]
     blacklist_roles = ["video_encoder.avc",
                        "video_decoder.avc",
-                       "audio_encoder.amrnb",
-                       "audio_encoder.flac",
-                       "audio_encoder.amrwb",
-                       "audio_encoder.aac",
-                       "audio_decoder.mp3",
-                       "audio_decoder.amrnb"]
+                       "video_encoder.avc",
+                       "video_decoder.mpeg4",
+                       "video_decoder.vp8",
+                       "video_decoder.h263",
+                       "video_decoder.hevc",
+                       "video_decoder.mpeg2",
+                       "video_decoder.vp9"]
 
     def CreateTestCases(self):
         """Get all registered test components and create test case objects."""
