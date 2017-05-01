@@ -25,7 +25,6 @@ cc_test {
         "libhidltransport",
         "libhidl-gen-utils",
         "libvintf",
-        "android.hidl.manager@1.0",
     ],
 }
 
