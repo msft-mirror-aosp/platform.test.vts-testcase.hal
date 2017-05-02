@@ -74,12 +74,10 @@ cc_library_shared {
         "android.hardware.tests.bar@1.0",
         "android.hardware.tests.foo@1.0",
         "android.hardware.tests.foo@1.0-vts.driver",
-        "android.hidl.base@1.0",
     ],
     export_shared_lib_headers: [
         "android.hardware.tests.foo@1.0",
         "android.hardware.tests.foo@1.0-vts.driver",
-        "android.hidl.base@1.0",
     ],
 }
 
@@ -127,13 +125,13 @@ cc_library_shared {
         "libbase",
         "libhidlbase",
         "libhidltransport",
+        "libvts_common",
         "libvts_profiling",
         "libvts_multidevice_proto",
         "libprotobuf-cpp-full",
         "android.hardware.tests.bar@1.0",
         "android.hardware.tests.foo@1.0",
         "android.hardware.tests.foo@1.0-vts.profiler",
-        "android.hidl.base@1.0",
     ],
 }
 
