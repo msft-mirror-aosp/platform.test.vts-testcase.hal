@@ -62,12 +62,10 @@ cc_library_shared {
         "android.hardware.automotive.vehicle@2.1",
         "android.hardware.automotive.vehicle@2.0",
         "android.hardware.automotive.vehicle@2.0-vts.driver",
-        "android.hidl.base@1.0",
     ],
     export_shared_lib_headers: [
         "android.hardware.automotive.vehicle@2.0",
         "android.hardware.automotive.vehicle@2.0-vts.driver",
-        "android.hidl.base@1.0",
     ],
 }
 
@@ -114,7 +112,6 @@ cc_library_shared {
         "android.hardware.automotive.vehicle@2.1",
         "android.hardware.automotive.vehicle@2.0",
         "android.hardware.automotive.vehicle@2.0-vts.profiler",
-        "android.hidl.base@1.0",
     ],
 }
 
