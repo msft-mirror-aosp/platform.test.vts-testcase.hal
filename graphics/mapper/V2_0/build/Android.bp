@@ -62,12 +62,10 @@ cc_library_shared {
         "android.hardware.graphics.mapper@2.0",
         "android.hardware.graphics.common@1.0",
         "android.hardware.graphics.common@1.0-vts.driver",
-        "android.hidl.base@1.0",
     ],
     export_shared_lib_headers: [
         "android.hardware.graphics.common@1.0",
         "android.hardware.graphics.common@1.0-vts.driver",
-        "android.hidl.base@1.0",
     ],
 }
 
@@ -113,7 +111,6 @@ cc_library_shared {
         "android.hardware.graphics.mapper@2.0",
         "android.hardware.graphics.common@1.0",
         "android.hardware.graphics.common@1.0-vts.profiler",
-        "android.hidl.base@1.0",
     ],
 }
 
