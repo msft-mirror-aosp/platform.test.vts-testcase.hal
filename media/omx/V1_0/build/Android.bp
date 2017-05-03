@@ -81,7 +81,6 @@ cc_library_shared {
         "android.hardware.graphics.common@1.0-vts.driver",
         "android.hardware.media@1.0",
         "android.hardware.media@1.0-vts.driver",
-        "android.hidl.base@1.0",
     ],
     export_shared_lib_headers: [
         "android.hardware.graphics.bufferqueue@1.0",
@@ -90,7 +89,6 @@ cc_library_shared {
         "android.hardware.graphics.common@1.0-vts.driver",
         "android.hardware.media@1.0",
         "android.hardware.media@1.0-vts.driver",
-        "android.hidl.base@1.0",
     ],
 }
 
@@ -151,7 +149,6 @@ cc_library_shared {
         "android.hardware.graphics.common@1.0-vts.profiler",
         "android.hardware.media@1.0",
         "android.hardware.media@1.0-vts.profiler",
-        "android.hidl.base@1.0",
     ],
 }
 

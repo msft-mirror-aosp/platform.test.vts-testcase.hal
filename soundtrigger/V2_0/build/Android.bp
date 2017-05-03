@@ -65,12 +65,10 @@ cc_library_shared {
         "android.hardware.soundtrigger@2.0",
         "android.hardware.audio.common@2.0",
         "android.hardware.audio.common@2.0-vts.driver",
-        "android.hidl.base@1.0",
     ],
     export_shared_lib_headers: [
         "android.hardware.audio.common@2.0",
         "android.hardware.audio.common@2.0-vts.driver",
-        "android.hidl.base@1.0",
     ],
 }
 
@@ -119,7 +117,6 @@ cc_library_shared {
         "android.hardware.soundtrigger@2.0",
         "android.hardware.audio.common@2.0",
         "android.hardware.audio.common@2.0-vts.profiler",
-        "android.hidl.base@1.0",
     ],
 }
 
