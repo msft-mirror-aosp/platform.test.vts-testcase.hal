@@ -70,6 +70,19 @@ cc_library_shared {
         "android.hardware.usb@1.0",
         "android.hardware.usb@1.0-vts.driver",
     ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+
+        // These warnings are in code generated with vtsc
+        // b/31362043
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-unused-private-field",
+        "-Wno-duplicate-decl-specifier",
+        "-Wno-uninitialized",
+        "-Wno-implicitly-unsigned-literal",
+    ],
 }
 
 // Build VTS profiler.
@@ -117,6 +130,19 @@ cc_library_shared {
         "android.hardware.usb@1.1",
         "android.hardware.usb@1.0",
         "android.hardware.usb@1.0-vts.profiler",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+
+        // These warnings are in code generated with vtsc
+        // b/31362043
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-unused-private-field",
+        "-Wno-duplicate-decl-specifier",
+        "-Wno-uninitialized",
+        "-Wno-implicitly-unsigned-literal",
     ],
 }
 
