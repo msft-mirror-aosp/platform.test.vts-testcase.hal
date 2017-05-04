@@ -59,6 +59,19 @@ cc_library_shared {
     export_shared_lib_headers: [
         {IMPORTED_DRIVER_PACKAGES}
     ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+
+        // These warnings are in code generated with vtsc
+        // b/31362043
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-unused-private-field",
+        "-Wno-duplicate-decl-specifier",
+        "-Wno-uninitialized",
+        "-Wno-implicitly-unsigned-literal",
+    ],
 }
 
 // Build VTS profiler.
@@ -101,6 +114,19 @@ cc_library_shared {
         "libprotobuf-cpp-full",
         "android.hardware.{HAL_NAME}@{HAL_VERSION}",
         {IMPORTED_PROFILER_PACKAGES}
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+
+        // These warnings are in code generated with vtsc
+        // b/31362043
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-unused-private-field",
+        "-Wno-duplicate-decl-specifier",
+        "-Wno-uninitialized",
+        "-Wno-implicitly-unsigned-literal",
     ],
 }
 
