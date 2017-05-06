@@ -6,6 +6,7 @@ subdirs = [
     "baz/V1_0",
     "expression/V1_0",
     "foo/V1_0",
+    "hash/V1_0",
     "inheritance/V1_0",
     "libhwbinder/V1_0",
     "memory/V1_0",
