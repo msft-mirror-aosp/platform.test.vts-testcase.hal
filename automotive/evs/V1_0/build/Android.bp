@@ -69,8 +69,10 @@ cc_library_shared {
         "libcamera_metadata",
         "libprotobuf-cpp-full",
         "android.hardware.automotive.evs@1.0",
+        
     ],
     export_shared_lib_headers: [
+        
     ],
 }
 
@@ -121,6 +123,7 @@ cc_library_shared {
         "libvts_multidevice_proto",
         "libprotobuf-cpp-full",
         "android.hardware.automotive.evs@1.0",
+        
     ],
 }
 

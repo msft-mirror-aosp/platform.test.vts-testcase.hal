@@ -63,8 +63,10 @@ cc_library_shared {
         "libcamera_metadata",
         "libprotobuf-cpp-full",
         "android.hardware.biometrics.fingerprint@2.1",
+        
     ],
     export_shared_lib_headers: [
+        
     ],
 }
 
@@ -111,6 +113,7 @@ cc_library_shared {
         "libvts_multidevice_proto",
         "libprotobuf-cpp-full",
         "android.hardware.biometrics.fingerprint@2.1",
+        
     ],
 }
 
