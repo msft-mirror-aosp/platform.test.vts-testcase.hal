@@ -11,6 +11,7 @@ hal2vts {
         "android/hardware/radio/1.1/Radio.vts",
         "android/hardware/radio/1.1/RadioIndication.vts",
         "android/hardware/radio/1.1/RadioResponse.vts",
+        "android/hardware/radio/1.1/types.vts",
     ],
 }
 
@@ -26,6 +27,7 @@ genrule {
         "android/hardware/radio/1.1/Radio.vts.cpp",
         "android/hardware/radio/1.1/RadioIndication.vts.cpp",
         "android/hardware/radio/1.1/RadioResponse.vts.cpp",
+        "android/hardware/radio/1.1/types.vts.cpp",
     ],
 }
 
@@ -40,6 +42,7 @@ genrule {
         "android/hardware/radio/1.1/Radio.vts.h",
         "android/hardware/radio/1.1/RadioIndication.vts.h",
         "android/hardware/radio/1.1/RadioResponse.vts.h",
+        "android/hardware/radio/1.1/types.vts.h",
     ],
 }
 
@@ -97,6 +100,7 @@ genrule {
         "android/hardware/radio/1.1/Radio.vts.cpp",
         "android/hardware/radio/1.1/RadioIndication.vts.cpp",
         "android/hardware/radio/1.1/RadioResponse.vts.cpp",
+        "android/hardware/radio/1.1/types.vts.cpp",
     ],
 }
 
@@ -111,6 +115,7 @@ genrule {
         "android/hardware/radio/1.1/Radio.vts.h",
         "android/hardware/radio/1.1/RadioIndication.vts.h",
         "android/hardware/radio/1.1/RadioResponse.vts.h",
+        "android/hardware/radio/1.1/types.vts.h",
     ],
 }
 
