@@ -111,6 +111,8 @@ cc_library_shared {
     export_generated_headers: ["android.hardware.media@1.0-vts.profiler_genc++_headers"],
     shared_libs: [
         "libbase",
+        "libcutils",
+        "libfmq",
         "libhidlbase",
         "libhidltransport",
         "libvts_common",
