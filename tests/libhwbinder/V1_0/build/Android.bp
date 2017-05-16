@@ -9,6 +9,7 @@ hal2vts {
     ],
     out: [
         "android/hardware/tests/libhwbinder/1.0/Benchmark.vts",
+        "android/hardware/tests/libhwbinder/1.0/ScheduleTest.vts",
     ],
 }
 
@@ -22,6 +23,7 @@ genrule {
     ],
     out: [
         "android/hardware/tests/libhwbinder/1.0/Benchmark.vts.cpp",
+        "android/hardware/tests/libhwbinder/1.0/ScheduleTest.vts.cpp",
     ],
 }
 
@@ -34,6 +36,7 @@ genrule {
     ],
     out: [
         "android/hardware/tests/libhwbinder/1.0/Benchmark.vts.h",
+        "android/hardware/tests/libhwbinder/1.0/ScheduleTest.vts.h",
     ],
 }
 
@@ -87,6 +90,7 @@ genrule {
     ],
     out: [
         "android/hardware/tests/libhwbinder/1.0/Benchmark.vts.cpp",
+        "android/hardware/tests/libhwbinder/1.0/ScheduleTest.vts.cpp",
     ],
 }
 
@@ -99,6 +103,7 @@ genrule {
     ],
     out: [
         "android/hardware/tests/libhwbinder/1.0/Benchmark.vts.h",
+        "android/hardware/tests/libhwbinder/1.0/ScheduleTest.vts.h",
     ],
 }
 
