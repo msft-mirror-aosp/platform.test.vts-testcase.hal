@@ -27,10 +27,8 @@
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalRenderscriptV1_0TargetTest/VtsHalRenderscriptV1_0TargetTest"/>
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalRenderscriptV1_0TargetTest/VtsHalRenderscriptV1_0TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
-        <option name="binary-test-disable-framework" value="true"/>
-        <option name="binary-test-stop-native-servers" value="true"/>
         <option name="enable-profiling" value="true"/>
         <option name="precondition-lshal" value="android.hardware.renderscript@1.0"/>
-        <option name="test-timeout" value="1m"/>
+        <option name="test-timeout" value="2m"/>
     </test>
 </configuration>
