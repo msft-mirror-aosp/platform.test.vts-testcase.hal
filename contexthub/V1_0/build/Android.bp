@@ -63,10 +63,23 @@ cc_library_shared {
         "libcamera_metadata",
         "libprotobuf-cpp-full",
         "android.hardware.contexthub@1.0",
-        "android.hidl.base@1.0",
+        
     ],
     export_shared_lib_headers: [
-        "android.hidl.base@1.0",
+        
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+
+        // These warnings are in code generated with vtsc
+        // b/31362043
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-unused-private-field",
+        "-Wno-duplicate-decl-specifier",
+        "-Wno-uninitialized",
+        "-Wno-implicitly-unsigned-literal",
     ],
 }
 
@@ -113,7 +126,20 @@ cc_library_shared {
         "libvts_multidevice_proto",
         "libprotobuf-cpp-full",
         "android.hardware.contexthub@1.0",
-        "android.hidl.base@1.0",
+        
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+
+        // These warnings are in code generated with vtsc
+        // b/31362043
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-unused-private-field",
+        "-Wno-duplicate-decl-specifier",
+        "-Wno-uninitialized",
+        "-Wno-implicitly-unsigned-literal",
     ],
 }
 

@@ -59,12 +59,23 @@ cc_library_shared {
         "android.hardware.graphics.allocator@2.0",
         "android.hardware.graphics.mapper@2.0",
         "android.hardware.graphics.mapper@2.0-vts.driver",
-        "android.hidl.base@1.0",
     ],
     export_shared_lib_headers: [
         "android.hardware.graphics.mapper@2.0",
         "android.hardware.graphics.mapper@2.0-vts.driver",
-        "android.hidl.base@1.0",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+
+        // These warnings are in code generated with vtsc
+        // b/31362043
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-unused-private-field",
+        "-Wno-duplicate-decl-specifier",
+        "-Wno-uninitialized",
+        "-Wno-implicitly-unsigned-literal",
     ],
 }
 
@@ -109,7 +120,19 @@ cc_library_shared {
         "android.hardware.graphics.allocator@2.0",
         "android.hardware.graphics.mapper@2.0",
         "android.hardware.graphics.mapper@2.0-vts.profiler",
-        "android.hidl.base@1.0",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+
+        // These warnings are in code generated with vtsc
+        // b/31362043
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-unused-private-field",
+        "-Wno-duplicate-decl-specifier",
+        "-Wno-uninitialized",
+        "-Wno-implicitly-unsigned-literal",
     ],
 }
 
