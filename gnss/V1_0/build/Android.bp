@@ -132,7 +132,6 @@ cc_library_shared {
         "-Wno-unused-variable",
         "-Wno-unused-private-field",
         "-Wno-duplicate-decl-specifier",
-        "-Wno-uninitialized",
         "-Wno-implicitly-unsigned-literal",
     ],
 }
@@ -228,7 +227,6 @@ cc_library_shared {
         "-Wno-unused-variable",
         "-Wno-unused-private-field",
         "-Wno-duplicate-decl-specifier",
-        "-Wno-uninitialized",
         "-Wno-implicitly-unsigned-literal",
     ],
 }
