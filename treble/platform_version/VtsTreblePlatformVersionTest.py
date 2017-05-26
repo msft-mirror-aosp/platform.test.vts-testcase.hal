@@ -63,5 +63,11 @@ class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
         asserts.assertEqual(trebleIsEnabledStr, "true",
             "VTS can only be run for Treble enabled devices")
 
+    def testVndkVersion(self):
+        """Test that VNDK version is specified."""
+        vndkVersion = self.getProp("ro.vendor.vndk.version")
+        asserts.assertLess(0, len(vndkVersion),
+            "VNDK version is not defined")
+
 if __name__ == "__main__":
     test_runner.main()
