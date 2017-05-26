@@ -102,7 +102,7 @@ class VtsHalMediaOmxV1_0Host(hal_hidl_gtest.HidlHalGTest):
         test_cases = []
 
         for gtest_case in gtest_cases:
-            test_suite = gtest_case.GetFullName()
+            test_suite = gtest_case.full_name
             for component, roles in self.components.iteritems():
                 for role in roles:
                     if not self.COMPONENT_TEST in test_suite and not role in self.whitelist_roles:
