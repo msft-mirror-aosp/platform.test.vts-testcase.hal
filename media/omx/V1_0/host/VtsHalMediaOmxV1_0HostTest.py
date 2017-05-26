@@ -28,34 +28,37 @@ import VtsHalMediaOmxV1_0TestCase as omx_test_case
 class VtsHalMediaOmxV1_0Host(hal_hidl_gtest.HidlHalGTest):
     """Host test class to run the Media_Omx HAL."""
 
+    COMPONENT_TEST = "ComponentHidlTest"
     AUDIO_ENC_TEST = "AudioEncHidlTest"
     AUDIO_DEC_TEST = "AudioDecHidlTest"
     VIDEO_ENC_TEST = "VideoEncHidlTest"
     VIDEO_DEC_TEST = "VideoDecHidlTest"
 
-    # Components and Roles which will be skipped.
-    blacklist_components = ["OMX.qcom.video.decoder.avc",
-                            "OMX.qcom.video.encoder.avc.secure",
-                            "OMX.qcom.video.decoder.avc.secure",
-                            "OMX.qcom.video.decoder.mpeg4.secure",
-                            "OMX.qcom.video.decoder.mpeg4",
-                            "OMX.qcom.video.decoder.h263",
-                            "OMX.qcom.video.decoder.hevc",
-                            "OMX.qcom.video.decoder.mpeg2.secure",
-                            "OMX.qcom.video.decoder.mpeg2",
-                            "OMX.qcom.video.decoder.vp8",
-                            "OMX.qcom.video.decoder.vp9",
-                            "OMX.qcom.video.decoder.hevc.secure",
-                            "OMX.qcom.video.decoder.vp9.secure",
-                            "OMX.qcom.video.decoder.vp8.secure"]
-    blacklist_roles = ["video_encoder.avc",
-                       "video_decoder.avc",
+    # Roles we want to test.
+    whitelist_roles = ["audio_encoder.aac",
+                       "audio_encoder.amrnb",
+                       "audio_encoder.amrwb",
+                       "audio_encoder.flac",
+                       "audio_decoder.aac",
+                       "audio_decoder.amrnb",
+                       "audio_decoder.amrwb",
+                       "audio_decoder.g711alaw",
+                       "audio_decoder.g711mlaw",
+                       "audio_decoder.gsm",
+                       "audio_decoder.mp3",
+                       "audio_decoder.opus",
+                       "audio_decoder.raw",
+                       "audio_decoder.vorbis",
                        "video_encoder.avc",
-                       "video_decoder.mpeg4",
-                       "video_decoder.vp8",
+                       "video_encoder.h263",
+                       "video_encoder.mpeg4",
+                       "video_encoder.vp8",
+                       "video_encoder.vp9",
+                       "video_decoder.avc",
                        "video_decoder.h263",
                        "video_decoder.hevc",
-                       "video_decoder.mpeg2",
+                       "video_decoder.mpeg4",
+                       "video_decoder.vp8",
                        "video_decoder.vp9"]
 
     def CreateTestCases(self):
@@ -102,7 +105,7 @@ class VtsHalMediaOmxV1_0Host(hal_hidl_gtest.HidlHalGTest):
             test_suite = gtest_case.GetFullName()
             for component, roles in self.components.iteritems():
                 for role in roles:
-                    if component in self.blacklist_components and role in self.blacklist_roles:
+                    if not self.COMPONENT_TEST in test_suite and not role in self.whitelist_roles:
                         continue
                     if self.AUDIO_ENC_TEST in test_suite and not "audio_encoder" in role:
                         continue
