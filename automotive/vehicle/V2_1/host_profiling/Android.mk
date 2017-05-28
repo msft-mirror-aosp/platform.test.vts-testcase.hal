@@ -18,6 +18,6 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := VtsHalBiometricsFingerprintV2_1TargetProfiling
-VTS_CONFIG_SRC_DIR := testcases/hal/biometrics/fingerprint/V2_1/target_profiling
+LOCAL_MODULE := VtsHalAutomotiveVehicleV2_1HostProfiling
+VTS_CONFIG_SRC_DIR := testcases/hal/automotive/vehicle/V2_1/host_profiling
 include test/vts/tools/build/Android.host_config.mk

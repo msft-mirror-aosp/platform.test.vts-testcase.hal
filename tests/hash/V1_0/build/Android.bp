@@ -72,7 +72,6 @@ cc_library_shared {
         "-Wno-unused-variable",
         "-Wno-unused-private-field",
         "-Wno-duplicate-decl-specifier",
-        "-Wno-uninitialized",
         "-Wno-implicitly-unsigned-literal",
     ],
 }
@@ -109,6 +108,8 @@ cc_library_shared {
     export_generated_headers: ["android.hardware.tests.hash@1.0-vts.profiler_genc++_headers"],
     shared_libs: [
         "libbase",
+        "libcutils",
+        "libfmq",
         "libhidlbase",
         "libhidltransport",
         "libvts_common",
@@ -128,7 +129,6 @@ cc_library_shared {
         "-Wno-unused-variable",
         "-Wno-unused-private-field",
         "-Wno-duplicate-decl-specifier",
-        "-Wno-uninitialized",
         "-Wno-implicitly-unsigned-literal",
     ],
 }
