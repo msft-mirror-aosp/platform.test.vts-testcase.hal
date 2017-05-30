@@ -28,10 +28,8 @@
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalBluetoothV1_0TargetTest/VtsHalBluetoothV1_0TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="binary-test-disable-framework" value="true"/>
-        <option name="binary-test-stop-native-servers" value="true"/>
         <option name="enable-profiling" value="true"/>
         <option name="precondition-lshal" value="android.hardware.bluetooth@1.0"/>
-        <option name="native-server-process-name" value="com.android.bluetooth"/>
         <option name="test-timeout" value="3m"/>
     </test>
 </configuration>
