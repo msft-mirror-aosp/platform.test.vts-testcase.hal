@@ -32,21 +32,42 @@ class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
         self.dut = self.registerController(android_device)[0]
         self.dut.shell.InvokeTerminal("VtsTreblePlatformVersionTest")
 
-    def testPlatformVersion(self):
-        """Test that device launched with O or later."""
+    def getProp(self, prop):
+        """Helper to retrieve a property from device."""
 
         results = self.dut.shell.VtsTreblePlatformVersionTest.Execute(
-            "getprop ro.product.first_api_level")
+            "getprop " + prop)
         asserts.assertEqual(results[const.EXIT_CODE][0], 0,
             "getprop must succeed")
 
+        result = results[const.STDOUT][0].strip()
+
+        logging.info("getprop {}={}".format(prop, result))
+
+        return result
+
+    def testPlatformVersion(self):
+        """Test that device launched with O or later."""
+
         try:
-            firstApiLevel = int(results[const.STDOUT][0].strip())
-            logging.info("Device first API level is {}".format(firstApiLevel))
+            firstApiLevel = int(self.getProp("ro.product.first_api_level"))
             asserts.assertTrue(firstApiLevel >= ANDROID_O_API_VERSION,
                 "VTS can only be run for new launches in O or above")
         except ValueError:
             asserts.fail("Unexpected value returned from getprop")
+
+    def testTrebleEnabled(self):
+        """Test that device has Treble enabled."""
+
+        trebleIsEnabledStr = self.getProp("ro.treble.enabled")
+        asserts.assertEqual(trebleIsEnabledStr, "true",
+            "VTS can only be run for Treble enabled devices")
+
+    def testVndkVersion(self):
+        """Test that VNDK version is specified."""
+        vndkVersion = self.getProp("ro.vendor.vndk.version")
+        asserts.assertLess(0, len(vndkVersion),
+            "VNDK version is not defined")
 
 if __name__ == "__main__":
     test_runner.main()
