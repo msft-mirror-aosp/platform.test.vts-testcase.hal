@@ -110,8 +110,8 @@ class VtsTrebleVintfTest : public ::testing::Test {
         << "Failed to get passthrough service manager." << endl;
 
     vendor_manifest_ = ::android::vintf::VintfObject::GetDeviceHalManifest();
-    ASSERT_NE(passthrough_manager_, nullptr)
-        << "Failed to get vendor HAL manifest." << endl;
+    ASSERT_NE(vendor_manifest_, nullptr) << "Failed to get vendor HAL manifest."
+                                         << endl;
   }
 
   // Applies given function to each HAL instance in VINTF.
