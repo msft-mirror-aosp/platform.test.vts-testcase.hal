@@ -34,7 +34,7 @@
         <option name="push" value="DATA/lib64/android.hardware.media@1.0-vts.driver.so->/data/local/tmp/64/android.hardware.media@1.0-vts.driver.so"/>
         <option name="push" value="DATA/lib/android.hardware.media.omx@1.0-vts.driver.so->/data/local/tmp/32/android.hardware.media.omx@1.0-vts.driver.so"/>
         <option name="push" value="DATA/lib64/android.hardware.media.omx@1.0-vts.driver.so->/data/local/tmp/64/android.hardware.media.omx@1.0-vts.driver.so"/>
-        <option name="push" value="DATA/media/res/bbb_352x288_420p_30fps_32frames.yuv->/sdcard/media/bbb_480x360_420p_30fps_32frames.yuv"/>
+        <option name="push" value="DATA/media/res/bbb_352x288_420p_30fps_32frames.yuv->/sdcard/media/bbb_352x288_420p_30fps_32frames.yuv"/>
         <option name="push" value="DATA/media/res/bbb_avc_1920x1080_5000kbps_30fps.h264->/sdcard/media/bbb_avc_1920x1080_5000kbps_30fps.h264"/>
         <option name="push" value="DATA/media/res/bbb_avc_1920x1080_5000kbps_30fps.info->/sdcard/media/bbb_avc_1920x1080_5000kbps_30fps.info"/>
         <option name="push" value="DATA/media/res/bbb_mp3_stereo_192kbps_48000hz.info->/sdcard/media/bbb_mp3_stereo_192kbps_48000hz.info"/>
