@@ -30,5 +30,10 @@
         <option name="binary-test-stop-native-servers" value="true"/>
         <option name="precondition-lshal" value="android.hardware.radio@1.0"/>
         <option name="test-timeout" value="10m"/>
+        <option name="exclude-filter" value="RadioHidlTest.getDataCallList" />
+        <option name="exclude-filter" value="RadioHidlTest.setRadioCapability" />
+        <option name="exclude-filter" value="RadioHidlTest.sendCDMAFeatureCode" />
+        <option name="exclude-filter" value="RadioHidlTest.setSimCardPower" />
+        <option name="exclude-filter" value="SapHidlTest.transferAtrReq" />
     </test>
 </configuration>
