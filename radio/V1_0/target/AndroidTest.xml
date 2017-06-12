@@ -35,5 +35,6 @@
         <option name="exclude-filter" value="RadioHidlTest.sendCDMAFeatureCode" />
         <option name="exclude-filter" value="RadioHidlTest.setSimCardPower" />
         <option name="exclude-filter" value="SapHidlTest.transferAtrReq" />
+        <option name="exclude-filter" value="RadioHidlTest.dial" />
     </test>
 </configuration>
