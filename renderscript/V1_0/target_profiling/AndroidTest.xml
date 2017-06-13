@@ -29,6 +29,6 @@
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="enable-profiling" value="true"/>
         <option name="precondition-lshal" value="android.hardware.renderscript@1.0"/>
-        <option name="test-timeout" value="2m"/>
+        <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
