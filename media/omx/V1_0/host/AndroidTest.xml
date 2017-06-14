@@ -86,6 +86,6 @@
         <option name="binary-test-stop-native-servers" value="true"/>
         <option name="hal-hidl-package-name" value="android.hardware.media.omx@1.0"/>
         <option name="precondition-lshal" value="android.hardware.media.omx@1.0"/>
-        <option name="test-timeout" value="40m"/>
+        <option name="test-timeout" value="2h"/>
     </test>
 </configuration>
