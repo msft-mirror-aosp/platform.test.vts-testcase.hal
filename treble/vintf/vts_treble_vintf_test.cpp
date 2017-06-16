@@ -73,7 +73,7 @@ static const set<string> kPassthroughHals = {
 // For a given interface returns package root if known. Returns empty string
 // otherwise.
 static const string PackageRoot(const FQName &fq_iface_name) {
-  for (const auto &package_root: kPackageRoot) {
+  for (const auto &package_root : kPackageRoot) {
     if (fq_iface_name.inPackage(package_root.first)) {
       return package_root.second;
     }
@@ -85,6 +85,19 @@ static const string PackageRoot(const FQName &fq_iface_name) {
 static bool IsGoogleDefinedIface(const FQName &fq_iface_name) {
   // Package roots are only known for Google-defined packages.
   return !PackageRoot(fq_iface_name).empty();
+}
+
+// Returns true iff HAL interface is exempt from following rules:
+// 1. If an interface is declared in VINTF, it has to be served on the device.
+// TODO(b/62547028): remove these exemptions in O-DR.
+static bool IsExempt(const FQName &fq_iface_name) {
+  static const set<string> exempt_hals_ = {
+      "android.hardware.radio", "android.hardware.radio.deprecated",
+  };
+  string hal_name = fq_iface_name.package();
+  // Radio-releated and non-Google HAL interfaces are given exemptions.
+  return exempt_hals_.find(hal_name) != exempt_hals_.end() ||
+         !IsGoogleDefinedIface(fq_iface_name);
 }
 
 // Returns the set of released hashes for a given HAL interface.
@@ -221,6 +234,11 @@ TEST_F(VtsTrebleVintfTest, VintfHalsAreServed) {
   // Verifies that HAL is available through service manager.
   HalVerifyFn is_available = [this](const FQName &fq_name,
                                     const string &instance_name) {
+    if (IsExempt(fq_name)) {
+      cout << fq_name.string() << " is exempt." << endl;
+      return;
+    }
+
     sp<android::hidl::base::V1_0::IBase> hal_service =
         GetHalService(fq_name, instance_name);
     EXPECT_NE(hal_service, nullptr)
@@ -238,6 +256,15 @@ TEST_F(VtsTrebleVintfTest, InterfacesAreReleased) {
                                    const string &instance_name) {
     sp<android::hidl::base::V1_0::IBase> hal_service =
         GetHalService(fq_name, instance_name);
+
+    if (hal_service == nullptr) {
+      if (IsExempt(fq_name)) {
+        cout << fq_name.string() << " is exempt." << endl;
+      } else {
+        ADD_FAILURE() << fq_name.package() << " not available." << endl;
+      }
+      return;
+    }
 
     vector<string> iface_chain{};
     hal_service->interfaceChain(
