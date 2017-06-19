@@ -32,6 +32,6 @@
         <option name="precondition-feature" value="android.hardware.vr.high_performance" />
         <option name="precondition-lshal" value="android.hardware.vr@1.0"/>
         <option name="test-config-path" value="vts/testcases/hal/vr/V1_0/target/VrHidlTargetTest.config" />
-        <option name="test-timeout" value="1m"/>
+        <option name="test-timeout" value="5m"/>
     </test>
 </configuration>

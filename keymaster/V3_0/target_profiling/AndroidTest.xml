@@ -28,6 +28,6 @@
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="precondition-lshal" value="android.hardware.keymaster@3.0"/>
         <option name="enable-profiling" value="true"/>
-        <option name="test-timeout" value="5m"/>
+        <option name="test-timeout" value="15m"/>
     </test>
 </configuration>
