@@ -22,5 +22,6 @@
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsTreblePlatformVersionTest" />
         <option name="test-case-path" value="vts/testcases/hal/treble/platform_version/VtsTreblePlatformVersionTest" />
+        <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
