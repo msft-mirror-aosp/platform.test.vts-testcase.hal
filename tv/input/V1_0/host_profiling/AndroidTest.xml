@@ -34,6 +34,6 @@
         <option name="test-case-path" value="vts/testcases/hal/tv/input/V1_0/host/VtsHalTvInputV1_0HostTest"/>
         <option name="enable-profiling" value="true"/>
         <option name="precondition-lshal" value="android.hardware.tv.input@1.0"/>
-        <option name="test-timeout" value="1m"/>
+        <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
