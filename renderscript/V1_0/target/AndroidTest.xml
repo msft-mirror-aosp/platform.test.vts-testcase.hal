@@ -25,6 +25,6 @@
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalRenderscriptV1_0TargetTest/VtsHalRenderscriptV1_0TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="precondition-lshal" value="android.hardware.renderscript@1.0"/>
-        <option name="test-timeout" value="1m"/>
+        <option name="test-timeout" value="5m"/>
     </test>
 </configuration>

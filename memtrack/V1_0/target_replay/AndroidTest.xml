@@ -31,6 +31,6 @@
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/memtrack/V1_0/android.hardware.memtrack_1.0_18679173942.vts.trace"/>
         <option name="hal-hidl-package-name" value="android.hardware.memtrack@1.0"/>
         <option name="precondition-lshal" value="android.hardware.memtrack@1.0"/>
-        <option name="test-timeout" value="5m"/>
+        <option name="test-timeout" value="15m"/>
     </test>
 </configuration>
