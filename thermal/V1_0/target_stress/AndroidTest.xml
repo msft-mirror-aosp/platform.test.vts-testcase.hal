@@ -24,7 +24,7 @@
         <option name="binary-test-source" value="_32bit::DATA/nativetest/thermal_hidl_stress_test/thermal_hidl_stress_test" />
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/thermal_hidl_stress_test/thermal_hidl_stress_test" />
         <option name="binary-test-type" value="gtest" />
-        <option name="test-timeout" value="1m" />
+        <option name="test-timeout" value="5m" />
     </test>
 </configuration>
 

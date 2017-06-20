@@ -31,6 +31,6 @@
         <option name="binary-test-stop-native-servers" value="true"/>
         <option name="enable-profiling" value="true"/>
         <option name="precondition-lshal" value="android.hardware.sensors@1.0"/>
-        <option name="test-timeout" value="10m"/>
+        <option name="test-timeout" value="15m"/>
     </test>
 </configuration>
