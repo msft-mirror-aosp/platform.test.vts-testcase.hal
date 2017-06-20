@@ -32,6 +32,6 @@
         <option name="test-module-name" value="VtsHalRadioV1_0Host"/>
         <option name="test-case-path" value="vts/testcases/hal/radio/V1_0/host/VtsHalRadioV1_0HostTest"/>
         <option name="precondition-lshal" value="android.hardware.radio@1.0"/>
-        <option name="test-timeout" value="15m"/>
+        <option name="test-timeout" value="30m"/>
     </test>
 </configuration>
