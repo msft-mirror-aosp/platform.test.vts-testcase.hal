@@ -32,6 +32,6 @@
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/nfc/V1_0/android.hardware.nfc@1.0_sailfish_1.vts.trace"/>
         <option name="hal-hidl-package-name" value="android.hardware.nfc@1.0"/>
         <option name="precondition-lshal" value="android.hardware.nfc@1.0"/>
-        <option name="test-timeout" value="3m"/>
+        <option name="test-timeout" value="15m"/>
     </test>
 </configuration>
