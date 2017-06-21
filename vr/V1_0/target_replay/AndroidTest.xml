@@ -29,6 +29,6 @@
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/vr/V1_0/android.hardware.vr@1.0_sailfish_1.vts.trace"/>
         <option name="hal-hidl-package-name" value="android.hardware.vr@1.0"/>
         <option name="precondition-lshal" value="android.hardware.vr@1.0"/>
-        <option name="test-timeout" value="1m"/>
+        <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
