@@ -33,6 +33,6 @@
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/biometrics/fingerprint/V2_1/android.hardware.biometrics.fingerprint_2.1_705377609277.vts.trace"/>
         <option name="hal-hidl-package-name" value="android.hardware.biometrics.fingerprint@2.1"/>
         <option name="precondition-lshal" value="android.hardware.biometrics.fingerprint@2.1"/>
-        <option name="test-timeout" value="2m"/>
+        <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
