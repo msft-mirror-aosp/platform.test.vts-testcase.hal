@@ -242,7 +242,7 @@ TEST_F(VtsTrebleVintfTest, VintfHalsAreServed) {
     sp<android::hidl::base::V1_0::IBase> hal_service =
         GetHalService(fq_name, instance_name);
     EXPECT_NE(hal_service, nullptr)
-        << fq_name.package() << " not available." << endl;
+        << fq_name.string() << " not available." << endl;
   };
 
   ForEachHalInstance(is_available);
