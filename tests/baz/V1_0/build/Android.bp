@@ -82,7 +82,6 @@ cc_library_shared {
 
         // These warnings are in code generated with vtsc
         // b/31362043
-        "-Wno-unused-private-field",
         "-Wno-duplicate-decl-specifier",
         "-Wno-implicitly-unsigned-literal",
     ],
@@ -145,7 +144,6 @@ cc_library_shared {
 
         // These warnings are in code generated with vtsc
         // b/31362043
-        "-Wno-unused-private-field",
         "-Wno-duplicate-decl-specifier",
         "-Wno-implicitly-unsigned-literal",
     ],
