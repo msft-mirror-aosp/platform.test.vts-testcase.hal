@@ -90,11 +90,8 @@ static bool IsGoogleDefinedIface(const FQName &fq_iface_name) {
 
 // Returns true iff HAL interface is exempt from following rules:
 // 1. If an interface is declared in VINTF, it has to be served on the device.
-// TODO(b/62547028): remove these exemptions in O-DR.
 static bool IsExempt(const FQName &fq_iface_name) {
-  static const set<string> exempt_hals_ = {
-      "android.hardware.radio", "android.hardware.radio.deprecated",
-  };
+  static const set<string> exempt_hals_ = {};
   string hal_name = fq_iface_name.package();
   // Radio-releated and non-Google HAL interfaces are given exemptions.
   return exempt_hals_.find(hal_name) != exempt_hals_.end() ||
