@@ -33,5 +33,8 @@
         <option name="exclude-filter" value="SapHidlTest.transferAtrReq" />
         <option name="exclude-filter" value="RadioHidlTest.nvReadItem" />
         <option name="exclude-filter" value="RadioHidlTest.nvWriteItem" />
+        <option name="exclude-filter" value="RadioHidlTest.setRadioCapability" />
+        <option name="exclude-filter" value="RadioHidlTest.setInitialAttachApn" />
+        <option name="exclude-filter" value="RadioHidlTest.setDataAllowed" />
     </test>
 </configuration>
