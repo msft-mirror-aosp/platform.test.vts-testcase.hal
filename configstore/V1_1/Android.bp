@@ -2,6 +2,5 @@
 // Use test/vts-testcase/hal/update_makefiles.py to generate this file.
 
 subdirs = [
-    "V1_0",
-    "V1_1",
+    "*",
 ]
