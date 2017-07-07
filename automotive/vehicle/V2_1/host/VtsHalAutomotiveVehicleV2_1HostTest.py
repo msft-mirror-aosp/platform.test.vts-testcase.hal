@@ -60,9 +60,6 @@ class VtsHalAutomotiveVehicleV2_1HostTest(base_test.BaseTestClass):
         self.vtypes = self.dut.hal.vehicle.GetHidlTypeInterface("types")
         logging.info("vehicle types: %s", self.vtypes)
         self.halProperties = {}
-        for config in self.vehicle.getAllPropConfigs():
-            logging.info('property %d -> %s', config['prop'], config)
-            self.halProperties[config['prop']] = config
 
     def tearDownClass(self):
         """Disables the profiling.
@@ -78,8 +75,25 @@ class VtsHalAutomotiveVehicleV2_1HostTest(base_test.BaseTestClass):
             self.coverage.SetCoverageData(dut=self.dut, isGlobal=True)
 
     def isPropertySupported(self, propertyId):
-        """Check whether a Vehicle HAL property is supported."""
-        return propertyId in self.halProperties
+        """Check whether a Vehicle HAL property is supported.
+
+           Args:
+               propertyId: the numeric identifier of the vehicle property.
+
+           Returns:
+                  True if the HAL implementation supports the property, False otherwise.
+        """
+        if propertyId in self.halProperties:
+            return self.halProperties[propertyId] is not None
+        ok, config = self.vehicle.getPropConfigs([propertyId])
+        logging.info("propertyId = %s, ok = %s, config = %s",
+            propertyId, ok, config)
+        if ok == self.vtypes.StatusCode.OK:
+            self.halProperties[propertyId] = config
+            return True
+        else:
+            self.halProperties[propertyId] = None
+            return False
 
     def getDiagnosticSupportInfo(self):
         """Check which of the OBD2 diagnostic properties are supported."""
@@ -242,7 +256,7 @@ class VtsHalAutomotiveVehicleV2_1HostTest(base_test.BaseTestClass):
                 # None is acceptable, as a newer fault could have overwritten
                 # the one we're trying to read
                 if value is not None:
-                    asserts.assertEqual(self.vtypes.StatusCode.OK, status)
+                    asserts.assertEqual(self.test.vtypes.StatusCode.OK, status)
                     asserts.assertEqual(self.propertyId, value['prop'])
                     asserts.assertEqual(self.timestamp, value['timestamp'])
 
@@ -256,10 +270,6 @@ class VtsHalAutomotiveVehicleV2_1HostTest(base_test.BaseTestClass):
             for timestamp in timestamps:
                 freezeCheckRead = FreezeFrameCheckRead(self, timestamp)
                 freezeCheckRead()
-            for timestamp in invalidTimestamps:
-                request = self.emptyValueProperty(
-                    self.vtypes.VehicleProperty.OBD2_FREEZE_FRAME)
-                status, value = self.vehicle.get(request)
         else:
             # freeze frame not supported by this HAL implementation. done
             logging.info("OBD2_FREEZE_FRAME and _INFO not supported.")
@@ -279,8 +289,6 @@ class VtsHalAutomotiveVehicleV2_1HostTest(base_test.BaseTestClass):
                 return propValue
 
             def validateGet(self, status, value):
-                # If we get freeze frame data here, something is wrong
-                asserts.assertEqual(None, value)
                 asserts.assertEqual(
                     self.test.vtypes.StatusCode.INVALID_ARG, status)
 
@@ -302,7 +310,7 @@ class VtsHalAutomotiveVehicleV2_1HostTest(base_test.BaseTestClass):
         class FreezeFrameClearCheckWrite(self.CheckWrite):
             def __init__(self, test, timestamp):
                 self.test = test
-                self.propertyId = self.vtypes.VehicleProperty.OBD2_FREEZE_FRAME
+                self.propertyId = self.test.vtypes.VehicleProperty.OBD2_FREEZE_FRAME_CLEAR
                 self.timestamp = timestamp
                 self.areaId = 0
 
@@ -319,7 +327,7 @@ class VtsHalAutomotiveVehicleV2_1HostTest(base_test.BaseTestClass):
             def __init__(self, test, timestamp):
                 self.test = test
                 self.propertyId = \
-                    self.test.vtypes.VehicleProperty.OBD2_FREEZE_FRAME_CLEAR
+                    self.test.vtypes.VehicleProperty.OBD2_FREEZE_FRAME
                 self.timestamp = timestamp
                 self.areaId = 0
 
@@ -328,8 +336,6 @@ class VtsHalAutomotiveVehicleV2_1HostTest(base_test.BaseTestClass):
                 return propValue
 
             def validateGet(self, status, value):
-                # If we get freeze frame data here, something is wrong
-                asserts.assertEqual(None, value)
                 asserts.assertEqual(
                     self.test.vtypes.StatusCode.INVALID_ARG, status)
 
