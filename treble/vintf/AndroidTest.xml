@@ -29,6 +29,8 @@
         <option name="test-module-name" value="VtsTrebleVintfTest"/>
         <option name="binary-test-source" value="_32bit::DATA/nativetest/vts_treble_vintf_test/vts_treble_vintf_test" />
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/vts_treble_vintf_test/vts_treble_vintf_test" />
+        <option name="binary-test-ld-library-path" value="_32bit::system/lib/vndk-sp" />
+        <option name="binary-test-ld-library-path" value="_64bit::system/lib64/vndk-sp" />
         <option name="binary-test-type" value="gtest"/>
         <option name="test-timeout" value="5m"/>
     </test>
