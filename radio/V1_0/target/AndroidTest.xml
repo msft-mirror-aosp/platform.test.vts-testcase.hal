@@ -31,9 +31,6 @@
         <option name="precondition-lshal" value="android.hardware.radio@1.0"/>
         <option name="test-timeout" value="15m"/>
         <option name="exclude-filter" value="SapHidlTest.transferAtrReq" />
-        <option name="exclude-filter" value="RadioHidlTest.nvReadItem" />
-        <option name="exclude-filter" value="RadioHidlTest.nvWriteItem" />
-        <option name="exclude-filter" value="RadioHidlTest.setRadioCapability" />
         <option name="exclude-filter" value="RadioHidlTest.setInitialAttachApn" />
         <option name="exclude-filter" value="RadioHidlTest.setDataAllowed" />
     </test>
