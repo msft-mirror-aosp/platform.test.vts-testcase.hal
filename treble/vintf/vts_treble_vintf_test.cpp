@@ -40,6 +40,7 @@ using android::sp;
 using android::vintf::HalManifest;
 using android::vintf::Transport;
 using android::vintf::Version;
+using android::vintf::VintfObject;
 
 using std::cout;
 using std::endl;
@@ -122,7 +123,7 @@ class VtsTrebleVintfTest : public ::testing::Test {
     ASSERT_NE(passthrough_manager_, nullptr)
         << "Failed to get passthrough service manager." << endl;
 
-    vendor_manifest_ = ::android::vintf::VintfObject::GetDeviceHalManifest();
+    vendor_manifest_ = VintfObject::GetDeviceHalManifest();
     ASSERT_NE(vendor_manifest_, nullptr) << "Failed to get vendor HAL manifest."
                                          << endl;
   }
@@ -300,6 +301,25 @@ TEST_F(VtsTrebleVintfTest, InterfacesAreReleased) {
   };
 
   ForEachHalInstance(is_released);
+}
+
+// Tests that vendor and framework are compatible.
+TEST(CompatiblityTest, VendorFrameworkCompatibility) {
+  string error;
+
+  EXPECT_TRUE(VintfObject::GetDeviceHalManifest()->checkCompatibility(
+      *VintfObject::GetFrameworkCompatibilityMatrix(), &error))
+      << error;
+
+  EXPECT_TRUE(VintfObject::GetFrameworkHalManifest()->checkCompatibility(
+      *VintfObject::GetDeviceCompatibilityMatrix(), &error))
+      << error;
+
+  EXPECT_TRUE(VintfObject::GetRuntimeInfo()->checkCompatibility(
+      *VintfObject::GetFrameworkCompatibilityMatrix(), &error))
+      << error;
+
+  EXPECT_TRUE(VintfObject::CheckCompatibility({}, &error)) << error;
 }
 
 int main(int argc, char **argv) {
