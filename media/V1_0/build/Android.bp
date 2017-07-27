@@ -69,11 +69,6 @@ cc_library_shared {
     cflags: [
         "-Wall",
         "-Werror",
-
-        // These warnings are in code generated with vtsc
-        // b/31362043
-        "-Wno-duplicate-decl-specifier",
-        "-Wno-implicitly-unsigned-literal",
     ],
 }
 
@@ -124,11 +119,6 @@ cc_library_shared {
     cflags: [
         "-Wall",
         "-Werror",
-
-        // These warnings are in code generated with vtsc
-        // b/31362043
-        "-Wno-duplicate-decl-specifier",
-        "-Wno-implicitly-unsigned-literal",
     ],
 }
 
