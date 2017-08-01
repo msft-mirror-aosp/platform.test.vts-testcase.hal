@@ -319,7 +319,7 @@ TEST(CompatiblityTest, VendorFrameworkCompatibility) {
       *VintfObject::GetFrameworkCompatibilityMatrix(), &error))
       << error;
 
-  EXPECT_TRUE(VintfObject::CheckCompatibility({}, &error)) << error;
+  EXPECT_EQ(0, VintfObject::CheckCompatibility({}, &error)) << error;
 }
 
 int main(int argc, char **argv) {
