@@ -13,21 +13,18 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<configuration description="Config for VTS VtsHalUsbV1_0Target test cases">
+<configuration description="Config for VTS VtsHalNeuralnetworksV1_0Target test cases">
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
         <option name="abort-on-push-failure" value="false"/>
         <option name="push-group" value="HalHidlTargetTest.push"/>
     </target_preparer>
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
-        <option name="test-module-name" value="VtsHalUsbV1_0Target"/>
-        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalUsbV1_0TargetTest/VtsHalUsbV1_0TargetTest"/>
-        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalUsbV1_0TargetTest/VtsHalUsbV1_0TargetTest"/>
+        <option name="test-module-name" value="VtsHalNeuralnetworksV1_0Target"/>
+        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalNeuralnetworksV1_0TargetTest/VtsHalNeuralnetworksV1_0TargetTest"/>
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalNeuralnetworksV1_0TargetTest/VtsHalNeuralnetworksV1_0TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
-        <option name="binary-test-disable-framework" value="true"/>
-        <option name="binary-test-stop-native-servers" value="true"/>
-        <option name="precondition-lshal" value="android.hardware.usb@1.0"/>
-        <option name="exclude-filter" value="UsbHidlTest.switchModetoDFP" />
-        <option name="test-timeout" value="15m"/>
+        <option name="precondition-lshal" value="android.hardware.neuralnetworks@1.0"/>
+        <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
