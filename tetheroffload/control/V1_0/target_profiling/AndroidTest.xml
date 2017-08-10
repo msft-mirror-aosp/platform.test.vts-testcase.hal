@@ -31,5 +31,7 @@
         <option name="enable-profiling" value="true"/>
         <option name="precondition-lshal" value="android.hardware.tetheroffload.control@1.0"/>
         <option name="test-timeout" value="30m"/>
+        <option name="exclude-filter" value="OffloadControlHidlTest.SetDataLimitNonZeroOk"/>
+        <option name="exclude-filter" value="OffloadControlHidlTest.SetDataLimitZeroOk"/>
     </test>
 </configuration>
