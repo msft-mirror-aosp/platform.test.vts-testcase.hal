@@ -32,6 +32,6 @@ if __name__ == "__main__":
     print 'Updating build rules.'
     warning_header = (
         '// This file was auto-generated. Do not edit manually.\n'
-        '// Use test/vts-testcase/hal/update_makefiles.py to generate this file.\n\n')
+        '// Use test/vts-testcase/hal/script/update_makefiles.py to generate this file.\n\n')
     build_rule_gen = BuildRuleGen(warning_header)
     build_rule_gen.UpdateBuildRule()
