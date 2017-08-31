@@ -279,6 +279,11 @@ TEST_F(VtsTrebleVintfTest, InterfacesAreReleased) {
     for (size_t i = 0; i < iface_chain.size(); ++i) {
       FQName fq_iface_name{iface_chain[i]};
       string hash = hash_chain[i];
+      // No interface is allowed to have an empty hash.
+      EXPECT_NE(hash, Hash::hexString(Hash::kEmptyHash))
+          << fq_iface_name.string()
+          << " has an empty hash. This is because it was compiled without"
+             " being frozen in a corresponding current.txt file.";
 
       if (IsGoogleDefinedIface(fq_iface_name)) {
         set<string> released_hashes = ReleasedHashes(fq_iface_name);
