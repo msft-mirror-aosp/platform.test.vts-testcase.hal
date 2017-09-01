@@ -32,6 +32,8 @@
         <option name="exclude-filter" value="RadioHidlTest.sendCDMAFeatureCode" />
         <option name="exclude-filter" value="RadioHidlTest.setSimCardPower" />
         <option name="exclude-filter" value="RadioHidlTest.dial" />
+        <!-- The following test is disabled due to b/64734869 -->
+        <option name="exclude-filter" value="RadioHidlTest.requestShutdown" />
         <option name="test-timeout" value="15m"/>
     </test>
 </configuration>
