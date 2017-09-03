@@ -9,6 +9,7 @@ hal2vts {
     ],
     out: [
         "android/hardware/neuralnetworks/1.0/Device.vts",
+        "android/hardware/neuralnetworks/1.0/Event.vts",
         "android/hardware/neuralnetworks/1.0/PreparedModel.vts",
         "android/hardware/neuralnetworks/1.0/types.vts",
     ],
@@ -24,6 +25,7 @@ genrule {
     ],
     out: [
         "android/hardware/neuralnetworks/1.0/Device.vts.cpp",
+        "android/hardware/neuralnetworks/1.0/Event.vts.cpp",
         "android/hardware/neuralnetworks/1.0/PreparedModel.vts.cpp",
         "android/hardware/neuralnetworks/1.0/types.vts.cpp",
     ],
@@ -38,6 +40,7 @@ genrule {
     ],
     out: [
         "android/hardware/neuralnetworks/1.0/Device.vts.h",
+        "android/hardware/neuralnetworks/1.0/Event.vts.h",
         "android/hardware/neuralnetworks/1.0/PreparedModel.vts.h",
         "android/hardware/neuralnetworks/1.0/types.vts.h",
     ],
@@ -86,6 +89,7 @@ genrule {
     ],
     out: [
         "android/hardware/neuralnetworks/1.0/Device.vts.cpp",
+        "android/hardware/neuralnetworks/1.0/Event.vts.cpp",
         "android/hardware/neuralnetworks/1.0/PreparedModel.vts.cpp",
         "android/hardware/neuralnetworks/1.0/types.vts.cpp",
     ],
@@ -100,6 +104,7 @@ genrule {
     ],
     out: [
         "android/hardware/neuralnetworks/1.0/Device.vts.h",
+        "android/hardware/neuralnetworks/1.0/Event.vts.h",
         "android/hardware/neuralnetworks/1.0/PreparedModel.vts.h",
         "android/hardware/neuralnetworks/1.0/types.vts.h",
     ],
