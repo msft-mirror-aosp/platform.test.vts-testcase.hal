@@ -129,7 +129,7 @@ class VtsTrebleVintfTest : public ::testing::Test {
   // Passthrough service manager.
   sp<IServiceManager> passthrough_manager_;
   // Vendor hal manifest.
-  const HalManifest *vendor_manifest_;
+  std::shared_ptr<const HalManifest> vendor_manifest_;
 };
 
 void VtsTrebleVintfTest::ForEachHalInstance(HalVerifyFn fn) {
