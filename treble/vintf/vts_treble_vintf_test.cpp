@@ -91,6 +91,16 @@ static bool IsGoogleDefinedIface(const FQName &fq_iface_name) {
   return !PackageRoot(fq_iface_name).empty();
 }
 
+// Returns true iff HAL interface is exempt from following rules:
+// 1. If an interface is declared in VINTF, it has to be served on the device.
+static bool IsExempt(const FQName &fq_iface_name) {
+  static const set<string> exempt_hals_ = {};
+  string hal_name = fq_iface_name.package();
+  // Radio-releated and non-Google HAL interfaces are given exemptions.
+  return exempt_hals_.find(hal_name) != exempt_hals_.end() ||
+         !IsGoogleDefinedIface(fq_iface_name);
+}
+
 // Returns the set of released hashes for a given HAL interface.
 static set<string> ReleasedHashes(const FQName &fq_iface_name) {
   set<string> released_hashes{};
@@ -168,8 +178,7 @@ sp<android::hidl::base::V1_0::IBase> VtsTrebleVintfTest::GetHalService(
                   fq_name.getPackageMinorVersion()};
   string iface_name = fq_name.name();
   string fq_iface_name = fq_name.string();
-  cout << "Getting service of: " << fq_iface_name << " " << instance_name
-       << endl;
+  cout << "Getting service of: " << fq_iface_name << endl;
 
   Transport transport = vendor_manifest_->getTransport(
       hal_name, version, iface_name, instance_name);
@@ -234,6 +243,11 @@ TEST_F(VtsTrebleVintfTest, VintfHalsAreServed) {
   // Verifies that HAL is available through service manager.
   HalVerifyFn is_available = [this](const FQName &fq_name,
                                     const string &instance_name) {
+    if (IsExempt(fq_name)) {
+      cout << fq_name.string() << " is exempt." << endl;
+      return;
+    }
+
     sp<android::hidl::base::V1_0::IBase> hal_service =
         GetHalService(fq_name, instance_name);
     EXPECT_NE(hal_service, nullptr)
@@ -253,7 +267,11 @@ TEST_F(VtsTrebleVintfTest, InterfacesAreReleased) {
         GetHalService(fq_name, instance_name);
 
     if (hal_service == nullptr) {
-      ADD_FAILURE() << fq_name.string() << " not available." << endl;
+      if (IsExempt(fq_name)) {
+        cout << fq_name.string() << " is exempt." << endl;
+      } else {
+        ADD_FAILURE() << fq_name.package() << " not available." << endl;
+      }
       return;
     }
 
