@@ -1,5 +1,5 @@
 // This file was auto-generated. Do not edit manually.
-// Use test/vts-testcase/hal/update_makefiles.py to generate this file.
+// Use test/vts-testcase/hal/script/update_makefiles.py to generate this file.
 
 // Generate .vts spec files.
 hal2vts {
@@ -76,15 +76,6 @@ cc_library_shared {
     cflags: [
         "-Wall",
         "-Werror",
-
-        // These warnings are in code generated with vtsc
-        // b/31362043
-        "-Wno-unused-parameter",
-        "-Wno-unused-variable",
-        "-Wno-unused-private-field",
-        "-Wno-duplicate-decl-specifier",
-        "-Wno-uninitialized",
-        "-Wno-implicitly-unsigned-literal",
     ],
 }
 
@@ -139,15 +130,6 @@ cc_library_shared {
     cflags: [
         "-Wall",
         "-Werror",
-
-        // These warnings are in code generated with vtsc
-        // b/31362043
-        "-Wno-unused-parameter",
-        "-Wno-unused-variable",
-        "-Wno-unused-private-field",
-        "-Wno-duplicate-decl-specifier",
-        "-Wno-uninitialized",
-        "-Wno-implicitly-unsigned-literal",
     ],
 }
 
