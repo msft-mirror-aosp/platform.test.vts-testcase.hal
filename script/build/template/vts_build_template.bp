@@ -4,9 +4,7 @@ hal2vts {
     srcs: [
         ":android.hardware.{HAL_NAME}@{HAL_VERSION}_hal",
     ],
-    out: [
-        {GENERATED_VTS_SPECS}
-    ],
+    out: [{GENERATED_VTS_SPECS}],
 }
 
 // Build VTS driver.
@@ -17,9 +15,7 @@ genrule {
     srcs: [
         ":android.hardware.{HAL_NAME}@{HAL_VERSION}_hal",
     ],
-    out: [
-        {GENERATED_SOURCES}
-    ],
+    out: [{GENERATED_SOURCES}],
 }
 
 genrule {
@@ -29,9 +25,7 @@ genrule {
     srcs: [
         ":android.hardware.{HAL_NAME}@{HAL_VERSION}_hal",
     ],
-    out: [
-        {GENERATED_HEADERS}
-    ],
+    out: [{GENERATED_HEADERS}],
 }
 
 cc_library_shared {
@@ -39,32 +33,9 @@ cc_library_shared {
     generated_sources: ["android.hardware.{HAL_NAME}@{HAL_VERSION}-vts.driver_genc++"],
     generated_headers: ["android.hardware.{HAL_NAME}@{HAL_VERSION}-vts.driver_genc++_headers"],
     export_generated_headers: ["android.hardware.{HAL_NAME}@{HAL_VERSION}-vts.driver_genc++_headers"],
-    shared_libs: [
-        "libcamera_metadata",
-        "libcutils",
-        "libfmq",
-        "libhidlbase",
-        "libhidltransport",
-        "libhwbinder",
-        "liblog",
-        "libprotobuf-cpp-full",
-        "libutils",
-        "libvts_common",
-        "libvts_datatype",
-        "libvts_drivercomm",
-        "libvts_measurement",
-        "libvts_multidevice_proto",
-        "android.hidl.allocator@1.0",
-        "android.hardware.{HAL_NAME}@{HAL_VERSION}",
-        {IMPORTED_DRIVER_PACKAGES}
-    ],
-    export_shared_lib_headers: [
-        {IMPORTED_DRIVER_PACKAGES}
-    ],
-    cflags: [
-        "-Wall",
-        "-Werror",
-    ],
+    defaults: ["VtsHalDriverDefaults"],
+    shared_libs: [{IMPORTED_DRIVER_PACKAGES}],
+    static_libs: [{HAL_LIBS}],
 }
 
 // Build VTS profiler.
@@ -75,9 +46,7 @@ genrule {
     srcs: [
         ":android.hardware.{HAL_NAME}@{HAL_VERSION}_hal",
     ],
-    out: [
-        {GENERATED_SOURCES}
-    ],
+    out: [{GENERATED_SOURCES}],
 }
 
 genrule {
@@ -87,9 +56,7 @@ genrule {
     srcs: [
         ":android.hardware.{HAL_NAME}@{HAL_VERSION}_hal",
     ],
-    out: [
-        {GENERATED_HEADERS}
-    ],
+    out: [{GENERATED_HEADERS}],
 }
 
 cc_library_shared {
@@ -97,22 +64,8 @@ cc_library_shared {
     generated_sources: ["android.hardware.{HAL_NAME}@{HAL_VERSION}-vts.profiler_genc++"],
     generated_headers: ["android.hardware.{HAL_NAME}@{HAL_VERSION}-vts.profiler_genc++_headers"],
     export_generated_headers: ["android.hardware.{HAL_NAME}@{HAL_VERSION}-vts.profiler_genc++_headers"],
-    shared_libs: [
-        "libbase",
-        "libcutils",
-        "libfmq",
-        "libhidlbase",
-        "libhidltransport",
-        "libvts_common",
-        "libvts_profiling",
-        "libvts_multidevice_proto",
-        "libprotobuf-cpp-full",
-        "android.hardware.{HAL_NAME}@{HAL_VERSION}",
-        {IMPORTED_PROFILER_PACKAGES}
-    ],
-    cflags: [
-        "-Wall",
-        "-Werror",
-    ],
+    defaults: ["VtsHalProfilerDefaults"],
+    shared_libs: [{IMPORTED_PROFILER_PACKAGES}],
+    static_libs: [{HAL_LIBS}],
 }
 
