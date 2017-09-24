@@ -1,6 +1,49 @@
-// This file was auto-generated. Do not edit manually.
-// Use test/vts-testcase/hal/update_makefiles.py to generate this file.
-
 subdirs = [
     "*",
 ]
+
+cc_defaults {
+    name: "VtsHalLibDefaults",
+    shared_libs: [
+        "libbase",
+        "libcutils",
+        "liblog",
+        "libhidlbase",
+        "libhidltransport",
+        "libhwbinder",
+        "libutils",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+    group_static_libs: true,
+}
+
+cc_defaults {
+    name: "VtsHalDriverDefaults",
+    defaults: ["VtsHalLibDefaults"],
+    shared_libs: [
+        "libcamera_metadata",
+        "libfmq",
+        "libprotobuf-cpp-full",
+        "libvts_common",
+        "libvts_datatype",
+        "libvts_drivercomm",
+        "libvts_measurement",
+        "libvts_multidevice_proto",
+        "android.hidl.allocator@1.0",
+    ],
+}
+
+cc_defaults {
+    name: "VtsHalProfilerDefaults",
+    defaults: ["VtsHalLibDefaults"],
+    shared_libs: [
+        "libfmq",
+        "libvts_common",
+        "libvts_profiling",
+        "libvts_multidevice_proto",
+        "libprotobuf-cpp-full",
+    ],
+}

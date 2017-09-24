@@ -1,5 +1,5 @@
 // This file was auto-generated. Do not edit manually.
-// Use test/vts-testcase/hal/update_makefiles.py to generate this file.
+// Use test/vts-testcase/hal/script/update_makefiles.py to generate this file.
 
 // Generate .vts spec files.
 hal2vts {
@@ -42,31 +42,10 @@ cc_library_shared {
     generated_sources: ["android.hardware.tests.memory@1.0-vts.driver_genc++"],
     generated_headers: ["android.hardware.tests.memory@1.0-vts.driver_genc++_headers"],
     export_generated_headers: ["android.hardware.tests.memory@1.0-vts.driver_genc++_headers"],
-    shared_libs: [
-        "libcamera_metadata",
-        "libcutils",
-        "libfmq",
-        "libhidlbase",
-        "libhidltransport",
-        "libhwbinder",
-        "liblog",
-        "libprotobuf-cpp-full",
-        "libutils",
-        "libvts_common",
-        "libvts_datatype",
-        "libvts_drivercomm",
-        "libvts_measurement",
-        "libvts_multidevice_proto",
-        "android.hidl.allocator@1.0",
+    defaults: ["VtsHalDriverDefaults"],
+    shared_libs: [],
+    static_libs: [
         "android.hardware.tests.memory@1.0",
-        
-    ],
-    export_shared_lib_headers: [
-        
-    ],
-    cflags: [
-        "-Wall",
-        "-Werror",
     ],
 }
 
@@ -100,22 +79,10 @@ cc_library_shared {
     generated_sources: ["android.hardware.tests.memory@1.0-vts.profiler_genc++"],
     generated_headers: ["android.hardware.tests.memory@1.0-vts.profiler_genc++_headers"],
     export_generated_headers: ["android.hardware.tests.memory@1.0-vts.profiler_genc++_headers"],
-    shared_libs: [
-        "libbase",
-        "libcutils",
-        "libfmq",
-        "libhidlbase",
-        "libhidltransport",
-        "libvts_common",
-        "libvts_profiling",
-        "libvts_multidevice_proto",
-        "libprotobuf-cpp-full",
+    defaults: ["VtsHalProfilerDefaults"],
+    shared_libs: [],
+    static_libs: [
         "android.hardware.tests.memory@1.0",
-        
-    ],
-    cflags: [
-        "-Wall",
-        "-Werror",
     ],
 }
 

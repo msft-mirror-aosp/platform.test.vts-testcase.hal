@@ -81,11 +81,14 @@ class VtsSpecParser(object):
                 package = package.split('::')[0]
                 imported_packages.add(package)
 
-        this_package = 'android.hardware.%s@%s' % (hal_name, hal_version)
-        if this_package in imported_packages:
-            imported_packages.remove(this_package)
+        # Exclude the current package and packages with no corresponding libs.
+        exclude_packages = [
+            "android.hidl.base@1.0",
+            "android.hidl.manager@1.0",
+            'android.hardware.%s@%s' % (hal_name, hal_version)
+        ]
 
-        return sorted(imported_packages)
+        return sorted(list(set(imported_packages) - set(exclude_packages)))
 
     def GenerateVtsSpecs(self, hal_name, hal_version):
         """Generates VTS specs.
