@@ -42,6 +42,7 @@ class VtsHalMediaOmxV1_0Host(hal_hidl_gtest.HidlHalGTest):
                        "audio_decoder.aac",
                        "audio_decoder.amrnb",
                        "audio_decoder.amrwb",
+                       "audio_decoder.flac",
                        "audio_decoder.g711alaw",
                        "audio_decoder.g711mlaw",
                        "audio_decoder.gsm",
