@@ -212,9 +212,9 @@ TEST_F(VtsTrebleVintfTest, HalEntriesAreComplete) {
 // VINTF.
 TEST_F(VtsTrebleVintfTest, HalsAreBinderized) {
   // Verifies that HAL is binderized unless it's allowed to be passthrough.
-  HalVerifyFn is_binderized = [this](const FQName &fq_name,
-                                     const string &instance_name,
-                                     Transport transport) {
+  HalVerifyFn is_binderized = [](const FQName &fq_name,
+                                 const string & /* instance_name */,
+                                 Transport transport) {
     cout << "Verifying transport method of: " << fq_name.string() << endl;
     string hal_name = fq_name.package();
     Version version{fq_name.getPackageMajorVersion(),
