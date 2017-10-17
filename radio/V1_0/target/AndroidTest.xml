@@ -32,6 +32,5 @@
         <option name="test-timeout" value="15m"/>
         <!-- The following test is disabled due to b/64734869 -->
         <option name="exclude-filter" value="RadioHidlTest.requestShutdown" />
-        <option name="exclude-filter" value="SapHidlTest.transferAtrReq" />
     </test>
 </configuration>
