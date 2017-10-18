@@ -95,6 +95,11 @@
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalMediaOmxV1_0TargetAudioDecTest/VtsHalMediaOmxV1_0TargetAudioDecTest"/>
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalMediaOmxV1_0TargetVideoEncTest/VtsHalMediaOmxV1_0TargetVideoEncTest"/>
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalMediaOmxV1_0TargetVideoDecTest/VtsHalMediaOmxV1_0TargetVideoDecTest"/>
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalMediaOmxV1_0TargetComponentTest/VtsHalMediaOmxV1_0TargetComponentTest"/>
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalMediaOmxV1_0TargetAudioEncTest/VtsHalMediaOmxV1_0TargetAudioEncTest"/>
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalMediaOmxV1_0TargetAudioDecTest/VtsHalMediaOmxV1_0TargetAudioDecTest"/>
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalMediaOmxV1_0TargetVideoEncTest/VtsHalMediaOmxV1_0TargetVideoEncTest"/>
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalMediaOmxV1_0TargetVideoDecTest/VtsHalMediaOmxV1_0TargetVideoDecTest"/>
         <option name="binary-test-disable-framework" value="true"/>
         <option name="binary-test-stop-native-servers" value="true"/>
         <option name="hal-hidl-package-name" value="android.hardware.media.omx@1.0"/>
