@@ -8,7 +8,7 @@ hal2vts {
         ":android.hardware.tests.extension.light@2.0_hal",
     ],
     out: [
-        "android/hardware/tests/extension/light/2.0/ExtLight.vts",
+        "android/hardware/tests/extension/light/2.0/Light.vts",
         "android/hardware/tests/extension/light/2.0/types.vts",
     ],
 }
@@ -22,7 +22,7 @@ genrule {
         ":android.hardware.tests.extension.light@2.0_hal",
     ],
     out: [
-        "android/hardware/tests/extension/light/2.0/ExtLight.vts.cpp",
+        "android/hardware/tests/extension/light/2.0/Light.vts.cpp",
         "android/hardware/tests/extension/light/2.0/types.vts.cpp",
     ],
 }
@@ -35,7 +35,7 @@ genrule {
         ":android.hardware.tests.extension.light@2.0_hal",
     ],
     out: [
-        "android/hardware/tests/extension/light/2.0/ExtLight.vts.h",
+        "android/hardware/tests/extension/light/2.0/Light.vts.h",
         "android/hardware/tests/extension/light/2.0/types.vts.h",
     ],
 }
@@ -64,7 +64,7 @@ genrule {
         ":android.hardware.tests.extension.light@2.0_hal",
     ],
     out: [
-        "android/hardware/tests/extension/light/2.0/ExtLight.vts.cpp",
+        "android/hardware/tests/extension/light/2.0/Light.vts.cpp",
         "android/hardware/tests/extension/light/2.0/types.vts.cpp",
     ],
 }
@@ -77,7 +77,7 @@ genrule {
         ":android.hardware.tests.extension.light@2.0_hal",
     ],
     out: [
-        "android/hardware/tests/extension/light/2.0/ExtLight.vts.h",
+        "android/hardware/tests/extension/light/2.0/Light.vts.h",
         "android/hardware/tests/extension/light/2.0/types.vts.h",
     ],
 }
