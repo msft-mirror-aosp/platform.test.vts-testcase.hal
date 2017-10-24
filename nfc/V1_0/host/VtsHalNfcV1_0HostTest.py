@@ -62,7 +62,6 @@ class NfcHidlBasicTest(base_test.BaseTestClass):
             bits=int(self.abi_bitness))
 
         if self.coverage.enabled:
-            self.coverage.LoadArtifacts()
             self.coverage.InitializeDeviceCoverage(self.dut)
 
     def tearDownClass(self):

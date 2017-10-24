@@ -46,7 +46,6 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
         logging.info("system_uid: %s", system_uid)
 
         if self.coverage.enabled:
-            self.coverage.LoadArtifacts()
             self.coverage.InitializeDeviceCoverage(self.dut)
 
         if self.profiling.enabled:
