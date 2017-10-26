@@ -24,6 +24,7 @@ from vts.runners.host import test_runner
 from vts.utils.python.controllers import android_device
 
 ANDROID_O_API_VERSION = 26
+ANDROID_O_MR1_API_VERSION = 27
 
 class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
     """VTS should run on devices launched with O or later."""
@@ -54,18 +55,22 @@ class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
 
         return result
 
-    def testFirstApiLevel(self):
-        """Test that device launched with O or later."""
+    def getFirstApiLevel(self):
+        """Helper to retrieve the ro.product.first_api_level property."""
         try:
             firstApiLevel = self.getProp("ro.product.first_api_level",
                                          required=False)
             if firstApiLevel is None:
                 asserts.skip("ro.product.first_api_level undefined")
-            firstApiLevel = int(firstApiLevel)
-            asserts.assertTrue(firstApiLevel >= ANDROID_O_API_VERSION,
-                "VTS can only be run for new launches in O or above")
+            return int(firstApiLevel)
         except ValueError as e:
             asserts.fail("Unexpected value returned from getprop: %s" % e)
+
+    def testFirstApiLevel(self):
+        """Test that device launched with O or later."""
+        firstApiLevel = self.getFirstApiLevel()
+        asserts.assertTrue(firstApiLevel >= ANDROID_O_API_VERSION,
+            "VTS can only be run for new launches in O or above")
 
     def testTrebleEnabled(self):
         """Test that device has Treble enabled."""
@@ -84,9 +89,14 @@ class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
 
     def testVndkVersion(self):
         """Test that VNDK version is specified."""
-        vndkVersion = self.getProp("ro.vendor.vndk.version")
-        asserts.assertLess(0, len(vndkVersion),
-            "VNDK version is not defined")
+        firstApiLevel = self.getFirstApiLevel()
+        if firstApiLevel > ANDROID_O_MR1_API_VERSION:
+            vndkVersion = self.getProp("ro.vndk.version")
+            if vndkVersion is None:
+                asserts.fail("VNDK version is not defined")
+        else:
+            asserts.skip(
+                "VndkVersion can only be run for new launches in P or above")
 
 if __name__ == "__main__":
     test_runner.main()
