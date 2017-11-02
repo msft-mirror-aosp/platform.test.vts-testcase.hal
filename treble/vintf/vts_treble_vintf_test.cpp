@@ -41,6 +41,7 @@ using android::hardware::hidl_vec;
 using android::hidl::manager::V1_0::IServiceManager;
 using android::sp;
 using android::vintf::HalManifest;
+using android::vintf::ManifestHal;
 using android::vintf::Transport;
 using android::vintf::Version;
 using android::vintf::VintfObject;
@@ -143,27 +144,27 @@ class VtsTrebleVintfTest : public ::testing::Test {
 void VtsTrebleVintfTest::ForEachHalInstance(const HalManifestPtr &manifest,
                                             HalVerifyFn fn) {
   auto hal_names = manifest->getHalNames();
-  for (const auto &hal_name : hal_names) {
-    auto versions = manifest->getSupportedVersions(hal_name);
-    auto iface_names = manifest->getInterfaceNames(hal_name);
-    for (const auto &iface_name : iface_names) {
-      auto instance_names = manifest->getInstances(hal_name, iface_name);
-      for (const auto &version : versions) {
-        for (const auto &instance_name : instance_names) {
-          string major_ver = std::to_string(version.majorVer);
-          string minor_ver = std::to_string(version.minorVer);
-          string full_ver = major_ver + "." + minor_ver;
-          FQName fq_name{hal_name, full_ver, iface_name};
-          Transport transport = manifest->getTransport(
-              hal_name, version, iface_name, instance_name);
+  for (const string &hal_name : hal_names) {
+    for (const ManifestHal *hal : manifest->getHals(hal_name)) {
+      for (const Version &version : hal->versions) {
+        for (const auto &it : hal->interfaces) {
+          string iface_name = it.first;
+          set<string> instances = it.second.instances;
+          for (const string &instance_name : instances) {
+            string major_ver = std::to_string(version.majorVer);
+            string minor_ver = std::to_string(version.minorVer);
+            string full_ver = major_ver + "." + minor_ver;
+            FQName fq_name{hal_name, full_ver, iface_name};
+            Transport transport = hal->transport();
 
-          auto future_result =
-              std::async([&]() { fn(fq_name, instance_name, transport); });
-          auto timeout = std::chrono::milliseconds(500);
-          std::future_status status = future_result.wait_for(timeout);
-          if (status != std::future_status::ready) {
-            cout << "Timed out on: " << fq_name.string() << " " << instance_name
-                 << endl;
+            auto future_result =
+                std::async([&]() { fn(fq_name, instance_name, transport); });
+            auto timeout = std::chrono::milliseconds(500);
+            std::future_status status = future_result.wait_for(timeout);
+            if (status != std::future_status::ready) {
+              cout << "Timed out on: " << fq_name.string() << " "
+                   << instance_name << endl;
+            }
           }
         }
       }
@@ -193,17 +194,16 @@ sp<android::hidl::base::V1_0::IBase> VtsTrebleVintfTest::GetHalService(
 // Tests that all HAL entries in VINTF has all required fields filled out.
 TEST_F(VtsTrebleVintfTest, HalEntriesAreComplete) {
   auto hal_names = vendor_manifest_->getHalNames();
-  for (const auto &hal_name : hal_names) {
-    auto versions = vendor_manifest_->getSupportedVersions(hal_name);
-    EXPECT_FALSE(versions.empty())
-        << hal_name << " has no version specified in VINTF.";
-    auto iface_names = vendor_manifest_->getInterfaceNames(hal_name);
-    EXPECT_FALSE(iface_names.empty())
-        << hal_name << " has no interface specified in VINTF.";
-    for (const auto &iface_name : iface_names) {
-      auto instances = vendor_manifest_->getInstances(hal_name, iface_name);
-      EXPECT_FALSE(instances.empty())
-          << hal_name << " has no instance specified in VINTF.";
+  for (const string &hal_name : hal_names) {
+    for (const ManifestHal *hal : vendor_manifest_->getHals(hal_name)) {
+      EXPECT_FALSE(hal->versions.empty())
+          << hal_name << " has no version specified in VINTF.";
+      EXPECT_FALSE(hal->interfaces.empty())
+          << hal_name << " has no interface specified in VINTF.";
+      for (const auto &it : hal->interfaces) {
+        EXPECT_FALSE(it.second.instances.empty())
+            << hal_name << " has no instance specified in VINTF.";
+      }
     }
   }
 }
