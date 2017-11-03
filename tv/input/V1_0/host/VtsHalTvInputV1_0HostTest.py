@@ -41,7 +41,6 @@ class TvInputHidlTest(base_test.BaseTestClass):
             return
 
         if self.coverage.enabled:
-            self.coverage.LoadArtifacts()
             self.coverage.InitializeDeviceCoverage(self.dut)
 
         self.dut.hal.InitHidlHal(target_type="tv_input",
