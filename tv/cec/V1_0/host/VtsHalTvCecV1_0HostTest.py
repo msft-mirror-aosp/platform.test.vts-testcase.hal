@@ -46,7 +46,6 @@ class TvCecHidlTest(base_test.BaseTestClass):
             "setprop vts.hal.vts.hidl.get_stub true")
 
         if self.coverage.enabled:
-            self.coverage.LoadArtifacts()
             self.coverage.InitializeDeviceCoverage(self.dut)
 
         if self.profiling.enabled:
