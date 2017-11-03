@@ -29,6 +29,5 @@
         <option name="test-case-path-type" value="file"/>
         <option name="test-timeout" value="10m"/>
         <option name="test-config-path" value="vts/testcases/hal/bluetooth/V1_0/app/VtsAppBluetooth.config" />
-        <option name="exclude-filter" value="ThroughputTest.test_iperf_max_ndp_aware_only_oob" />
     </test>
 </configuration>
