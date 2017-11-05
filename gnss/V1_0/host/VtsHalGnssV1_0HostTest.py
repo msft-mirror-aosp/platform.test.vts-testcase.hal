@@ -54,7 +54,6 @@ class VtsHalGnssV1_0HostTest(base_test.BaseTestClass):
             bits=int(self.abi_bitness))
 
         if self.coverage.enabled:
-            self.coverage.LoadArtifacts()
             self.coverage.InitializeDeviceCoverage(self._dut)
 
     def SetCallback(self):

@@ -60,7 +60,6 @@ class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
         self.vtypes = self.omxstore.GetHidlTypeInterface('types')
 
         if self.coverage.enabled:
-            self.coverage.LoadArtifacts()
             self.coverage.InitializeDeviceCoverage(self._dut)
 
     def testListServiceAttributes(self):
