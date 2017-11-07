@@ -1,5 +1,5 @@
 // This file was auto-generated. Do not edit manually.
-// Use test/vts-testcase/hal/update_makefiles.py to generate this file.
+// Use test/vts-testcase/hal/script/update_makefiles.py to generate this file.
 
 // Generate .vts spec files.
 hal2vts {
@@ -45,38 +45,13 @@ cc_library_shared {
     generated_sources: ["android.hardware.thermal@1.1-vts.driver_genc++"],
     generated_headers: ["android.hardware.thermal@1.1-vts.driver_genc++_headers"],
     export_generated_headers: ["android.hardware.thermal@1.1-vts.driver_genc++_headers"],
+    defaults: ["VtsHalDriverDefaults"],
     shared_libs: [
-        "libcamera_metadata",
-        "libcutils",
-        "libfmq",
-        "libhidlbase",
-        "libhidltransport",
-        "libhwbinder",
-        "liblog",
-        "libprotobuf-cpp-full",
-        "libutils",
-        "libvts_common",
-        "libvts_datatype",
-        "libvts_drivercomm",
-        "libvts_measurement",
-        "libvts_multidevice_proto",
-        "android.hidl.allocator@1.0",
+        "android.hardware.thermal@1.0-vts.driver",
+    ],
+    static_libs: [
+        "android.hardware.thermal@1.0",
         "android.hardware.thermal@1.1",
-        "android.hardware.thermal@1.0",
-        "android.hardware.thermal@1.0-vts.driver",
-    ],
-    export_shared_lib_headers: [
-        "android.hardware.thermal@1.0",
-        "android.hardware.thermal@1.0-vts.driver",
-    ],
-    cflags: [
-        "-Wall",
-        "-Werror",
-
-        // These warnings are in code generated with vtsc
-        // b/31362043
-        "-Wno-duplicate-decl-specifier",
-        "-Wno-implicitly-unsigned-literal",
     ],
 }
 
@@ -112,28 +87,13 @@ cc_library_shared {
     generated_sources: ["android.hardware.thermal@1.1-vts.profiler_genc++"],
     generated_headers: ["android.hardware.thermal@1.1-vts.profiler_genc++_headers"],
     export_generated_headers: ["android.hardware.thermal@1.1-vts.profiler_genc++_headers"],
+    defaults: ["VtsHalProfilerDefaults"],
     shared_libs: [
-        "libbase",
-        "libcutils",
-        "libfmq",
-        "libhidlbase",
-        "libhidltransport",
-        "libvts_common",
-        "libvts_profiling",
-        "libvts_multidevice_proto",
-        "libprotobuf-cpp-full",
-        "android.hardware.thermal@1.1",
-        "android.hardware.thermal@1.0",
         "android.hardware.thermal@1.0-vts.profiler",
     ],
-    cflags: [
-        "-Wall",
-        "-Werror",
-
-        // These warnings are in code generated with vtsc
-        // b/31362043
-        "-Wno-duplicate-decl-specifier",
-        "-Wno-implicitly-unsigned-literal",
+    static_libs: [
+        "android.hardware.thermal@1.0",
+        "android.hardware.thermal@1.1",
     ],
 }
 
