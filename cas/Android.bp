@@ -3,4 +3,5 @@
 
 subdirs = [
     "V1_0",
+    "native/V1_0",
 ]
