@@ -61,7 +61,7 @@ class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
 
         if self.coverage.enabled:
             self.coverage.LoadArtifacts()
-            self.coverage.InitializeDeviceCoverage(self._dut)
+            self.coverage.InitializeDeviceCoverage(self.dut)
 
     def testListServiceAttributes(self):
         """Test IOmxStore::listServiceAttributes().
