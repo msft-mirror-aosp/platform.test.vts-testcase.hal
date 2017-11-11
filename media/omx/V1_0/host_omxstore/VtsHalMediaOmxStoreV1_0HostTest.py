@@ -282,6 +282,9 @@ class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
 
         # The test code starts here.
         roles = self.omxstore.listRoles()
+        if len(roles) == 0:
+            logging.warning('IOmxStore has an empty implementation. Skipping...')
+            return
 
         # A map from a node name to a set of roles.
         node2roles = {}
