@@ -35,7 +35,8 @@ class VtsHalRadioV1_0HostTest(base_test.BaseTestClass):
         self.dut.shell.InvokeTerminal("one")
         self.dut.shell.one.Execute("setenforce 0")  # SELinux permissive mode
         if not precondition_utils.CanRunHidlHalTest(
-            self, self.dut, self.dut.shell.one):
+                self, self.dut, self.dut.shell.one,
+                self.run_as_compliance_test):
             self._skip_all_testcases = True
             return
 

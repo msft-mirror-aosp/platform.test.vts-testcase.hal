@@ -37,7 +37,8 @@ class VtsHalGnssV1_0HostTest(base_test.BaseTestClass):
 
         self.dut.shell.Execute("setenforce 0")  # SELinux permissive mode
         if not precondition_utils.CanRunHidlHalTest(
-            self, self.dut, self.dut.shell.default):
+                self, self.dut, self.dut.shell.default,
+                self.run_as_compliance_test):
             self._skip_all_testcases = True
             return
 
