@@ -48,7 +48,7 @@ class VtsHalMediaOmxV1_0HostBasic(base_test.BaseTestClass):
 
         if self.coverage.enabled:
             self.coverage.LoadArtifacts()
-            self.coverage.InitializeDeviceCoverage(self._dut)
+            self.coverage.InitializeDeviceCoverage(self.dut)
 
     def testIOmxStoreBase(self):
         """A simple test case which just calls each registered function."""
