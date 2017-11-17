@@ -43,7 +43,6 @@
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalAudioEffectV2_0TargetReplay"/>
         <option name="binary-test-type" value="hal_hidl_replay_test"/>
-        <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/audio/effect/V2_0/android.hardware.audio.effect_2.0_108301333025.vts.trace"/>
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/audio/effect/V2_0/android.hardware.audio.effect_2.0_32249473887.vts.trace"/>
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/audio/effect/V2_0/android.hardware.audio.effect_2.0_486896798397.vts.trace"/>
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/audio/effect/V2_0/android.hardware.audio.effect_2.0_61278401310.vts.trace"/>
