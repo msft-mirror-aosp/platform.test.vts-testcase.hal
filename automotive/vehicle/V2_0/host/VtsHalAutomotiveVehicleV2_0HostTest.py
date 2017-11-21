@@ -19,38 +19,26 @@ import logging
 import time
 
 from vts.runners.host import asserts
-from vts.runners.host import base_test
 from vts.runners.host import const
 from vts.runners.host import keys
 from vts.runners.host import test_runner
-from vts.utils.python.controllers import android_device
-from vts.utils.python.precondition import precondition_utils
+from vts.testcases.template.hal_hidl_host_test import hal_hidl_host_test
 
 
-class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
+class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
     """A simple testcase for the VEHICLE HIDL HAL."""
+
+    TEST_HAL_SERVICES = {
+        "android.hardware.automotive.vehicle@2.0::IVehicle",
+    }
 
     def setUpClass(self):
         """Creates a mirror and init vehicle hal."""
-        self.dut = self.registerController(android_device)[0]
+        super(VtsHalAutomotiveVehicleV2_0HostTest, self).setUpClass()
 
-        self.dut.shell.InvokeTerminal("one")
-        self.dut.shell.one.Execute("setenforce 0")  # SELinux permissive mode
-        if not precondition_utils.CanRunHidlHalTest(
-                self, self.dut, self.dut.shell.one,
-                self.run_as_compliance_test):
-            self._skip_all_testcases = True
-            return
-
-        results = self.dut.shell.one.Execute("id -u system")
+        results = self.shell.Execute("id -u system")
         system_uid = results[const.STDOUT][0].strip()
         logging.info("system_uid: %s", system_uid)
-
-        if self.coverage.enabled:
-            self.coverage.InitializeDeviceCoverage(self.dut)
-
-        if self.profiling.enabled:
-            self.profiling.EnableVTSProfiling(self.dut.shell.one)
 
         self.dut.hal.InitHidlHal(
             target_type="vehicle",
@@ -67,23 +55,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(base_test.BaseTestClass):
         asserts.assertEqual(0x00ff0000, self.vtypes.VehiclePropertyType.MASK)
         asserts.assertEqual(0x0f000000, self.vtypes.VehicleArea.MASK)
 
-    def tearDownClass(self):
-        """Disables the profiling.
-
-        If profiling is enabled for the test, collect the profiling data
-        and disable profiling after the test is done.
-        """
-        if self._skip_all_testcases:
-            return
-
-        if self.profiling.enabled:
-            self.profiling.ProcessTraceDataForTestCase(self.dut)
-            self.profiling.ProcessAndUploadTraceData()
-
-        if self.coverage.enabled:
-            self.coverage.SetCoverageData(dut=self.dut, isGlobal=True)
-
     def setUp(self):
+        super(VtsHalAutomotiveVehicleV2_0HostTest, self).setUp()
         self.propToConfig = {}
         for config in self.vehicle.getAllPropConfigs():
             self.propToConfig[config['prop']] = config
