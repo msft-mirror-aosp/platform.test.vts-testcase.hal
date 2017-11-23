@@ -29,24 +29,18 @@ import logging
 import re
 
 from vts.runners.host import asserts
-from vts.runners.host import base_test
 from vts.runners.host import test_runner
-from vts.utils.python.controllers import android_device
-from vts.utils.python.precondition import precondition_utils
+from vts.testcases.template.hal_hidl_host_test import hal_hidl_host_test
 
 
-class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
+class VtsHalMediaOmxStoreV1_0Host(hal_hidl_host_test.HalHidlHostTest):
     """Host test class to run the Media_OmxStore HAL."""
+    TEST_HAL_SERVICES = {
+        "android.hardware.media.omx@1.0::IOmxStore",
+    }
 
     def setUpClass(self):
-        self.dut = self.registerController(android_device)[0]
-
-        self.dut.shell.InvokeTerminal('one')
-        self.dut.shell.one.Execute('setenforce 0')  # SELinux permissive mode
-        if not precondition_utils.CanRunHidlHalTest(
-            self, self.dut, self.dut.shell.one):
-            self._skip_all_testcases = True
-            return
+        super(VtsHalMediaOmxStoreV1_0Host, self).setUpClass()
 
         self.dut.hal.InitHidlHal(
             target_type='media_omx',
@@ -58,9 +52,6 @@ class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
 
         self.omxstore = self.dut.hal.media_omx
         self.vtypes = self.omxstore.GetHidlTypeInterface('types')
-
-        if self.coverage.enabled:
-            self.coverage.InitializeDeviceCoverage(self.dut)
 
     def testListServiceAttributes(self):
         """Test IOmxStore::listServiceAttributes().
