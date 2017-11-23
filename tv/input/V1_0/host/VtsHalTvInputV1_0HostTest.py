@@ -18,31 +18,17 @@
 import logging
 
 from vts.runners.host import asserts
-from vts.runners.host import base_test
-from vts.runners.host import const
-from vts.runners.host import keys
 from vts.runners.host import test_runner
-from vts.utils.python.controllers import android_device
-from vts.utils.python.precondition import precondition_utils
+from vts.testcases.template.hal_hidl_host_test import hal_hidl_host_test
 
 
-class TvInputHidlTest(base_test.BaseTestClass):
+class TvInputHidlTest(hal_hidl_host_test.HalHidlHostTest):
     """Two hello world test cases which use the shell driver."""
 
+    TEST_HAL_SERVICES = {"android.hardware.tv.input@1.0::ITvInput"}
     def setUpClass(self):
         """Creates a mirror and init tv input hal."""
-        self.dut = self.registerController(android_device)[0]
-
-        self.dut.shell.InvokeTerminal("one")
-        self.dut.shell.one.Execute("setenforce 0")  # SELinux permissive mode
-        if not precondition_utils.CanRunHidlHalTest(
-                self, self.dut, self.dut.shell.one,
-                self.run_as_compliance_test):
-            self._skip_all_testcases = True
-            return
-
-        if self.coverage.enabled:
-            self.coverage.InitializeDeviceCoverage(self.dut)
+        super(TvInputHidlTest, self).setUpClass()
 
         self.dut.hal.InitHidlHal(target_type="tv_input",
                                  target_basepaths=self.dut.libPaths,
@@ -50,32 +36,6 @@ class TvInputHidlTest(base_test.BaseTestClass):
                                  target_package="android.hardware.tv.input",
                                  target_component_name="ITvInput",
                                  bits=int(self.abi_bitness))
-
-        self.dut.shell.InvokeTerminal("one")
-
-    def setUp(self):
-        """Setup function that will be called every time before executing each
-        test case in the test class."""
-        if self.profiling.enabled:
-            self.profiling.EnableVTSProfiling(self.dut.shell.one)
-
-    def tearDown(self):
-        """TearDown function that will be called every time after executing each
-        test case in the test class."""
-        if self.profiling.enabled:
-            self.profiling.ProcessTraceDataForTestCase(self.dut)
-            self.profiling.DisableVTSProfiling(self.dut.shell.one)
-
-    def tearDownClass(self):
-        """To be executed when all test cases are finished."""
-        if self._skip_all_testcases:
-            return
-
-        if self.coverage.enabled:
-            self.coverage.SetCoverageData(dut=self.dut, isGlobal=True)
-
-        if self.profiling.enabled:
-            self.profiling.ProcessAndUploadTraceData()
 
     def testGetStreamConfigurations(self):
         configs = self.dut.hal.tv_input.getStreamConfigurations(0)
