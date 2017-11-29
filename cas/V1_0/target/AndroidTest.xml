@@ -13,20 +13,20 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<configuration description="Config for VTS VtsHalDrmV1_0Target test cases">
+<configuration description="Config for VTS VtsHalCasV1_0Target test cases">
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
         <option name="abort-on-push-failure" value="false"/>
         <option name="push-group" value="HalHidlTargetTest.push"/>
-        <option name="push" value="vendor/lib/drm-vts-test-libs->/data/local/tmp/32/lib"/>
-        <option name="push" value="vendor/lib64/drm-vts-test-libs->/data/local/tmp/64/lib"/>
     </target_preparer>
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
-        <option name="test-module-name" value="VtsHalDrmV1_0Target"/>
-        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalDrmV1_0TargetTest/VtsHalDrmV1_0TargetTest"/>
-        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalDrmV1_0TargetTest/VtsHalDrmV1_0TargetTest"/>
+        <option name="test-module-name" value="VtsHalCasV1_0Target"/>
+        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalCasV1_0TargetTest/VtsHalCasV1_0TargetTest"/>
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalCasV1_0TargetTest/VtsHalCasV1_0TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
-        <option name="precondition-lshal" value="android.hardware.drm@1.0"/>
-        <option name="test-timeout" value="15m"/>
+        <option name="binary-test-disable-framework" value="true"/>
+        <option name="binary-test-stop-native-servers" value="true"/>
+        <option name="precondition-lshal" value="android.hardware.cas@1.0"/>
+        <option name="test-timeout" value="1m"/>
     </test>
 </configuration>

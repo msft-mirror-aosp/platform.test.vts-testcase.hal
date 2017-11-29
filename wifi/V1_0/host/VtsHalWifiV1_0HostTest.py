@@ -17,6 +17,7 @@
 
 import logging
 
+from vts.runners.host import asserts
 from vts.runners.host import const
 from vts.runners.host import test_runner
 from vts.testcases.template.hal_hidl_gtest import hal_hidl_gtest
@@ -27,6 +28,18 @@ class VtsHalWifiV1_0Host(hal_hidl_gtest.HidlHalGTest):
     """Host test class to run the WiFi V1.0 HAL's VTS tests."""
 
     WIFI_AWARE_FEATURE_NAME = "android.hardware.wifi.aware"
+
+    def setUpClass(self):
+       super(VtsHalWifiV1_0Host, self).setUpClass()
+       results = self.shell.Execute("setprop ctl.stop wpa_supplicant")
+       asserts.assertEqual(0, results[const.EXIT_CODE][0])
+       results = self.shell.Execute("setprop ctl.stop wificond")
+       asserts.assertEqual(0, results[const.EXIT_CODE][0])
+
+    def tearDownClass(self):
+       results = self.shell.Execute("setprop ctl.start wificond")
+       if results[const.EXIT_CODE][0] != 0:
+         logging.error('Failed to start wificond')
 
     def CreateTestCases(self):
         """Get all registered test components and create test case objects."""

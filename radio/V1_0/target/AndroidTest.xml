@@ -30,6 +30,7 @@
         <option name="binary-test-stop-native-servers" value="true"/>
         <option name="precondition-lshal" value="android.hardware.radio@1.0"/>
         <option name="test-timeout" value="15m"/>
-        <option name="exclude-filter" value="SapHidlTest.transferAtrReq" />
+        <!-- The following test is disabled due to b/64734869 -->
+        <option name="exclude-filter" value="RadioHidlTest.requestShutdown" />
     </test>
 </configuration>
