@@ -1,7 +1,3 @@
-subdirs = [
-    "*",
-]
-
 cc_defaults {
     name: "VtsHalLibDefaults",
     shared_libs: [
