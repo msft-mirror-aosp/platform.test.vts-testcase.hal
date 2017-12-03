@@ -168,7 +168,9 @@ class BuildRuleGen(object):
             result = []
             for package in imported_packages:
                 prefix = 'android.hardware.'
-                if package.startswith(prefix):
+                hidl_prefix = 'android.hidl.'
+                if package.startswith(prefix) or package.startswith(
+                        hidl_prefix):
                     vts_pkg_name = package + '-vts.' + vts_pkg_type
                     result.append(vts_pkg_name)
                 else:
