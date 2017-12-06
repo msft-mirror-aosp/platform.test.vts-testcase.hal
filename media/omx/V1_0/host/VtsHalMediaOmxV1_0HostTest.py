@@ -42,6 +42,7 @@ class VtsHalMediaOmxV1_0Host(hal_hidl_gtest.HidlHalGTest):
                        "audio_decoder.aac",
                        "audio_decoder.amrnb",
                        "audio_decoder.amrwb",
+                       "audio_decoder.flac",
                        "audio_decoder.g711alaw",
                        "audio_decoder.g711mlaw",
                        "audio_decoder.gsm",
@@ -120,7 +121,7 @@ class VtsHalMediaOmxV1_0Host(hal_hidl_gtest.HidlHalGTest):
                     instance_name = "default"
                     test_case = omx_test_case.VtsHalMediaOmxV1_0TestCase(
                         component, role, instance_name, test_suite, test_name,
-                        path)
+                        path, tag)
                     test_cases.append(test_case)
         logging.info("num of test_testcases: %s", len(test_cases))
         return test_cases
