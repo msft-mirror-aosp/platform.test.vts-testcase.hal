@@ -67,11 +67,6 @@ class BuildRuleGen(object):
                                    utils.HalNameDir(hal_name),
                                    utils.HalVerDir(hal_version))
 
-            file_path = os.path.join(hal_dir, 'Android.bp')
-            utils.WriteBuildRule(
-                file_path,
-                utils.OnlySubdirsBpRule(self._warning_header, ['*']))
-
             file_path = os.path.join(hal_dir, 'build', 'Android.bp')
             utils.WriteBuildRule(file_path, self._VtsBuildRuleFromTemplate(
                 self._VTS_BUILD_TEMPLATE, hal_name, hal_version))
