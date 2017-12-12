@@ -1,8 +1,0 @@
-// This file was auto-generated. Do not edit manually.
-// Use test/vts-testcase/hal/script/update_makefiles.py to generate this file.
-
-subdirs = [
-    "evs/V1_0",
-    "vehicle/V2_0",
-    "vehicle/V2_1",
-]

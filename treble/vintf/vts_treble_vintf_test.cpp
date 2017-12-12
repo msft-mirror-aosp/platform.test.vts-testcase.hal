@@ -105,6 +105,34 @@ static set<string> ReleasedHashes(const FQName &fq_iface_name) {
   return released_hashes;
 }
 
+// Returns the partition that a HAL is associated with.
+static std::string PartitionOfProcess(int32_t pid) {
+  const std::string path = "/proc/" + std::to_string(pid) + "/exe";
+
+  char buff[PATH_MAX];
+  ssize_t len = readlink(path.c_str(), buff, sizeof(buff) - 1);
+  if (len < 0) {
+    return "(unknown)";
+  }
+
+  buff[len] = '\0';
+
+  std::string partition = buff;
+  while (!partition.empty() && partition.front() == '/') {
+    partition = partition.substr(1);
+  }
+
+  size_t backslash = partition.find_first_of('/');
+  partition = partition.substr(0, backslash);
+
+  // TODO(b/70033981): remove once ODM and Vendor manifests are distinguished
+  if (partition == "odm") {
+    partition = "vendor";
+  }
+
+  return partition;
+}
+
 class VtsTrebleVintfTest : public ::testing::Test {
  public:
   virtual void SetUp() override {
@@ -237,18 +265,31 @@ TEST_F(VtsTrebleVintfTest, HalsAreBinderized) {
 // Tests that all HALs specified in the VINTF are available through service
 // manager.
 TEST_F(VtsTrebleVintfTest, HalsAreServed) {
-  // Verifies that HAL is available through service manager.
-  HalVerifyFn is_available = [this](const FQName &fq_name,
-                                    const string &instance_name,
-                                    Transport transport) {
-    sp<android::hidl::base::V1_0::IBase> hal_service =
-        GetHalService(fq_name, instance_name, transport);
-    EXPECT_NE(hal_service, nullptr)
-        << fq_name.string() << " not available." << endl;
+  // Returns a function that verifies that HAL is available through service
+  // manager and is served from a specific set of partitions.
+  auto is_available_from =
+      [this](const std::string &expected_partition) -> HalVerifyFn {
+    return [&](const FQName &fq_name, const string &instance_name,
+               Transport transport) {
+      sp<android::hidl::base::V1_0::IBase> hal_service =
+          GetHalService(fq_name, instance_name, transport);
+      EXPECT_NE(hal_service, nullptr)
+          << fq_name.string() << " not available." << endl;
+
+      if (!hal_service->isRemote()) return;
+
+      auto ret = hal_service->getDebugInfo([&](const auto &info) {
+        const std::string &partition = PartitionOfProcess(info.pid);
+        EXPECT_EQ(expected_partition, partition)
+            << fq_name.string() << " is in partition " << partition
+            << " but is expected to be in " << expected_partition;
+      });
+      EXPECT_TRUE(ret.isOk());
+    };
   };
 
-  ForEachHalInstance(vendor_manifest_, is_available);
-  ForEachHalInstance(fwk_manifest_, is_available);
+  ForEachHalInstance(vendor_manifest_, is_available_from("vendor"));
+  ForEachHalInstance(fwk_manifest_, is_available_from("system"));
 }
 
 // Tests that HAL interfaces are officially released.
