@@ -24,7 +24,7 @@
         <option name="push" value="DATA/lib/android.hardware.automotive.vehicle@2.0-vts.driver.so->/data/local/tmp/32/android.hardware.automotive.vehicle@2.0-vts.driver.so"/>
         <option name="push" value="DATA/lib64/android.hardware.automotive.vehicle@2.0-vts.driver.so->/data/local/tmp/64/android.hardware.automotive.vehicle@2.0-vts.driver.so"/>
     </target_preparer>
-    <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
+    <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalAutomotiveVehicleV2_0Host"/>
         <option name="test-case-path" value="vts/testcases/hal/automotive/vehicle/V2_0/host/VtsHalAutomotiveVehicleV2_0HostTest"/>
