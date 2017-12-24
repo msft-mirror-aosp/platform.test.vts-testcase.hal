@@ -14,14 +14,14 @@
      limitations under the License.
 -->
 <configuration description="Config for VTS VtsAppWifiAwarePerformanceThroughput test cases">
-    <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer">
+    <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer">
         <option name="no-dep-module" value="enum" />
         <option name="dep-module" value="enum34" />
         <option name="dep-module" value="pyserial" />
         <option name="dep-module" value="shellescape" />
         <option name="dep-module" value="statistics" />
         <option name="dep-module" value="subprocess32" />
-    </target_preparer>
+    </multi_target_preparer>
 
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
         <option name="abort-on-push-failure" value="true"/>
