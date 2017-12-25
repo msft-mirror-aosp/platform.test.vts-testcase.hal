@@ -14,6 +14,7 @@
      limitations under the License.
 -->
 <configuration description="Config for VTS VtsAppWifiAwarePerformanceThroughput test cases">
+    <option name="config-descriptor:metadata" key="plan" value="vts-misc" />
     <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer">
         <option name="no-dep-module" value="enum" />
         <option name="dep-module" value="enum34" />
