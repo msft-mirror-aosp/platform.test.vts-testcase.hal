@@ -276,7 +276,7 @@ TEST_F(VtsTrebleVintfTest, HalsAreServed) {
       EXPECT_NE(hal_service, nullptr)
           << fq_name.string() << " not available." << endl;
 
-      if (!hal_service->isRemote()) return;
+      if (hal_service == nullptr || !hal_service->isRemote()) return;
 
       auto ret = hal_service->getDebugInfo([&](const auto &info) {
         const std::string &partition = PartitionOfProcess(info.pid);
