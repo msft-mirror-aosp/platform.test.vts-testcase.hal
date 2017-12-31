@@ -118,6 +118,12 @@ static std::string PartitionOfProcess(int32_t pid) {
   buff[len] = '\0';
 
   std::string partition = buff;
+
+  if (partition == "/system/bin/app_process64" ||
+      partition == "/system/bin/app_process32") {
+    return "";  // cannot determine
+  }
+
   while (!partition.empty() && partition.front() == '/') {
     partition = partition.substr(1);
   }
@@ -276,10 +282,11 @@ TEST_F(VtsTrebleVintfTest, HalsAreServed) {
       EXPECT_NE(hal_service, nullptr)
           << fq_name.string() << " not available." << endl;
 
-      if (!hal_service->isRemote()) return;
+      if (hal_service == nullptr || !hal_service->isRemote()) return;
 
       auto ret = hal_service->getDebugInfo([&](const auto &info) {
         const std::string &partition = PartitionOfProcess(info.pid);
+        if (partition.empty()) return;
         EXPECT_EQ(expected_partition, partition)
             << fq_name.string() << " is in partition " << partition
             << " but is expected to be in " << expected_partition;
