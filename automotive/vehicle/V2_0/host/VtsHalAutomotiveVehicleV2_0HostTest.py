@@ -324,7 +324,6 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             self.vtypes.VehicleProperty.INFO_MODEL_YEAR,
             self.vtypes.VehicleProperty.INFO_FUEL_CAPACITY,
             self.vtypes.VehicleProperty.HVAC_FAN_DIRECTION_AVAILABLE,
-            self.vtypes.VehicleProperty.AUDIO_HW_VARIANT,
             self.vtypes.VehicleProperty.AP_POWER_BOOTUP_REASON,
         ])
         for c in self.configList:
