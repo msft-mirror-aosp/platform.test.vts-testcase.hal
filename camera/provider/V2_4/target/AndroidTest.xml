@@ -25,6 +25,12 @@
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalCameraProviderV2_4TargetTest/VtsHalCameraProviderV2_4TargetTest"/>
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalCameraProviderV2_4TargetTest/VtsHalCameraProviderV2_4TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
+        <option name="exclude-coverage-path" value="hardware/qcom/camera/msm8998/QCamera2/HAL" />
+        <option name="exclude-coverage-path" value="hardware/interfaces/graphics/mapper/2.0" />
+        <option name="exclude-coverage-path" value="hardware/interfaces/configstore/utils" />
+        <option name="exclude-coverage-path" value="hardware/interfaces/sensors" />
+        <option name="exclude-coverage-path" value="hardware/qcom/display/msm8998" />
+        <option name="exclude-coverage-path" value="vendor/qcom/msm8998/proprietary/proprietary/qmi-framework" />
         <option name="precondition-lshal" value="android.hardware.camera.provider@2.4"/>
         <option name="test-timeout" value="15m"/>
     </test>
