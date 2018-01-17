@@ -25,6 +25,7 @@
 #include <thread>
 #include <vector>
 
+#include <android-base/properties.h>
 #include <android/hidl/manager/1.0/IServiceManager.h>
 #include <gtest/gtest.h>
 #include <hidl-hash/Hash.h>
@@ -35,12 +36,14 @@
 
 using android::FQName;
 using android::Hash;
+using android::sp;
+using android::base::GetUintProperty;
 using android::hardware::hidl_array;
 using android::hardware::hidl_string;
 using android::hardware::hidl_vec;
 using android::hidl::manager::V1_0::IServiceManager;
-using android::sp;
 using android::vintf::HalManifest;
+using android::vintf::Level;
 using android::vintf::ManifestHal;
 using android::vintf::Transport;
 using android::vintf::Version;
@@ -76,6 +79,34 @@ static const set<string> kPassthroughHals = {
     "android.hardware.graphics.mapper", "android.hardware.renderscript",
     "android.hidl.memory",
 };
+
+// kFcm2ApiLevelMap is associated with API level. There can be multiple
+// Framework Compatibility Matrix Version (FCM Version) per API level, or
+// multiple API levels per FCM version.
+// kFcm2ApiLevelMap is defined apart from android::vintf::Level. Level is an
+// integer designed to be irrelevant with API level; the O / O_MR1 values are
+// historic values for convenience, and should be removed (b/70628538). Hence
+// these values are not used here.
+// For example:
+//    ...
+//    // Assume devices launch with Android X must implement FCM version >= 9
+//    X = 9,
+//    // Assume devices launch with Android Y and Android Z must implement
+//    // FCM version >= 11
+//    Y = 11,
+//    Z = 11
+static const map<size_t /* Shipping API Level */, Level /* FCM Version */>
+    kFcm2ApiLevelMap{{// N. The test runs on devices that launch with N and
+                      // become a Treble device when upgrading to O.
+                      {25, static_cast<Level>(1)},
+                      // O
+                      {26, static_cast<Level>(1)},
+                      // O MR-1
+                      {27, static_cast<Level>(2)},
+                      // P
+                      {28, static_cast<Level>(3)}}};
+
+static const string kShippingApiLevelProp = "ro.product.first_api_level";
 
 // For a given interface returns package root if known. Returns empty string
 // otherwise.
@@ -377,6 +408,38 @@ TEST(CompatiblityTest, VendorFrameworkCompatibility) {
   EXPECT_EQ(0, VintfObject::CheckCompatibility(
                    {}, &error, ::android::vintf::DISABLE_AVB_CHECK))
       << error;
+}
+
+// Tests that Shipping FCM Version in the device manifest is at least the
+// minimum Shipping FCM Version as required by Shipping API level.
+TEST(DeprecateTest, ShippingFcmVersion) {
+  uint64_t shipping_api_level =
+      GetUintProperty<uint64_t>(kShippingApiLevelProp, 0);
+
+  ASSERT_NE(shipping_api_level, 0u) << "sysprop " << kShippingApiLevelProp
+                                    << " is missing or cannot be parsed.";
+  Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
+  if (shipping_fcm_version == Level::UNSPECIFIED) {
+    // O / O-MR1 vendor image doesn't have shipping FCM version declared and
+    // shipping FCM version is inferred from Shipping API level, hence it always
+    // meets the requirement.
+    return;
+  }
+
+  ASSERT_GE(shipping_api_level, kFcm2ApiLevelMap.begin()->first /* 25 */)
+      << "Pre-N devices should not run this test.";
+
+  auto it = kFcm2ApiLevelMap.find(shipping_api_level);
+  ASSERT_TRUE(it != kFcm2ApiLevelMap.end())
+      << "No launch requirement is set yet for Shipping API level "
+      << shipping_api_level << ". Please update the test.";
+
+  Level required_fcm_version = it->second;
+
+  ASSERT_GE(shipping_fcm_version, required_fcm_version)
+      << "Shipping API level == " << shipping_api_level
+      << " requires Shipping FCM Version >= " << required_fcm_version
+      << " (but is " << shipping_fcm_version << ")";
 }
 
 int main(int argc, char **argv) {
