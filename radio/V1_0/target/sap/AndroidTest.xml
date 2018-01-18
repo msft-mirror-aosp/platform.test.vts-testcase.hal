@@ -13,26 +13,21 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<configuration description="Config for VTS VtsHalRadioV1_0TargetProfiling test cases">
+<configuration description="Config for VTS VtsHalSapV1_0Target test cases">
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
         <option name="abort-on-push-failure" value="false"/>
-        <option name="push-group" value="HalHidlTargetProfilingTest.push"/>
-        <option name="cleanup" value="true"/>
-        <option name="push" value="DATA/lib/android.hardware.radio@1.0-vts.profiler.so->/data/local/tmp/32/android.hardware.radio@1.0-vts.profiler.so"/>
-        <option name="push" value="DATA/lib64/android.hardware.radio@1.0-vts.profiler.so->/data/local/tmp/64/android.hardware.radio@1.0-vts.profiler.so"/>
+        <option name="push-group" value="HalHidlTargetTest.push"/>
     </target_preparer>
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
-        <option name="test-module-name" value="VtsHalRadioV1_0TargetProfiling"/>
-        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalRadioV1_0TargetTest/VtsHalRadioV1_0TargetTest"/>
-        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalRadioV1_0TargetTest/VtsHalRadioV1_0TargetTest"/>
+        <option name="test-module-name" value="VtsHalSapV1_0Target"/>
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalSapV1_0TargetTest/VtsHalSapV1_0TargetTest"/>
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalSapV1_0TargetTest/VtsHalSapV1_0TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="binary-test-disable-framework" value="true"/>
         <option name="binary-test-stop-native-servers" value="true"/>
-        <option name="enable-profiling" value="true"/>
         <option name="precondition-lshal" value="android.hardware.radio@1.0"/>
+        <option name="exclude-filter" value="SapHidlTest.transferAtrReq" />
         <option name="test-timeout" value="15m"/>
     </test>
 </configuration>
