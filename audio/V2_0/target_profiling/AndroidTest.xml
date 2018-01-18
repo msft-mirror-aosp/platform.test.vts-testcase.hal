@@ -34,6 +34,10 @@
         <option name="enable-profiling" value="true"/>
         <option name="binary-test-disable-framework" value="true"/>
         <option name="binary-test-stop-native-servers" value="true"/>
+        <option name="exclude-coverage-path" value="hardware/interfaces/audio/effect" />
+        <option name="exclude-coverage-path" value="hardware/qcom/audio/post_proc" />
+        <option name="exclude-coverage-path" value="hardware/qcom/audio/visualizer" />
+        <option name="exclude-coverage-path" value="hardware/qcom/audio/voice_processing/" />
         <option name="precondition-lshal" value="android.hardware.audio@2.0"/>
         <option name="test-timeout" value="60m"/>
         <option name="gtest-batch-mode" value="true"/>
