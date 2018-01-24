@@ -36,8 +36,7 @@ class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
     def getProp(self, prop, required=True):
         """Helper to retrieve a property from device."""
 
-        results = self.dut.shell.VtsTreblePlatformVersionTest.Execute(
-            "getprop " + prop)
+        results = self.dut.shell.Execute("getprop " + prop)
         if required:
             asserts.assertEqual(results[const.EXIT_CODE][0], 0,
                 "getprop must succeed")
@@ -52,6 +51,21 @@ class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
         result = results[const.STDOUT][0].strip()
 
         logging.info("getprop {}={}".format(prop, result))
+
+        return result
+
+    def getEnv(self, env):
+        """Helper to retrieve an environment varable from device."""
+
+        results = self.dut.shell.Execute("printenv " + env)
+        if (results[const.EXIT_CODE][0] != 0 or
+            len(results[const.STDOUT][0].strip()) == 0):
+            logging.info("environment variable %s undefined", env)
+            return None
+
+        result = results[const.STDOUT][0].strip()
+
+        logging.info("printenv {}:{}".format(env, result))
 
         return result
 
@@ -88,12 +102,19 @@ class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
             asserts.fail("Unexpected value returned from getprop: %s" % e)
 
     def testVndkVersion(self):
-        """Test that VNDK version is specified."""
+        """Test that VNDK version is specified.
+
+        If ro.vndk.version is not defined on boot, GSI sets LD_CONFIG_FILE to
+        temporary configuration file and ro.vndk.version to default value.
+        """
         firstApiLevel = self.getFirstApiLevel()
         if firstApiLevel > ANDROID_O_MR1_API_VERSION:
             vndkVersion = self.getProp("ro.vndk.version")
+            envLdConfigFile = self.getEnv("LD_CONFIG_FILE")
             if vndkVersion is None:
                 asserts.fail("VNDK version is not defined")
+            if envLdConfigFile is not None:
+                asserts.fail("LD_CONFIG_FILE is defined as %s" % envLdConfigFile)
         else:
             asserts.skip(
                 "VndkVersion can only be run for new launches in P or above")
