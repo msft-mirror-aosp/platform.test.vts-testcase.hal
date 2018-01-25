@@ -221,7 +221,7 @@ class TestCaseCreator(object):
                                     {'class': VTS_FILE_PUSHER})
 
         self.GeneratePushFileConfigure(file_pusher)
-        python_preparer = ET.SubElement(configuration, 'target_preparer',
+        python_preparer = ET.SubElement(configuration, 'multi_target_preparer',
                                         {'class': VTS_PYTHON_PREPARER})
         test = ET.SubElement(configuration, 'test', {'class': VTS_TEST_CLASS})
 
