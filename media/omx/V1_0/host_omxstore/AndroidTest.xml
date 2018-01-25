@@ -37,7 +37,7 @@
         <option name="push" value="DATA/lib/android.hardware.media.omx@1.0-vts.driver.so->/data/local/tmp/32/android.hardware.media.omx@1.0-vts.driver.so"/>
         <option name="push" value="DATA/lib64/android.hardware.media.omx@1.0-vts.driver.so->/data/local/tmp/64/android.hardware.media.omx@1.0-vts.driver.so"/>
     </target_preparer>
-    <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
+    <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalMediaOmxStoreV1_0Host"/>
         <option name="test-case-path" value="vts/testcases/hal/media/omx/V1_0/host_omxstore/VtsHalMediaOmxStoreV1_0HostTest"/>
