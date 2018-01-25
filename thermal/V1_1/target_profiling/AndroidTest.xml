@@ -22,7 +22,7 @@
         <option name="push" value="DATA/lib/android.hardware.thermal@1.1-vts.profiler.so->/data/local/tmp/32/android.hardware.thermal@1.1-vts.profiler.so"/>
         <option name="push" value="DATA/lib64/android.hardware.thermal@1.1-vts.profiler.so->/data/local/tmp/64/android.hardware.thermal@1.1-vts.profiler.so"/>
     </target_preparer>
-    <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
+    <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalThermalV1_1TargetProfiling"/>
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalThermalV1_1TargetTest/VtsHalThermalV1_1TargetTest"/>
