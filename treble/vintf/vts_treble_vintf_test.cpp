@@ -26,6 +26,7 @@
 #include <vector>
 
 #include <android-base/properties.h>
+#include <android-base/strings.h>
 #include <android/hidl/manager/1.0/IServiceManager.h>
 #include <gtest/gtest.h>
 #include <hidl-hash/Hash.h>
@@ -33,6 +34,7 @@
 #include <hidl/ServiceManagement.h>
 #include <vintf/HalManifest.h>
 #include <vintf/VintfObject.h>
+#include <vintf/parse_string.h>
 
 using android::FQName;
 using android::Hash;
@@ -48,6 +50,8 @@ using android::vintf::ManifestHal;
 using android::vintf::Transport;
 using android::vintf::Version;
 using android::vintf::VintfObject;
+using android::vintf::operator<<;
+using android::vintf::to_string;
 
 using std::cout;
 using std::endl;
@@ -194,7 +198,11 @@ class VtsTrebleVintfTest : public ::testing::Test {
   void ForEachHalInstance(const HalManifestPtr &, HalVerifyFn);
   // Retrieves an existing HAL service.
   sp<android::hidl::base::V1_0::IBase> GetHalService(
-      const FQName &fq_name, const string &instance_name, Transport);
+      const FQName &fq_name, const string &instance_name, Transport,
+      bool log = true);
+
+  static vector<string> GetInterfaceChain(
+      const sp<android::hidl::base::V1_0::IBase> &service);
 
   // Default service manager.
   sp<IServiceManager> default_manager_;
@@ -238,14 +246,18 @@ void VtsTrebleVintfTest::ForEachHalInstance(const HalManifestPtr &manifest,
 }
 
 sp<android::hidl::base::V1_0::IBase> VtsTrebleVintfTest::GetHalService(
-    const FQName &fq_name, const string &instance_name, Transport transport) {
+    const FQName &fq_name, const string &instance_name, Transport transport,
+    bool log) {
   string hal_name = fq_name.package();
   Version version{fq_name.getPackageMajorVersion(),
                   fq_name.getPackageMinorVersion()};
   string iface_name = fq_name.name();
   string fq_iface_name = fq_name.string();
-  cout << "Getting service of: " << fq_iface_name << " " << instance_name
-       << endl;
+
+  if (log) {
+    cout << "Getting service of: " << fq_iface_name << " " << instance_name
+         << endl;
+  }
 
   android::sp<android::hidl::base::V1_0::IBase> hal_service = nullptr;
   if (transport == Transport::HWBINDER) {
@@ -254,6 +266,17 @@ sp<android::hidl::base::V1_0::IBase> VtsTrebleVintfTest::GetHalService(
     hal_service = passthrough_manager_->get(fq_iface_name, instance_name);
   }
   return hal_service;
+}
+
+vector<string> VtsTrebleVintfTest::GetInterfaceChain(
+    const sp<android::hidl::base::V1_0::IBase> &service) {
+  vector<string> iface_chain{};
+  service->interfaceChain([&iface_chain](const hidl_vec<hidl_string> &chain) {
+    for (const auto &iface_name : chain) {
+      iface_chain.push_back(iface_name);
+    }
+  });
+  return iface_chain;
 }
 
 // Tests that all HAL entries in VINTF has all required fields filled out.
@@ -345,13 +368,7 @@ TEST_F(VtsTrebleVintfTest, InterfacesAreReleased) {
       return;
     }
 
-    vector<string> iface_chain{};
-    hal_service->interfaceChain(
-        [&iface_chain](const hidl_vec<hidl_string> &chain) {
-          for (const auto &iface_name : chain) {
-            iface_chain.push_back(iface_name);
-          }
-        });
+    vector<string> iface_chain = GetInterfaceChain(hal_service);
 
     vector<string> hash_chain{};
     hal_service->getHashChain(
@@ -405,14 +422,17 @@ TEST(CompatiblityTest, VendorFrameworkCompatibility) {
       ::android::vintf::DISABLE_AVB_CHECK))
       << error;
 
-  EXPECT_EQ(0, VintfObject::CheckCompatibility(
-                   {}, &error, ::android::vintf::DISABLE_AVB_CHECK))
+  EXPECT_EQ(android::vintf::COMPATIBLE,
+            VintfObject::CheckCompatibility(
+                {}, &error, ::android::vintf::DISABLE_AVB_CHECK))
       << error;
 }
 
+class DeprecateTest : public VtsTrebleVintfTest {};
+
 // Tests that Shipping FCM Version in the device manifest is at least the
 // minimum Shipping FCM Version as required by Shipping API level.
-TEST(DeprecateTest, ShippingFcmVersion) {
+TEST_F(DeprecateTest, ShippingFcmVersion) {
   uint64_t shipping_api_level =
       GetUintProperty<uint64_t>(kShippingApiLevelProp, 0);
 
@@ -440,6 +460,66 @@ TEST(DeprecateTest, ShippingFcmVersion) {
       << "Shipping API level == " << shipping_api_level
       << " requires Shipping FCM Version >= " << required_fcm_version
       << " (but is " << shipping_fcm_version << ")";
+}
+
+// Tests that deprecated HALs are not served, unless a higher, non-deprecated
+// minor version is served.
+TEST_F(DeprecateTest, NoDeprcatedHalsOnManager) {
+  // Predicate for whether an instance is served through service manager.
+  // Return {is instance in service manager, highest minor version}
+  // where "highest minor version" is the first element in getInterfaceChain()
+  // that has the same "package", major version as "version", "interface" and
+  // "instance", but a higher minor version than "version".
+  VintfObject::IsInstanceInUse is_instance_served =
+      [this](const string &package, Version version, const string &interface,
+             const string &instance) {
+        FQName fq_name(package, to_string(version), interface);
+        for (auto transport : {Transport::HWBINDER, Transport::PASSTHROUGH}) {
+          auto service =
+              GetHalService(fq_name, instance, transport, false /* log */);
+          if (service == nullptr) {
+            continue;  // try next transport
+          }
+          vector<string> iface_chain = GetInterfaceChain(service);
+          for (const auto &fq_interface_str : iface_chain) {
+            FQName fq_interface{fq_interface_str};
+            if (!fq_interface.isValid()) {
+              // Allow CheckDeprecation to proceed with some sensible default
+              ADD_FAILURE() << "'" << fq_interface_str
+                            << "' (returned by getInterfaceChain())"
+                            << "is not a valid fully-qualified name.";
+              return std::make_pair(true, version);
+            }
+            if (fq_interface.package() == package) {
+              Version fq_version{fq_interface.getPackageMajorVersion(),
+                                 fq_interface.getPackageMinorVersion()};
+              if (fq_version.minorAtLeast(version)) {
+                return std::make_pair(true, fq_version);
+              }
+            }
+          }
+          // Allow CheckDeprecation to proceed with some sensible default
+          ADD_FAILURE() << "getInterfaceChain() does not return interface name "
+                        << "with at least minor version'" << package << "@"
+                        << version << "'; returned values are ["
+                        << android::base::Join(iface_chain, ", ") << "]";
+          return std::make_pair(true, version);
+        }
+
+        return std::make_pair(false, Version{});
+      };
+  string error;
+  EXPECT_EQ(android::vintf::NO_DEPRECATED_HALS,
+            VintfObject::CheckDeprecation(is_instance_served, &error))
+      << error;
+}
+
+// Tests that deprecated HALs are not in the manifest, unless a higher,
+// non-deprecated minor version is in the manifest.
+TEST_F(DeprecateTest, NoDeprcatedHalsOnManifest) {
+  string error;
+  EXPECT_EQ(android::vintf::NO_DEPRECATED_HALS,
+            VintfObject::CheckDeprecation(&error));
 }
 
 int main(int argc, char **argv) {
