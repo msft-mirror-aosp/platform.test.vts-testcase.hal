@@ -13,8 +13,9 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<configuration description="Config for VTS VtsHalVibratorV1_1Adapter test cases">
-    <option name="config-descriptor:metadata" key="component" value="framework" />
+<configuration description="Config for VTS VtsHalVibratorV1_1AdapterSanityTest test cases">
+    <option name="config-descriptor:metadata" key="plan" value="vts-hal-adapter" />
+    <option name="config-descriptor:metadata" key="plan" value="vts-staging-default" />
 
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
         <option name="abort-on-push-failure" value="false"/>
@@ -30,14 +31,15 @@
         <option name="thread-count" value="1"/>
     </target_preparer>
 
-    <target_preparer class="com.android.tradefed.targetprep.suite.SuiteApkInstaller">
+    <target_preparer class="com.android.compatibility.common.tradefed.targetprep.ApkInstaller">
+        <option name="test-file-name" value="DATA/app/DeviceHealthTests/DeviceHealthTests.apk" />
         <option name="cleanup-apks" value="true" />
-        <option name="test-file-name" value="CtsOsTestCases.apk" />
     </target_preparer>
 
+    <option name="test-tag" value="DeviceHealthTests" />
     <test class="com.android.tradefed.testtype.AndroidJUnitTest" >
-        <option name="package" value="android.os.cts" />
-        <option name="runtime-hint" value="3m15s" />
+        <option name="package" value="com.android.devicehealth.tests" />
+        <option name="runner" value="android.support.test.runner.AndroidJUnitRunner" />
     </test>
 
 </configuration>
