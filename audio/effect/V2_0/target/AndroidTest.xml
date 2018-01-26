@@ -28,10 +28,10 @@
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="binary-test-disable-framework" value="true"/>
         <option name="binary-test-stop-native-servers" value="true"/>
-        <option name="exclude-coverage-path" value="platform/hardware/interfaces/audio/2.0/default/" />
-        <option name="exclude-coverage-path" value="platform/hardware/interfaces/soundtrigger/" />
-        <option name="exclude-coverage-path" value="platform/hardware/libhardware/modules/" />
-        <option name="exclude-coverage-path" value="platform/hardware/qcom/audio/hal/" />
+        <option name="exclude-coverage-path" value="hardware/interfaces/audio/2.0/default/" />
+        <option name="exclude-coverage-path" value="hardware/interfaces/soundtrigger/" />
+        <option name="exclude-coverage-path" value="hardware/libhardware/modules/" />
+        <option name="exclude-coverage-path" value="hardware/qcom/audio/hal/" />
         <option name="precondition-lshal" value="android.hardware.audio.effect@2.0"/>
         <option name="test-timeout" value="5m"/>
     </test>
