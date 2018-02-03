@@ -9,7 +9,6 @@ hal2vts {
     ],
     out: [
         "android/hardware/automotive/audiocontrol/1.0/AudioControl.vts",
-        "android/hardware/automotive/audiocontrol/1.0/AudioControlCallback.vts",
         "android/hardware/automotive/audiocontrol/1.0/types.vts",
     ],
 }
@@ -24,7 +23,6 @@ genrule {
     ],
     out: [
         "android/hardware/automotive/audiocontrol/1.0/AudioControl.vts.cpp",
-        "android/hardware/automotive/audiocontrol/1.0/AudioControlCallback.vts.cpp",
         "android/hardware/automotive/audiocontrol/1.0/types.vts.cpp",
     ],
 }
@@ -38,7 +36,6 @@ genrule {
     ],
     out: [
         "android/hardware/automotive/audiocontrol/1.0/AudioControl.vts.h",
-        "android/hardware/automotive/audiocontrol/1.0/AudioControlCallback.vts.h",
         "android/hardware/automotive/audiocontrol/1.0/types.vts.h",
     ],
 }
@@ -65,7 +62,6 @@ genrule {
     ],
     out: [
         "android/hardware/automotive/audiocontrol/1.0/AudioControl.vts.cpp",
-        "android/hardware/automotive/audiocontrol/1.0/AudioControlCallback.vts.cpp",
         "android/hardware/automotive/audiocontrol/1.0/types.vts.cpp",
     ],
 }
@@ -79,7 +75,6 @@ genrule {
     ],
     out: [
         "android/hardware/automotive/audiocontrol/1.0/AudioControl.vts.h",
-        "android/hardware/automotive/audiocontrol/1.0/AudioControlCallback.vts.h",
         "android/hardware/automotive/audiocontrol/1.0/types.vts.h",
     ],
 }
