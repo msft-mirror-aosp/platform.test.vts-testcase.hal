@@ -34,10 +34,15 @@
         <option name="binary-test-disable-framework" value="true"/>
         <option name="binary-test-stop-native-servers" value="true"/>
         <option name="enable-profiling" value="true"/>
+        <option name="exclude-coverage-path" value="frameworks/av" />
         <option name="exclude-coverage-path" value="hardware/interfaces/audio/2.0/default/" />
+        <option name="exclude-coverage-path" value="hardware/interfaces/audio/core/" />
         <option name="exclude-coverage-path" value="hardware/interfaces/soundtrigger/" />
+        <option name="exclude-coverage-path" value="hardware/libhardware/include/hardware/audio_alsaops.h" />
+        <option name="exclude-coverage-path" value="hardware/libhardware/include/hardware/sound_trigger.h" />
         <option name="exclude-coverage-path" value="hardware/libhardware/modules/" />
         <option name="exclude-coverage-path" value="hardware/qcom/audio/hal/" />
+        <option name="exclude-coverage-path" value="system/media" />
         <option name="precondition-lshal" value="android.hardware.audio.effect@2.0"/>
         <option name="test-timeout" value="15m"/>
     </test>
