@@ -34,6 +34,7 @@ cc_test {
     static_libs: [
         "libhidl-gen-hash",
         "libhidl-gen-utils",
+        "libprocpartition",
         "libselinux",
         "libtinyxml2",
         "libvintf",
