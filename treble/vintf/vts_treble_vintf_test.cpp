@@ -32,6 +32,7 @@
 #include <hidl-hash/Hash.h>
 #include <hidl-util/FQName.h>
 #include <hidl/ServiceManagement.h>
+#include <procpartition/procpartition.h>
 #include <vintf/HalManifest.h>
 #include <vintf/VintfObject.h>
 #include <vintf/parse_string.h>
@@ -44,6 +45,7 @@ using android::hardware::hidl_array;
 using android::hardware::hidl_string;
 using android::hardware::hidl_vec;
 using android::hidl::manager::V1_0::IServiceManager;
+using android::procpartition::Partition;
 using android::vintf::HalManifest;
 using android::vintf::Level;
 using android::vintf::ManifestHal;
@@ -141,34 +143,12 @@ static set<string> ReleasedHashes(const FQName &fq_iface_name) {
 }
 
 // Returns the partition that a HAL is associated with.
-static std::string PartitionOfProcess(int32_t pid) {
-  const std::string path = "/proc/" + std::to_string(pid) + "/exe";
-
-  char buff[PATH_MAX];
-  ssize_t len = readlink(path.c_str(), buff, sizeof(buff) - 1);
-  if (len < 0) {
-    return "(unknown)";
-  }
-
-  buff[len] = '\0';
-
-  std::string partition = buff;
-
-  if (partition == "/system/bin/app_process64" ||
-      partition == "/system/bin/app_process32") {
-    return "";  // cannot determine
-  }
-
-  while (!partition.empty() && partition.front() == '/') {
-    partition = partition.substr(1);
-  }
-
-  size_t backslash = partition.find_first_of('/');
-  partition = partition.substr(0, backslash);
+static Partition PartitionOfProcess(int32_t pid) {
+  auto partition = android::procpartition::getPartition(pid);
 
   // TODO(b/70033981): remove once ODM and Vendor manifests are distinguished
-  if (partition == "odm") {
-    partition = "vendor";
+  if (partition == Partition::ODM) {
+    partition = Partition::VENDOR;
   }
 
   return partition;
@@ -327,10 +307,10 @@ TEST_F(VtsTrebleVintfTest, HalsAreBinderized) {
 TEST_F(VtsTrebleVintfTest, HalsAreServed) {
   // Returns a function that verifies that HAL is available through service
   // manager and is served from a specific set of partitions.
-  auto is_available_from =
-      [this](const std::string &expected_partition) -> HalVerifyFn {
-    return [&](const FQName &fq_name, const string &instance_name,
-               Transport transport) {
+  auto is_available_from = [this](Partition expected_partition) -> HalVerifyFn {
+    return [this, expected_partition](const FQName &fq_name,
+                                      const string &instance_name,
+                                      Transport transport) {
       sp<android::hidl::base::V1_0::IBase> hal_service =
           GetHalService(fq_name, instance_name, transport);
       EXPECT_NE(hal_service, nullptr)
@@ -339,8 +319,8 @@ TEST_F(VtsTrebleVintfTest, HalsAreServed) {
       if (hal_service == nullptr || !hal_service->isRemote()) return;
 
       auto ret = hal_service->getDebugInfo([&](const auto &info) {
-        const std::string &partition = PartitionOfProcess(info.pid);
-        if (partition.empty()) return;
+        Partition partition = PartitionOfProcess(info.pid);
+        if (partition == Partition::UNKNOWN) return;
         EXPECT_EQ(expected_partition, partition)
             << fq_name.string() << " is in partition " << partition
             << " but is expected to be in " << expected_partition;
@@ -349,8 +329,8 @@ TEST_F(VtsTrebleVintfTest, HalsAreServed) {
     };
   };
 
-  ForEachHalInstance(vendor_manifest_, is_available_from("vendor"));
-  ForEachHalInstance(fwk_manifest_, is_available_from("system"));
+  ForEachHalInstance(vendor_manifest_, is_available_from(Partition::VENDOR));
+  ForEachHalInstance(fwk_manifest_, is_available_from(Partition::SYSTEM));
 }
 
 // Tests that HAL interfaces are officially released.
