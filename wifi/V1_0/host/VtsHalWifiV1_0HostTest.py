@@ -20,7 +20,6 @@ import logging
 from vts.runners.host import const
 from vts.runners.host import test_runner
 from vts.testcases.template.hal_hidl_gtest import hal_hidl_gtest
-from vts.testcases.hal.wifi.V1_0.host import VtsHalWifiV1_0TestCase as wifi_test_case
 
 
 class VtsHalWifiV1_0Host(hal_hidl_gtest.HidlHalGTest):
@@ -47,13 +46,10 @@ class VtsHalWifiV1_0Host(hal_hidl_gtest.HidlHalGTest):
             A list of VtsHalWifiV1_0TestCase objects
         """
         gtest_cases = super(VtsHalWifiV1_0Host, self).CreateTestCase(path, tag)
-        test_cases = []
         for gtest_case in gtest_cases:
-            test_case = wifi_test_case.VtsHalWifiV1_0TestCase(
-                self._nan_on, gtest_case.full_name, gtest_case.test_name, path)
-            test_cases.append(test_case)
-        logging.info("num of test_testcases: %s", len(test_cases))
-        return test_cases
+            if self._nan_on:
+                gtest_cases.args += "--nan_on"
+        return gtest_cases
 
 
 if __name__ == "__main__":
