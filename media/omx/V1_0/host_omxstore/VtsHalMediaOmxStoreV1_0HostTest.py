@@ -32,12 +32,12 @@ from vts.runners.host import asserts
 from vts.runners.host import test_runner
 from vts.testcases.template.hal_hidl_host_test import hal_hidl_host_test
 
+OMXSTORE_V1_0_HAL = "android.hardware.media.omx@1.0::IOmxStore"
 
 class VtsHalMediaOmxStoreV1_0Host(hal_hidl_host_test.HalHidlHostTest):
     """Host test class to run the Media_OmxStore HAL."""
-    TEST_HAL_SERVICES = {
-        "android.hardware.media.omx@1.0::IOmxStore",
-    }
+
+    TEST_HAL_SERVICES = {OMXSTORE_V1_0_HAL}
 
     def setUpClass(self):
         super(VtsHalMediaOmxStoreV1_0Host, self).setUpClass()
@@ -48,6 +48,7 @@ class VtsHalMediaOmxStoreV1_0Host(hal_hidl_host_test.HalHidlHostTest):
             target_version=1.0,
             target_package='android.hardware.media.omx',
             target_component_name='IOmxStore',
+            hw_binder_service_name=self.getHalServiceName(OMXSTORE_V1_0_HAL),
             bits=int(self.abi_bitness))
 
         self.omxstore = self.dut.hal.media_omx
