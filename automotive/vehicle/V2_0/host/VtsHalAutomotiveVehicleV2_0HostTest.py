@@ -24,12 +24,13 @@ from vts.runners.host import keys
 from vts.runners.host import test_runner
 from vts.testcases.template.hal_hidl_host_test import hal_hidl_host_test
 
+VEHICLE_V2_0_HAL = "android.hardware.automotive.vehicle@2.0::IVehicle"
 
 class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
     """A simple testcase for the VEHICLE HIDL HAL."""
 
     TEST_HAL_SERVICES = {
-        "android.hardware.automotive.vehicle@2.0::IVehicle",
+        VEHICLE_V2_0_HAL,
     }
 
     def setUpClass(self):
@@ -46,6 +47,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             target_version=2.0,
             target_package="android.hardware.automotive.vehicle",
             target_component_name="IVehicle",
+            hw_binder_service_name=self.getHalServiceName(VEHICLE_V2_0_HAL),
             bits=int(self.abi_bitness))
 
         self.vehicle = self.dut.hal.vehicle  # shortcut
