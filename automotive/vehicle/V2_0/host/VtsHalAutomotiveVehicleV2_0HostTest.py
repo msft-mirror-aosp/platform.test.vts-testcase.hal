@@ -97,6 +97,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             'prop' : propertyId,
             'timestamp' : 0,
             'areaId' : areaId,
+            'status' : self.vtypes.VehiclePropertyStatus.AVAILABLE,
             'value' : {
                 'int32Values' : [],
                 'floatValues' : [],
@@ -194,20 +195,15 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             self.vtypes.VehicleAreaZone.ROW_1_LEFT,
             self.vtypes.VehicleAreaZone.ROW_1_CENTER,
             self.vtypes.VehicleAreaZone.ROW_1_RIGHT,
-            self.vtypes.VehicleAreaZone.ROW_1,
             self.vtypes.VehicleAreaZone.ROW_2_LEFT,
             self.vtypes.VehicleAreaZone.ROW_2_CENTER,
             self.vtypes.VehicleAreaZone.ROW_2_RIGHT,
-            self.vtypes.VehicleAreaZone.ROW_2,
             self.vtypes.VehicleAreaZone.ROW_3_LEFT,
             self.vtypes.VehicleAreaZone.ROW_3_CENTER,
             self.vtypes.VehicleAreaZone.ROW_3_RIGHT,
-            self.vtypes.VehicleAreaZone.ROW_3,
             self.vtypes.VehicleAreaZone.ROW_4_LEFT,
             self.vtypes.VehicleAreaZone.ROW_4_CENTER,
             self.vtypes.VehicleAreaZone.ROW_4_RIGHT,
-            self.vtypes.VehicleAreaZone.ROW_4,
-            self.vtypes.VehicleAreaZone.WHOLE_CABIN,
         ]
 
         extractedZones = []
@@ -582,7 +578,6 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
 
             subscribeOptions = {
                 "propId" : self.vtypes.VehicleProperty.ENGINE_OIL_TEMP,
-                "vehicleAreas" : 0,
                 "sampleRate" : 10.0,  # Hz
                 "flags" : self.vtypes.SubscribeFlags.HAL_EVENT,
             }
@@ -648,6 +643,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
                 'prop' : self.propertyId,
                 'timestamp' : 0,
                 'areaId' : self.areaId,
+                'status' : self.test.vtypes.VehiclePropertyStatus.AVAILABLE,
                 'value' : {
                     'int32Values' : [],
                     'floatValues' : [],
@@ -704,6 +700,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
                 'prop' : self.propertyId,
                 'timestamp' : 0,
                 'areaId' : self.areaId,
+                'status' : self.test.vtypes.VehiclePropertyStatus.AVAILABLE,
                 'value' : {
                     'int32Values' : [],
                     'floatValues' : [],
