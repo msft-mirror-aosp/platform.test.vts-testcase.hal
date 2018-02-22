@@ -12,6 +12,7 @@ hal2vts {
         "android/hardware/gnss/1.1/GnssCallback.vts",
         "android/hardware/gnss/1.1/GnssConfiguration.vts",
         "android/hardware/gnss/1.1/GnssMeasurement.vts",
+        "android/hardware/gnss/1.1/GnssMeasurementCallback.vts",
     ],
 }
 
@@ -28,6 +29,7 @@ genrule {
         "android/hardware/gnss/1.1/GnssCallback.vts.cpp",
         "android/hardware/gnss/1.1/GnssConfiguration.vts.cpp",
         "android/hardware/gnss/1.1/GnssMeasurement.vts.cpp",
+        "android/hardware/gnss/1.1/GnssMeasurementCallback.vts.cpp",
     ],
 }
 
@@ -43,6 +45,7 @@ genrule {
         "android/hardware/gnss/1.1/GnssCallback.vts.h",
         "android/hardware/gnss/1.1/GnssConfiguration.vts.h",
         "android/hardware/gnss/1.1/GnssMeasurement.vts.h",
+        "android/hardware/gnss/1.1/GnssMeasurementCallback.vts.h",
     ],
 }
 
@@ -74,6 +77,7 @@ genrule {
         "android/hardware/gnss/1.1/GnssCallback.vts.cpp",
         "android/hardware/gnss/1.1/GnssConfiguration.vts.cpp",
         "android/hardware/gnss/1.1/GnssMeasurement.vts.cpp",
+        "android/hardware/gnss/1.1/GnssMeasurementCallback.vts.cpp",
     ],
 }
 
@@ -89,6 +93,7 @@ genrule {
         "android/hardware/gnss/1.1/GnssCallback.vts.h",
         "android/hardware/gnss/1.1/GnssConfiguration.vts.h",
         "android/hardware/gnss/1.1/GnssMeasurement.vts.h",
+        "android/hardware/gnss/1.1/GnssMeasurementCallback.vts.h",
     ],
 }
 
