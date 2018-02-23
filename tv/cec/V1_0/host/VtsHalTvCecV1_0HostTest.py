@@ -22,11 +22,12 @@ from vts.runners.host import asserts
 from vts.runners.host import test_runner
 from vts.testcases.template.hal_hidl_host_test import hal_hidl_host_test
 
+TVCEC_V1_0_HAL = "android.hardware.tv.cec@1.0::IHdmiCec"
 
 class TvCecHidlTest(hal_hidl_host_test.HalHidlHostTest):
     """Host testcase class for the TV HDMI_CEC HIDL HAL."""
 
-    TEST_HAL_SERVICES = {"android.hardware.tv.cec@1.0::IHdmiCec"}
+    TEST_HAL_SERVICES = {TVCEC_V1_0_HAL}
     def setUpClass(self):
         """Creates a mirror and init tv hdmi cec hal service."""
         super(TvCecHidlTest, self).setUpClass()
@@ -37,6 +38,7 @@ class TvCecHidlTest(hal_hidl_host_test.HalHidlHostTest):
             target_version=1.0,
             target_package="android.hardware.tv.cec",
             target_component_name="IHdmiCec",
+            hw_binder_service_name=self.getHalServiceName(TVCEC_V1_0_HAL),
             bits=int(self.abi_bitness))
 
         time.sleep(1) # Wait for hal to be ready
