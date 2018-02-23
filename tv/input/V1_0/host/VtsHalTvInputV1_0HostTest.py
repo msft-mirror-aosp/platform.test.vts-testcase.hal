@@ -21,21 +21,26 @@ from vts.runners.host import asserts
 from vts.runners.host import test_runner
 from vts.testcases.template.hal_hidl_host_test import hal_hidl_host_test
 
+TVINPUT_V1_0_HAL = "android.hardware.tv.input@1.0::ITvInput"
+
 
 class TvInputHidlTest(hal_hidl_host_test.HalHidlHostTest):
     """Two hello world test cases which use the shell driver."""
 
-    TEST_HAL_SERVICES = {"android.hardware.tv.input@1.0::ITvInput"}
+    TEST_HAL_SERVICES = {TVINPUT_V1_0_HAL}
+
     def setUpClass(self):
         """Creates a mirror and init tv input hal."""
         super(TvInputHidlTest, self).setUpClass()
 
-        self.dut.hal.InitHidlHal(target_type="tv_input",
-                                 target_basepaths=self.dut.libPaths,
-                                 target_version=1.0,
-                                 target_package="android.hardware.tv.input",
-                                 target_component_name="ITvInput",
-                                 bits=int(self.abi_bitness))
+        self.dut.hal.InitHidlHal(
+            target_type="tv_input",
+            target_basepaths=self.dut.libPaths,
+            target_version=1.0,
+            target_package="android.hardware.tv.input",
+            target_component_name="ITvInput",
+            hw_binder_service_name=self.getHalServiceName(TVINPUT_V1_0_HAL),
+            bits=int(self.abi_bitness))
 
     def testGetStreamConfigurations(self):
         configs = self.dut.hal.tv_input.getStreamConfigurations(0)
