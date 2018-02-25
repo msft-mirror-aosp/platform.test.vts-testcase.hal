@@ -44,6 +44,8 @@ using android::base::GetUintProperty;
 using android::hardware::hidl_array;
 using android::hardware::hidl_string;
 using android::hardware::hidl_vec;
+using android::hardware::Return;
+using android::hidl::base::V1_0::IBase;
 using android::hidl::manager::V1_0::IServiceManager;
 using android::procpartition::Partition;
 using android::vintf::HalManifest;
@@ -177,12 +179,10 @@ class VtsTrebleVintfTest : public ::testing::Test {
   // Applies given function to each HAL instance in VINTF.
   void ForEachHalInstance(const HalManifestPtr &, HalVerifyFn);
   // Retrieves an existing HAL service.
-  sp<android::hidl::base::V1_0::IBase> GetHalService(
-      const FQName &fq_name, const string &instance_name, Transport,
-      bool log = true);
+  sp<IBase> GetHalService(const FQName &fq_name, const string &instance_name,
+                          Transport, bool log = true);
 
-  static vector<string> GetInterfaceChain(
-      const sp<android::hidl::base::V1_0::IBase> &service);
+  static vector<string> GetInterfaceChain(const sp<IBase> &service);
 
   // Default service manager.
   sp<IServiceManager> default_manager_;
@@ -225,9 +225,9 @@ void VtsTrebleVintfTest::ForEachHalInstance(const HalManifestPtr &manifest,
   }
 }
 
-sp<android::hidl::base::V1_0::IBase> VtsTrebleVintfTest::GetHalService(
-    const FQName &fq_name, const string &instance_name, Transport transport,
-    bool log) {
+sp<IBase> VtsTrebleVintfTest::GetHalService(const FQName &fq_name,
+                                            const string &instance_name,
+                                            Transport transport, bool log) {
   string hal_name = fq_name.package();
   Version version{fq_name.getPackageMajorVersion(),
                   fq_name.getPackageMinorVersion()};
@@ -239,7 +239,7 @@ sp<android::hidl::base::V1_0::IBase> VtsTrebleVintfTest::GetHalService(
          << endl;
   }
 
-  android::sp<android::hidl::base::V1_0::IBase> hal_service = nullptr;
+  android::sp<IBase> hal_service = nullptr;
   if (transport == Transport::HWBINDER) {
     hal_service = default_manager_->get(fq_iface_name, instance_name);
   } else if (transport == Transport::PASSTHROUGH) {
@@ -248,8 +248,7 @@ sp<android::hidl::base::V1_0::IBase> VtsTrebleVintfTest::GetHalService(
   return hal_service;
 }
 
-vector<string> VtsTrebleVintfTest::GetInterfaceChain(
-    const sp<android::hidl::base::V1_0::IBase> &service) {
+vector<string> VtsTrebleVintfTest::GetInterfaceChain(const sp<IBase> &service) {
   vector<string> iface_chain{};
   service->interfaceChain([&iface_chain](const hidl_vec<hidl_string> &chain) {
     for (const auto &iface_name : chain) {
@@ -304,6 +303,7 @@ TEST_F(VtsTrebleVintfTest, HalsAreBinderized) {
 
 // Tests that all HALs specified in the VINTF are available through service
 // manager.
+// This tests (HAL in manifest) => (HAL is served)
 TEST_F(VtsTrebleVintfTest, HalsAreServed) {
   // Returns a function that verifies that HAL is available through service
   // manager and is served from a specific set of partitions.
@@ -311,8 +311,7 @@ TEST_F(VtsTrebleVintfTest, HalsAreServed) {
     return [this, expected_partition](const FQName &fq_name,
                                       const string &instance_name,
                                       Transport transport) {
-      sp<android::hidl::base::V1_0::IBase> hal_service =
-          GetHalService(fq_name, instance_name, transport);
+      sp<IBase> hal_service = GetHalService(fq_name, instance_name, transport);
       EXPECT_NE(hal_service, nullptr)
           << fq_name.string() << " not available." << endl;
 
@@ -333,6 +332,44 @@ TEST_F(VtsTrebleVintfTest, HalsAreServed) {
   ForEachHalInstance(fwk_manifest_, is_available_from(Partition::SYSTEM));
 }
 
+// Tests that all HALs which are served are specified in the VINTF
+// This tests (binderized HAL is served) => (binderized HAL in manifest)
+TEST_F(VtsTrebleVintfTest, ServedHalsAreInManifest) {
+  std::set<std::string> manifest_hwbinder_hals_;
+
+  auto add_manifest_hwbinder_hals = [&manifest_hwbinder_hals_](
+                                        const FQName &fq_name,
+                                        const string &instance_name,
+                                        Transport transport) {
+    if (transport != Transport::HWBINDER) return;
+
+    // 1.n in manifest => 1.0, 1.1, ... 1.n are all served
+    FQName fq = fq_name;
+    while (true) {
+      manifest_hwbinder_hals_.insert(fq.string() + "/" + instance_name);
+      if (fq.getPackageMinorVersion() <= 0) {
+        break;
+      }
+      fq = fq.downRev();
+    }
+  };
+
+  ForEachHalInstance(vendor_manifest_, add_manifest_hwbinder_hals);
+  ForEachHalInstance(fwk_manifest_, add_manifest_hwbinder_hals);
+
+  Return<void> ret = default_manager_->list([&](const auto &list) {
+    for (const auto &name : list) {
+      // TODO(b/73774955): use standardized parsing code for fqinstancename
+      if (std::string(name).find(IBase::descriptor) == 0) continue;
+
+      EXPECT_NE(manifest_hwbinder_hals_.find(name),
+                manifest_hwbinder_hals_.end())
+          << name << " is being served, but it is not in a manifest.";
+    }
+  });
+  EXPECT_TRUE(ret.isOk());
+}
+
 // Tests that HAL interfaces are officially released.
 TEST_F(VtsTrebleVintfTest, InterfacesAreReleased) {
   // Verifies that HAL are released by fetching the hash of the interface and
@@ -340,8 +377,7 @@ TEST_F(VtsTrebleVintfTest, InterfacesAreReleased) {
   HalVerifyFn is_released = [this](const FQName &fq_name,
                                    const string &instance_name,
                                    Transport transport) {
-    sp<android::hidl::base::V1_0::IBase> hal_service =
-        GetHalService(fq_name, instance_name, transport);
+    sp<IBase> hal_service = GetHalService(fq_name, instance_name, transport);
 
     if (hal_service == nullptr) {
       ADD_FAILURE() << fq_name.string() << " not available." << endl;
