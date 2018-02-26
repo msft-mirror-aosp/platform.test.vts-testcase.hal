@@ -80,7 +80,7 @@ class VtsCodelabHelloWorldTest(base_test.BaseTestClass):
         Enables mtp and checks the host to see if mtp interface is present.
         MTP: https://en.wikipedia.org/wiki/Media_Transfer_Protocol.
         """
-        self.adb.shell("svc usb setFunction mtp true")
+        self.adb.shell("svc usb setFunctions mtp true")
         time.sleep(3)
         asserts.assertTrue(self.checkProtocol(6, 1, 1), "MTP not present")
 
@@ -90,7 +90,7 @@ class VtsCodelabHelloWorldTest(base_test.BaseTestClass):
         Enables ptp and checks the host to see if ptp interface is present.
         PTP: https://en.wikipedia.org/wiki/Picture_Transfer_Protocol.
         """
-        self.adb.shell("svc usb setFunction ptp true")
+        self.adb.shell("svc usb setFunctions ptp true")
         time.sleep(3)
         asserts.assertTrue(self.checkProtocol(6, 1, 1), "PTP not present")
 
@@ -100,7 +100,7 @@ class VtsCodelabHelloWorldTest(base_test.BaseTestClass):
         Enables midi and checks the host to see if midi interface is present.
         MIDI: https://en.wikipedia.org/wiki/MIDI.
         """
-        self.adb.shell("svc usb setFunction midi true")
+        self.adb.shell("svc usb setFunctions midi true")
         time.sleep(3)
         asserts.assertTrue(self.checkProtocol(1, 3, 0), "MIDI not present")
 
@@ -110,7 +110,7 @@ class VtsCodelabHelloWorldTest(base_test.BaseTestClass):
         Enables rndis and checks the host to see if rndis interface is present.
         RNDIS: https://en.wikipedia.org/wiki/RNDIS.
         """
-        self.adb.shell("svc usb setFunction rndis true")
+        self.adb.shell("svc usb setFunctions rndis true")
         time.sleep(3)
         asserts.assertTrue(self.checkProtocol(10, 0, 0), "RNDIS not present")
 
