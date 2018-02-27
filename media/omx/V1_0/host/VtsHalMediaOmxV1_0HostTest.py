@@ -120,7 +120,7 @@ class VtsHalMediaOmxV1_0Host(hal_hidl_gtest.HidlHalGTest):
                     test_case = copy.copy(gtest_case)
                     test_case.args += " -C " + component
                     test_case.args += " -R " + role
-                    test_case.tag = component + '_' + role + test_case.tag
+                    test_case.name_appendix = '_' + component + '_' + role + test_case.name_appendix
                     test_cases.append(test_case)
         logging.info("num of test_testcases: %s", len(test_cases))
         return test_cases
