@@ -24,7 +24,6 @@
         <option name="push" value="DATA/lib/android.hardware.sensors@1.0-vts.driver.so->/data/local/tmp/32/android.hardware.sensors@1.0-vts.driver.so"/>
         <option name="push" value="DATA/lib64/android.hardware.sensors@1.0-vts.driver.so->/data/local/tmp/64/android.hardware.sensors@1.0-vts.driver.so"/>
     </target_preparer>
-    <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalSensorsV1_0Host"/>
         <option name="test-case-path" value="vts/testcases/hal/sensors/V1_0/host/VtsHalSensorsV1_0HostTest"/>
