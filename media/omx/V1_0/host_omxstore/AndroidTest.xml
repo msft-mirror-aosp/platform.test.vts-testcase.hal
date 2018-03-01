@@ -41,8 +41,6 @@
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalMediaOmxStoreV1_0Host"/>
         <option name="test-case-path" value="vts/testcases/hal/media/omx/V1_0/host_omxstore/VtsHalMediaOmxStoreV1_0HostTest"/>
-        <option name="hal-hidl-package-name" value="android.hardware.media.omx@1.0"/>
-        <option name="precondition-lshal" value="android.hardware.media.omx@1.0"/>
         <option name="test-timeout" value="1m"/>
     </test>
 </configuration>
