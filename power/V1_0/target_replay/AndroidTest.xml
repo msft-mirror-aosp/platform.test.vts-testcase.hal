@@ -32,8 +32,6 @@
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/power/V1_0/android.hardware.power_1.0_16558631751.vts.trace"/>
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/power/V1_0/android.hardware.power_1.0_16053566180.vts.trace"/>
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/power/V1_0/android.hardware.power_1.0_16273110837.vts.trace"/>
-        <option name="hal-hidl-package-name" value="android.hardware.power@1.0"/>
-        <option name="precondition-lshal" value="android.hardware.power@1.0"/>
         <option name="test-timeout" value="5m"/>
     </test>
 </configuration>

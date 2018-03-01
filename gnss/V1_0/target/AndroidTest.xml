@@ -27,7 +27,6 @@
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="binary-test-disable-framework" value="true"/>
         <option name="binary-test-stop-native-servers" value="true"/>
-        <option name="precondition-lshal" value="android.hardware.gnss@1.0"/>
         <option name="test-timeout" value="15m"/>
     </test>
 </configuration>
