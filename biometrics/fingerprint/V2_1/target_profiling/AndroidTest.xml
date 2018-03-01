@@ -30,7 +30,6 @@
         <option name="binary-test-disable-framework" value="true"/>
         <option name="binary-test-stop-native-servers" value="true"/>
         <option name="enable-profiling" value="true"/>
-        <option name="precondition-lshal" value="android.hardware.biometrics.fingerprint@2.1"/>
         <option name="test-timeout" value="15m"/>
     </test>
 </configuration>

@@ -27,7 +27,6 @@
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalGraphicsComposerV2_1TargetTest/VtsHalGraphicsComposerV2_1TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="exclude-filter" value="r(.*\(default\).*)" />
-        <option name="precondition-lshal" value="android.hardware.graphics.composer@2.1"/>
         <option name="test-timeout" value="5m"/>
     </test>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
@@ -40,7 +39,6 @@
         <option name="binary-test-disable-framework" value="true"/>
         <option name="binary-test-stop-native-servers" value="true"/>
         <option name="exclude-filter" value="r(.*\(vr\).*)" />
-        <option name="precondition-lshal" value="android.hardware.graphics.composer@2.1"/>
         <option name="test-timeout" value="5m"/>
     </test>
 </configuration>

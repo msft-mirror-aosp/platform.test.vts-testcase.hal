@@ -29,7 +29,10 @@
         <option name="binary-test-type" value="hal_hidl_replay_test"/>
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/thermal/V1_0/android.hardware.thermal_1.0_414823138144.vts.trace"/>
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/thermal/V1_0/android.hardware.thermal_1.0_42653587163.vts.trace"/>
+<<<<<<< HEAD
         <option name="precondition-lshal" value="android.hardware.thermal@1.0"/>
+=======
+>>>>>>> 0b407a15... Remove precondition-lshal in AT.xml
         <option name="binary-test-disable-framework" value="true"/>
         <option name="test-timeout" value="5m"/>
     </test>

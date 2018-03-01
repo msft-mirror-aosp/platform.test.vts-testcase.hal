@@ -28,7 +28,6 @@
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalAutomotiveVehicleV2_0Host"/>
         <option name="test-case-path" value="vts/testcases/hal/automotive/vehicle/V2_0/host/VtsHalAutomotiveVehicleV2_0HostTest"/>
-        <option name="precondition-lshal" value="android.hardware.automotive.vehicle@2.0"/>
         <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
