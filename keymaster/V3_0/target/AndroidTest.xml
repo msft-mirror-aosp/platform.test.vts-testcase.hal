@@ -24,7 +24,6 @@
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalKeymasterV3_0TargetTest/VtsHalKeymasterV3_0TargetTest" />
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalKeymasterV3_0TargetTest/VtsHalKeymasterV3_0TargetTest" />
         <option name="binary-test-type" value="hal_hidl_gtest"/>
-        <option name="precondition-lshal" value="android.hardware.keymaster@3.0"/>
         <option name="test-timeout" value="15m"/>
     </test>
 </configuration>

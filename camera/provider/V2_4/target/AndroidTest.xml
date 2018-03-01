@@ -30,7 +30,6 @@
         <option name="exclude-coverage-path" value="hardware/interfaces/sensors" />
         <option name="exclude-coverage-path" value="hardware/qcom/display/msm8998" />
         <option name="exclude-coverage-path" value="vendor/qcom/msm8998/proprietary/proprietary/qmi-framework" />
-        <option name="precondition-lshal" value="android.hardware.camera.provider@2.4"/>
         <option name="test-timeout" value="15m"/>
     </test>
 </configuration>

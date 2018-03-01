@@ -29,8 +29,6 @@
         <option name="binary-test-type" value="hal_hidl_replay_test"/>
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/light/V2_0/android.hardware.light_2.0_19050569395.vts.trace"/>
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/light/V2_0/android.hardware.light_2.0_17887988342.vts.trace"/>
-        <option name="hal-hidl-package-name" value="android.hardware.light@2.0"/>
-        <option name="precondition-lshal" value="android.hardware.light@2.0"/>
         <option name="test-timeout" value="5m" />
     </test>
 </configuration>
