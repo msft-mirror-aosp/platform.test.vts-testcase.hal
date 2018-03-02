@@ -13,6 +13,7 @@ hal2vts {
         "android/hardware/wifi/1.2/WifiChipEventCallback.vts",
         "android/hardware/wifi/1.2/WifiNanIface.vts",
         "android/hardware/wifi/1.2/WifiNanIfaceEventCallback.vts",
+        "android/hardware/wifi/1.2/WifiStaIface.vts",
         "android/hardware/wifi/1.2/types.vts",
     ],
 }
@@ -31,6 +32,7 @@ genrule {
         "android/hardware/wifi/1.2/WifiChipEventCallback.vts.cpp",
         "android/hardware/wifi/1.2/WifiNanIface.vts.cpp",
         "android/hardware/wifi/1.2/WifiNanIfaceEventCallback.vts.cpp",
+        "android/hardware/wifi/1.2/WifiStaIface.vts.cpp",
         "android/hardware/wifi/1.2/types.vts.cpp",
     ],
 }
@@ -48,6 +50,7 @@ genrule {
         "android/hardware/wifi/1.2/WifiChipEventCallback.vts.h",
         "android/hardware/wifi/1.2/WifiNanIface.vts.h",
         "android/hardware/wifi/1.2/WifiNanIfaceEventCallback.vts.h",
+        "android/hardware/wifi/1.2/WifiStaIface.vts.h",
         "android/hardware/wifi/1.2/types.vts.h",
     ],
 }
@@ -83,6 +86,7 @@ genrule {
         "android/hardware/wifi/1.2/WifiChipEventCallback.vts.cpp",
         "android/hardware/wifi/1.2/WifiNanIface.vts.cpp",
         "android/hardware/wifi/1.2/WifiNanIfaceEventCallback.vts.cpp",
+        "android/hardware/wifi/1.2/WifiStaIface.vts.cpp",
         "android/hardware/wifi/1.2/types.vts.cpp",
     ],
 }
@@ -100,6 +104,7 @@ genrule {
         "android/hardware/wifi/1.2/WifiChipEventCallback.vts.h",
         "android/hardware/wifi/1.2/WifiNanIface.vts.h",
         "android/hardware/wifi/1.2/WifiNanIfaceEventCallback.vts.h",
+        "android/hardware/wifi/1.2/WifiStaIface.vts.h",
         "android/hardware/wifi/1.2/types.vts.h",
     ],
 }
