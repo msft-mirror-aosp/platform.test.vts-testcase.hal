@@ -93,6 +93,7 @@ static bool IsGoogleDefinedIface(const FQName &fq_iface_name) {
 static bool IsExempt(const FQName &fq_iface_name) {
   static const set<string> exempt_hals_ = {
       "android.hardware.radio", "android.hardware.radio.deprecated",
+      "android.hardware.tetheroffload.config", "android.hardware.tetheroffload.control",
   };
   string hal_name = fq_iface_name.package();
   // Radio-releated and non-Google HAL interfaces are given exemptions.
