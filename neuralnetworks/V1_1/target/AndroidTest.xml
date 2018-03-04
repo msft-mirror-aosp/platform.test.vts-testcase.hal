@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2018 The Android Open Source Project
+<!-- Copyright (C) 2017 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -13,21 +13,18 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<configuration description="Config for VTS VtsHalDrmV1_1Target test cases">
+<configuration description="Config for VTS VtsHalNeuralnetworksV1_1Target test cases">
     <option name="config-descriptor:metadata" key="plan" value="vts-hal" />
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
         <option name="abort-on-push-failure" value="false"/>
         <option name="push-group" value="HalHidlTargetTest.push"/>
-        <option name="push" value="vendor/lib/drm-vts-test-libs->/data/local/tmp/32/lib"/>
-        <option name="push" value="vendor/lib64/drm-vts-test-libs->/data/local/tmp/64/lib"/>
     </target_preparer>
-    <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
+    <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
-        <option name="test-module-name" value="VtsHalDrmV1_1Target"/>
-        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalDrmV1_1TargetTest/VtsHalDrmV1_1TargetTest"/>
-        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalDrmV1_1TargetTest/VtsHalDrmV1_1TargetTest"/>
+        <option name="test-module-name" value="VtsHalNeuralnetworksV1_1Target"/>
+        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalNeuralnetworksV1_1TargetTest/VtsHalNeuralnetworksV1_1TargetTest"/>
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalNeuralnetworksV1_1TargetTest/VtsHalNeuralnetworksV1_1TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
-        <option name="precondition-lshal" value="android.hardware.drm@1.1"/>
-        <option name="test-timeout" value="15m"/>
+        <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
