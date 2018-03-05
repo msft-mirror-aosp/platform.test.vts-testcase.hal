@@ -211,7 +211,6 @@ class TestCaseCreator(object):
     def CreateAndroidTestXml(self):
         """Create AndroidTest.xml."""
         VTS_FILE_PUSHER = 'com.android.compatibility.common.tradefed.targetprep.VtsFilePusher'
-        VTS_PYTHON_PREPARER = 'com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer'
         VTS_TEST_CLASS = 'com.android.tradefed.testtype.VtsMultiDeviceTest'
 
         configuration = ET.Element('configuration', {
@@ -221,8 +220,6 @@ class TestCaseCreator(object):
                                     {'class': VTS_FILE_PUSHER})
 
         self.GeneratePushFileConfigure(file_pusher)
-        python_preparer = ET.SubElement(configuration, 'multi_target_preparer',
-                                        {'class': VTS_PYTHON_PREPARER})
         test = ET.SubElement(configuration, 'test', {'class': VTS_TEST_CLASS})
 
         self.GenerateTestOptionConfigure(test)
