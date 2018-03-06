@@ -32,7 +32,6 @@
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/bluetooth/V1_0/android.hardware.bluetooth_1.0_4975305052967.vts.trace"/>
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/bluetooth/V1_0/android.hardware.bluetooth_1.0_19300431972.vts.trace"/>
         <option name="binary-test-disable-framework" value="true"/>
-        <option name="precondition-lshal" value="android.hardware.bluetooth@1.0"/>
         <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
