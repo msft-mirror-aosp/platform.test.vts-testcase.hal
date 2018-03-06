@@ -31,7 +31,7 @@ class VtsCodelabHelloWorldTest(base_test.BaseTestClass):
     def setUpClass(self):
         self.dut = self.android_devices[0]
         self.shell = self.dut.shell
-        self.adb = adb.AdbProxy()
+        self.adb = self.dut.adb
         try:
             self.adb.root()
             self.adb.wait_for_device()
