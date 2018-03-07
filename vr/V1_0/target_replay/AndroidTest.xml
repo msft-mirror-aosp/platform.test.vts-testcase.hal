@@ -23,7 +23,6 @@
         <option name="push" value="DATA/lib/android.hardware.vr@1.0-vts.driver.so->/data/local/tmp/32/android.hardware.vr@1.0-vts.driver.so"/>
         <option name="push" value="DATA/lib64/android.hardware.vr@1.0-vts.driver.so->/data/local/tmp/64/android.hardware.vr@1.0-vts.driver.so"/>
     </target_preparer>
-    <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalVrV1_0TargetReplay"/>
         <option name="binary-test-type" value="hal_hidl_replay_test"/>
