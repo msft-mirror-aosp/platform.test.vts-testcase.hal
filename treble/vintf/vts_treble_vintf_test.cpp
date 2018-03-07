@@ -484,7 +484,12 @@ TEST_F(VtsTrebleVintfTest, InterfacesAreReleased) {
 
     ASSERT_EQ(iface_chain.size(), hash_chain.size());
     for (size_t i = 0; i < iface_chain.size(); ++i) {
-      FQName fq_iface_name{iface_chain[i]};
+      FQName fq_iface_name;
+      if (!FQName::parse(iface_chain[i], &fq_iface_name)) {
+        ADD_FAILURE() << "Could not parse iface name " << iface_chain[i]
+                      << " from interface chain of " << fq_name.string();
+        return;
+      }
       string hash = hash_chain[i];
       // No interface is allowed to have an empty hash.
       EXPECT_NE(hash, Hash::hexString(Hash::kEmptyHash))
@@ -584,8 +589,8 @@ TEST_F(DeprecateTest, NoDeprecatedHalsOnManager) {
           }
           vector<string> iface_chain = GetInterfaceChain(service);
           for (const auto &fq_interface_str : iface_chain) {
-            FQName fq_interface{fq_interface_str};
-            if (!fq_interface.isValid()) {
+            FQName fq_interface;
+            if (!FQName::parse(fq_interface_str, &fq_interface)) {
               // Allow CheckDeprecation to proceed with some sensible default
               ADD_FAILURE() << "'" << fq_interface_str
                             << "' (returned by getInterfaceChain())"
