@@ -27,7 +27,6 @@
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="binary-test-disable-framework" value="true"/>
         <option name="binary-test-stop-native-servers" value="true"/>
-        <option name="precondition-lshal" value="android.hardware.nfc@1.1"/>
         <option name="exclude-coverage-path" value="frameworks/av/media"/>
         <option name="exclude-coverage-path" value="frameworks/rs"/>
         <option name="test-timeout" value="15m"/>

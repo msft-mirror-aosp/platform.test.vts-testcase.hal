@@ -31,7 +31,6 @@
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalTvInputV1_0Host"/>
         <option name="test-case-path" value="vts/testcases/hal/tv/input/V1_0/host/VtsHalTvInputV1_0HostTest"/>
-        <option name="precondition-lshal" value="android.hardware.tv.input@1.0"/>
         <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
