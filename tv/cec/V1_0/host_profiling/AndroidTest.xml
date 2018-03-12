@@ -25,7 +25,6 @@
         <option name="push" value="DATA/lib/android.hardware.tv.cec@1.0-vts.driver.so->/data/local/tmp/32/android.hardware.tv.cec@1.0-vts.driver.so"/>
         <option name="push" value="DATA/lib/android.hardware.tv.cec@1.0-vts.profiler.so->/data/local/tmp/32/android.hardware.tv.cec@1.0-vts.profiler.so"/>
     </target_preparer>
-    <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalTvCecV1_0HostProfiling"/>
         <option name="test-case-path" value="vts/testcases/hal/tv/cec/V1_0/host/VtsHalTvCecV1_0HostTest"/>
