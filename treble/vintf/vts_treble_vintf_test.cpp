@@ -197,33 +197,23 @@ class VtsTrebleVintfTest : public ::testing::Test {
 
 void VtsTrebleVintfTest::ForEachHalInstance(const HalManifestPtr &manifest,
                                             HalVerifyFn fn) {
-  auto hal_names = manifest->getHalNames();
-  for (const string &hal_name : hal_names) {
-    for (const ManifestHal *hal : manifest->getHals(hal_name)) {
-      for (const Version &version : hal->versions) {
-        for (const auto &it : hal->interfaces) {
-          string iface_name = it.first;
-          set<string> instances = it.second.instances;
-          for (const string &instance_name : instances) {
-            string major_ver = std::to_string(version.majorVer);
-            string minor_ver = std::to_string(version.minorVer);
-            string full_ver = major_ver + "." + minor_ver;
-            FQName fq_name{hal_name, full_ver, iface_name};
-            Transport transport = hal->transport();
+  manifest->forEachInstance([manifest, fn](const auto &manifest_instance) {
+    const FQName fq_name{manifest_instance.package(),
+                         to_string(manifest_instance.version()),
+                         manifest_instance.interface()};
+    const Transport transport = manifest_instance.transport();
+    const std::string instance_name = manifest_instance.instance();
 
-            auto future_result =
-                std::async([&]() { fn(fq_name, instance_name, transport); });
-            auto timeout = std::chrono::milliseconds(500);
-            std::future_status status = future_result.wait_for(timeout);
-            if (status != std::future_status::ready) {
-              cout << "Timed out on: " << fq_name.string() << " "
-                   << instance_name << endl;
-            }
-          }
-        }
-      }
+    auto future_result =
+        std::async([&]() { fn(fq_name, instance_name, transport); });
+    auto timeout = std::chrono::milliseconds(500);
+    std::future_status status = future_result.wait_for(timeout);
+    if (status != std::future_status::ready) {
+      cout << "Timed out on: " << fq_name.string() << " " << instance_name
+           << endl;
     }
-  }
+    return true;  // continue to next instance
+  });
 }
 
 sp<IBase> VtsTrebleVintfTest::GetHalService(const FQName &fq_name,
@@ -261,17 +251,20 @@ vector<string> VtsTrebleVintfTest::GetInterfaceChain(const sp<IBase> &service) {
 
 // Tests that all HAL entries in VINTF has all required fields filled out.
 TEST_F(VtsTrebleVintfTest, HalEntriesAreComplete) {
-  auto hal_names = vendor_manifest_->getHalNames();
-  for (const string &hal_name : hal_names) {
+  for (const auto &hal_name : vendor_manifest_->getHalNames()) {
     for (const ManifestHal *hal : vendor_manifest_->getHals(hal_name)) {
-      EXPECT_FALSE(hal->versions.empty())
-          << hal_name << " has no version specified in VINTF.";
-      EXPECT_FALSE(hal->interfaces.empty())
-          << hal_name << " has no interface specified in VINTF.";
-      for (const auto &it : hal->interfaces) {
-        EXPECT_FALSE(it.second.instances.empty())
-            << hal_name << " has no instance specified in VINTF.";
-      }
+      // Do not suggest <fqname> for target FCM version < P.
+      bool allow_fqname = vendor_manifest_->level() != Level::UNSPECIFIED &&
+                          vendor_manifest_->level() >= 3 /* P */;
+
+      EXPECT_TRUE(hal->isOverride() || !hal->isDisabledHal())
+          << hal->getName()
+          << " has no instances declared and does not have override=\"true\". "
+          << "Do one of the following to fix: \n"
+          << (allow_fqname ? "  * Add <fqname> tags.\n" : "")
+          << "  * Add <version>, <interface> and <instance> tags.\n"
+          << "  * If the component should be disabled, add attribute "
+          << "override=\"true\".";
     }
   }
 }
