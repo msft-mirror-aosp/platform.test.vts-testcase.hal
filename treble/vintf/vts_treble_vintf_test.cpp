@@ -540,7 +540,8 @@ TEST_F(DeprecateTest, NoDeprcatedHalsOnManager) {
 TEST_F(DeprecateTest, NoDeprcatedHalsOnManifest) {
   string error;
   EXPECT_EQ(android::vintf::NO_DEPRECATED_HALS,
-            VintfObject::CheckDeprecation(&error));
+            VintfObject::CheckDeprecation(&error))
+      << error;
 }
 
 int main(int argc, char **argv) {
