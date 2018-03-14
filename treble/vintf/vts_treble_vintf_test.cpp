@@ -31,6 +31,7 @@
 #include <gtest/gtest.h>
 #include <hidl-hash/Hash.h>
 #include <hidl-util/FQName.h>
+#include <hidl/HidlTransportUtils.h>
 #include <hidl/ServiceManagement.h>
 #include <procpartition/procpartition.h>
 #include <vintf/HalManifest.h>
@@ -311,11 +312,52 @@ TEST_F(VtsTrebleVintfTest, HalsAreServed) {
     return [this, expected_partition](const FQName &fq_name,
                                       const string &instance_name,
                                       Transport transport) {
-      sp<IBase> hal_service = GetHalService(fq_name, instance_name, transport);
+      sp<IBase> hal_service;
+
+      if (transport == Transport::PASSTHROUGH) {
+        using android::hardware::details::canCastInterface;
+
+        // Passthrough services all start with minor version 0.
+        // there are only three of them listed above. They are looked
+        // up based on their binary location. For instance,
+        // V1_0::IFoo::getService() might correspond to looking up
+        // android.hardware.foo@1.0-impl for the symbol
+        // HIDL_FETCH_IFoo. For @1.1::IFoo to continue to work with
+        // 1.0 clients, it must also be present in a library that is
+        // called the 1.0 name. Clients can say:
+        //     mFoo1_0 = V1_0::IFoo::getService();
+        //     mFoo1_1 = V1_1::IFoo::castFrom(mFoo1_0);
+        // This is the standard pattern for making a service work
+        // for both versions (mFoo1_1 != nullptr => you have 1.1)
+        // and a 1.0 client still works with the 1.1 interface.
+
+        if (!IsGoogleDefinedIface(fq_name)) {
+          // This isn't the case for extensions of core Google interfaces.
+          return;
+        }
+
+        const FQName lowest_name =
+            fq_name.withVersion(fq_name.getPackageMajorVersion(), 0);
+        hal_service = GetHalService(lowest_name, instance_name, transport);
+        EXPECT_TRUE(
+            canCastInterface(hal_service.get(), fq_name.string().c_str()));
+      } else {
+        hal_service = GetHalService(fq_name, instance_name, transport);
+      }
+
       EXPECT_NE(hal_service, nullptr)
           << fq_name.string() << " not available." << endl;
 
-      if (hal_service == nullptr || !hal_service->isRemote()) return;
+      if (hal_service == nullptr) return;
+
+      EXPECT_EQ(transport == Transport::HWBINDER, hal_service->isRemote())
+          << "transport is " << transport << "but HAL service is "
+          << (hal_service->isRemote() ? "" : "not") << " remote.";
+      EXPECT_EQ(transport == Transport::PASSTHROUGH, !hal_service->isRemote())
+          << "transport is " << transport << "but HAL service is "
+          << (hal_service->isRemote() ? "" : "not") << " remote.";
+
+      if (!hal_service->isRemote()) return;
 
       auto ret = hal_service->getDebugInfo([&](const auto &info) {
         Partition partition = PartitionOfProcess(info.pid);
@@ -333,29 +375,33 @@ TEST_F(VtsTrebleVintfTest, HalsAreServed) {
 }
 
 // Tests that all HALs which are served are specified in the VINTF
-// This tests (binderized HAL is served) => (binderized HAL in manifest)
+// This tests (HAL is served) => (HAL in manifest)
 TEST_F(VtsTrebleVintfTest, ServedHalsAreInManifest) {
   std::set<std::string> manifest_hwbinder_hals_;
+  std::set<std::string> manifest_passthrough_hals_;
 
-  auto add_manifest_hwbinder_hals = [&manifest_hwbinder_hals_](
-                                        const FQName &fq_name,
-                                        const string &instance_name,
-                                        Transport transport) {
-    if (transport != Transport::HWBINDER) return;
-
-    // 1.n in manifest => 1.0, 1.1, ... 1.n are all served
-    FQName fq = fq_name;
-    while (true) {
-      manifest_hwbinder_hals_.insert(fq.string() + "/" + instance_name);
-      if (fq.getPackageMinorVersion() <= 0) {
-        break;
+  auto add_manifest_hals = [&manifest_hwbinder_hals_,
+                            &manifest_passthrough_hals_](
+                               const FQName &fq_name,
+                               const string &instance_name,
+                               Transport transport) {
+    if (transport == Transport::HWBINDER) {
+      // 1.n in manifest => 1.0, 1.1, ... 1.n are all served (if they exist)
+      FQName fq = fq_name;
+      while (true) {
+        manifest_hwbinder_hals_.insert(fq.string() + "/" + instance_name);
+        if (fq.getPackageMinorVersion() <= 0) break;
+        fq = fq.downRev();
       }
-      fq = fq.downRev();
+    } else if (transport == Transport::PASSTHROUGH) {
+      manifest_passthrough_hals_.insert(fq_name.string() + "/" + instance_name);
+    } else {
+      ADD_FAILURE() << "Unrecognized transport: " << transport;
     }
   };
 
-  ForEachHalInstance(vendor_manifest_, add_manifest_hwbinder_hals);
-  ForEachHalInstance(fwk_manifest_, add_manifest_hwbinder_hals);
+  ForEachHalInstance(vendor_manifest_, add_manifest_hals);
+  ForEachHalInstance(fwk_manifest_, add_manifest_hals);
 
   Return<void> ret = default_manager_->list([&](const auto &list) {
     for (const auto &name : list) {
@@ -368,6 +414,45 @@ TEST_F(VtsTrebleVintfTest, ServedHalsAreInManifest) {
     }
   });
   EXPECT_TRUE(ret.isOk());
+
+  auto passthrough_interfaces_declared = [this, &manifest_passthrough_hals_](
+                                             const FQName &fq_name,
+                                             const string &instance_name,
+                                             Transport transport) {
+    if (transport != Transport::PASSTHROUGH) return;
+
+    // See HalsAreServed. These are always retrieved through the base interface
+    // and if it is not a google defined interface, it must be an extension of
+    // one.
+    if (!IsGoogleDefinedIface(fq_name)) return;
+
+    const FQName lowest_name =
+        fq_name.withVersion(fq_name.getPackageMajorVersion(), 0);
+    sp<IBase> hal_service =
+        GetHalService(lowest_name, instance_name, transport);
+    if (hal_service == nullptr) {
+      ADD_FAILURE() << "Could not get service " << fq_name.string() << "/"
+                    << instance_name;
+      return;
+    }
+
+    Return<void> ret = hal_service->interfaceChain(
+        [&manifest_passthrough_hals_, &instance_name](const auto &interfaces) {
+          for (const auto &interface : interfaces) {
+            if (std::string(interface) == IBase::descriptor) continue;
+
+            const std::string instance =
+                std::string(interface) + "/" + instance_name;
+            EXPECT_NE(manifest_passthrough_hals_.find(instance),
+                      manifest_passthrough_hals_.end())
+                << "Instance missing from manifest: " << instance;
+          }
+        });
+    EXPECT_TRUE(ret.isOk());
+  };
+
+  ForEachHalInstance(vendor_manifest_, passthrough_interfaces_declared);
+  ForEachHalInstance(fwk_manifest_, passthrough_interfaces_declared);
 }
 
 // Tests that HAL interfaces are officially released.
