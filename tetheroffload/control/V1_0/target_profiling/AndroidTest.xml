@@ -29,7 +29,6 @@
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="binary-test-disable-framework" value="true"/>
         <option name="enable-profiling" value="true"/>
-        <option name="precondition-lshal" value="android.hardware.tetheroffload.control@1.0"/>
         <option name="test-timeout" value="30m"/>
         <option name="exclude-filter" value="OffloadControlHidlTest.SetDataLimitNonZeroOk"/>
         <option name="exclude-filter" value="OffloadControlHidlTest.SetDataLimitZeroOk"/>

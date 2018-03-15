@@ -408,10 +408,6 @@ class TestCaseCreator(object):
                           {'name': 'enable-profiling',
                            'value': 'true'})
 
-        ET.SubElement(test, 'option', {
-            'name': 'precondition-lshal',
-            'value': self._hal_package_name
-        })
         ET.SubElement(test, 'option',
                       {'name': 'test-timeout',
                        'value': self._time_out})
