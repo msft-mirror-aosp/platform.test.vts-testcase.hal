@@ -47,7 +47,6 @@
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/audio/effect/V2_0/android.hardware.audio.effect_2.0_486896798397.vts.trace"/>
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/audio/effect/V2_0/android.hardware.audio.effect_2.0_61278401310.vts.trace"/>
         <option name="hal-hidl-replay-test-trace-path" value="test/vts-testcase/hal-trace/audio/effect/V2_0/android.hardware.audio.effect_2.0_89221826074.vts.trace"/>
-        <option name="precondition-lshal" value="android.hardware.audio.effect@2.0"/>
         <option name="binary-test-disable-framework" value="true"/>
         <option name="test-timeout" value="6m"/>
     </test>

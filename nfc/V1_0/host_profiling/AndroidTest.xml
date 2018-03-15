@@ -31,7 +31,6 @@
         <option name="test-module-name" value="VtsHalNfcV1_0HostProfiling"/>
         <option name="test-case-path" value="vts/testcases/hal/nfc/V1_0/host/VtsHalNfcV1_0HostTest"/>
         <option name="enable-profiling" value="true"/>
-        <option name="precondition-lshal" value="android.hardware.nfc@1.0"/>
         <option name="test-timeout" value="5m"/>
     </test>
 </configuration>

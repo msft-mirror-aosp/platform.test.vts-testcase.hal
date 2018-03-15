@@ -30,7 +30,6 @@
         <option name="test-module-name" value="VtsHalSensorsV1_0HostProfiling"/>
         <option name="test-case-path" value="vts/testcases/hal/sensors/V1_0/host/VtsHalSensorsV1_0HostTest"/>
         <option name="enable-profiling" value="true"/>
-        <option name="precondition-lshal" value="android.hardware.sensors@1.0"/>
         <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
