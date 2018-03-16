@@ -45,7 +45,7 @@ class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
         self.dut.shell.one.Execute('setenforce 0')  # SELinux permissive mode
         if not precondition_utils.CanRunHidlHalTest(
             self, self.dut, self.dut.shell.one):
-            self._skip_all_testcases = True
+            self.skipAllTests("precondition check for hidl hal test didn't pass")
             return
 
         self.dut.hal.InitHidlHal(
