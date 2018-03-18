@@ -26,7 +26,6 @@
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalSecureElementV1_0TargetTest/VtsHalSecureElementV1_0TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="binary-test-disable-framework" value="true"/>
-        <option name="precondition-lshal" value="android.hardware.secure_element@1.0"/>
         <option name="test-timeout" value="5m"/>
         <option name="runtime-hint" value="2m"/>
     </test>

@@ -14,10 +14,11 @@
      limitations under the License.
 -->
 <configuration description="Config for VTS VtsHalVibratorV1_1Adapter test cases">
+    <option name="config-descriptor:metadata" key="plan" value="vts-hal-adapter" />
     <option name="config-descriptor:metadata" key="component" value="framework" />
 
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
-        <option name="abort-on-push-failure" value="false"/>
+        <option name="abort-on-push-failure" value="true"/>
         <option name="push" value="DATA/nativetest/android.hardware.vibrator@1.0-adapter/android.hardware.vibrator@1.0-adapter->/data/nativetest/android.hardware.vibrator@1.0-adapter"/>
         <option name="push" value="DATA/nativetest64/android.hardware.vibrator@1.0-adapter/android.hardware.vibrator@1.0-adapter->/data/nativetest64/android.hardware.vibrator@1.0-adapter"/>
         <option name="push" value="script/target/vts_adapter.sh->/data/local/tmp/vts_adapter.sh"/>

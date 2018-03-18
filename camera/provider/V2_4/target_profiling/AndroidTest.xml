@@ -37,7 +37,6 @@
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalCameraProviderV2_4TargetTest/VtsHalCameraProviderV2_4TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="enable-profiling" value="true"/>
-        <option name="precondition-lshal" value="android.hardware.camera.provider@2.4"/>
         <option name="test-timeout" value="45m"/>
     </test>
 </configuration>
