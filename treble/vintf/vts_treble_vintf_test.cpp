@@ -563,7 +563,7 @@ TEST_F(DeprecateTest, ShippingFcmVersion) {
 
 // Tests that deprecated HALs are not served, unless a higher, non-deprecated
 // minor version is served.
-TEST_F(DeprecateTest, NoDeprcatedHalsOnManager) {
+TEST_F(DeprecateTest, NoDeprecatedHalsOnManager) {
   // Predicate for whether an instance is served through service manager.
   // Return {is instance in service manager, highest minor version}
   // where "highest minor version" is the first element in getInterfaceChain()
@@ -615,7 +615,7 @@ TEST_F(DeprecateTest, NoDeprcatedHalsOnManager) {
 
 // Tests that deprecated HALs are not in the manifest, unless a higher,
 // non-deprecated minor version is in the manifest.
-TEST_F(DeprecateTest, NoDeprcatedHalsOnManifest) {
+TEST_F(DeprecateTest, NoDeprecatedHalsOnManifest) {
   string error;
   EXPECT_EQ(android::vintf::NO_DEPRECATED_HALS,
             VintfObject::CheckDeprecation(&error))
