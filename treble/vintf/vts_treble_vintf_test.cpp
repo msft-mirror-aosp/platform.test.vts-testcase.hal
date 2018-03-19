@@ -15,10 +15,12 @@
  */
 
 #include <chrono>
+#include <condition_variable>
 #include <functional>
 #include <future>
 #include <iostream>
 #include <map>
+#include <mutex>
 #include <set>
 #include <sstream>
 #include <string>
@@ -164,10 +166,6 @@ class VtsTrebleVintfTest : public ::testing::Test {
     ASSERT_NE(default_manager_, nullptr)
         << "Failed to get default service manager." << endl;
 
-    passthrough_manager_ = ::android::hardware::getPassthroughServiceManager();
-    ASSERT_NE(passthrough_manager_, nullptr)
-        << "Failed to get passthrough service manager." << endl;
-
     vendor_manifest_ = VintfObject::GetDeviceHalManifest();
     ASSERT_NE(vendor_manifest_, nullptr)
         << "Failed to get vendor HAL manifest." << endl;
@@ -187,8 +185,6 @@ class VtsTrebleVintfTest : public ::testing::Test {
 
   // Default service manager.
   sp<IServiceManager> default_manager_;
-  // Passthrough service manager.
-  sp<IServiceManager> passthrough_manager_;
   // Vendor hal manifest.
   HalManifestPtr vendor_manifest_;
   // Framework hal manifest.
@@ -206,7 +202,7 @@ void VtsTrebleVintfTest::ForEachHalInstance(const HalManifestPtr &manifest,
 
     auto future_result =
         std::async([&]() { fn(fq_name, instance_name, transport); });
-    auto timeout = std::chrono::milliseconds(500);
+    auto timeout = std::chrono::seconds(1);
     std::future_status status = future_result.wait_for(timeout);
     if (status != std::future_status::ready) {
       cout << "Timed out on: " << fq_name.string() << " " << instance_name
@@ -219,24 +215,34 @@ void VtsTrebleVintfTest::ForEachHalInstance(const HalManifestPtr &manifest,
 sp<IBase> VtsTrebleVintfTest::GetHalService(const FQName &fq_name,
                                             const string &instance_name,
                                             Transport transport, bool log) {
-  string hal_name = fq_name.package();
-  Version version{fq_name.getPackageMajorVersion(),
-                  fq_name.getPackageMinorVersion()};
-  string iface_name = fq_name.name();
-  string fq_iface_name = fq_name.string();
+  using android::hardware::details::getRawServiceInternal;
 
   if (log) {
-    cout << "Getting service of: " << fq_iface_name << " " << instance_name
-         << endl;
+    cout << "Getting: " << fq_name.string() << "/" << instance_name << endl;
   }
 
-  android::sp<IBase> hal_service = nullptr;
-  if (transport == Transport::HWBINDER) {
-    hal_service = default_manager_->get(fq_iface_name, instance_name);
-  } else if (transport == Transport::PASSTHROUGH) {
-    hal_service = passthrough_manager_->get(fq_iface_name, instance_name);
-  }
-  return hal_service;
+  // getService blocks until a service is available. In 100% of other cases
+  // where getService is used, it should be called directly. However, this test
+  // enforces that various services are actually available when they are
+  // declared, it must make a couple of precautions in case the service isn't
+  // actually available so that the proper failure can be reported.
+
+  auto task = std::packaged_task<sp<IBase>()>([fq_name, instance_name]() {
+    return getRawServiceInternal(fq_name.string(), instance_name,
+                                 true /* retry */, false /* getStub */);
+  });
+
+  std::future<sp<IBase>> future = task.get_future();
+  std::thread(std::move(task)).detach();
+  auto status = future.wait_for(std::chrono::milliseconds(500));
+
+  if (status != std::future_status::ready) return nullptr;
+
+  sp<IBase> base = future.get();
+  EXPECT_EQ(base->isRemote(), transport == Transport::HWBINDER)
+      << "Transport is actually " << transport << " for " << fq_name.string()
+      << "/" << instance_name;
+  return base;
 }
 
 vector<string> VtsTrebleVintfTest::GetInterfaceChain(const sp<IBase> &service) {
