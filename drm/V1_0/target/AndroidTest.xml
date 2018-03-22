@@ -21,7 +21,6 @@
         <option name="push" value="vendor/lib/drm-vts-test-libs/libvtswidevine.so->/data/local/tmp/32/lib/libvtswidevine.so"/>
         <option name="push" value="vendor/lib64/drm-vts-test-libs/libvtswidevine.so->/data/local/tmp/64/lib/libvtswidevine.so"/>
     </target_preparer>
-    <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalDrmV1_0Target"/>
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalDrmV1_0TargetTest/VtsHalDrmV1_0TargetTest"/>
