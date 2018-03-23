@@ -239,9 +239,11 @@ sp<IBase> VtsTrebleVintfTest::GetHalService(const FQName &fq_name,
   if (status != std::future_status::ready) return nullptr;
 
   sp<IBase> base = future.get();
-  EXPECT_EQ(base->isRemote(), transport == Transport::HWBINDER)
-      << "Transport is actually " << transport << " for " << fq_name.string()
-      << "/" << instance_name;
+  if (base == nullptr) return nullptr;
+
+  bool wantRemote = transport == Transport::HWBINDER;
+  if (base->isRemote() != wantRemote) return nullptr;
+
   return base;
 }
 
