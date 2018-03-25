@@ -22,7 +22,6 @@
         <option name="push" value="DATA/lib/android.hardware.contexthub@1.0-vts.profiler.so->/data/local/tmp/32/android.hardware.contexthub@1.0-vts.profiler.so"/>
         <option name="push" value="DATA/lib64/android.hardware.contexthub@1.0-vts.profiler.so->/data/local/tmp/64/android.hardware.contexthub@1.0-vts.profiler.so"/>
     </target_preparer>
-    <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalContexthubV1_0TargetProfiling"/>
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalContexthubV1_0TargetTest/VtsHalContexthubV1_0TargetTest"/>

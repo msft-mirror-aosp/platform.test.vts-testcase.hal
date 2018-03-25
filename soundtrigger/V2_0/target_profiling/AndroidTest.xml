@@ -24,7 +24,6 @@
         <option name="push" value="DATA/lib/android.hardware.soundtrigger@2.0-vts.profiler.so->/data/local/tmp/32/android.hardware.soundtrigger@2.0-vts.profiler.so"/>
         <option name="push" value="DATA/lib64/android.hardware.soundtrigger@2.0-vts.profiler.so->/data/local/tmp/64/android.hardware.soundtrigger@2.0-vts.profiler.so"/>
     </target_preparer>
-    <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalSoundtriggerV2_0TargetProfiling"/>
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalSoundtriggerV2_0TargetTest/VtsHalSoundtriggerV2_0TargetTest"/>

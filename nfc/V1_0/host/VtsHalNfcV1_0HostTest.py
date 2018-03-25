@@ -56,7 +56,7 @@ class NfcHidlBasicTest(hal_hidl_host_test.HalHidlHostTest):
         """Turns off the framework-layer NFC service."""
         # Ideally, we would want to store the nfc service's state before
         # turning that off in setUpClass and restore the original state.
-        if not self._skip_all_testcases:
+        if not self.isSkipAllTests():
             self.shell.Execute("svc nfc disable")  # make sure it's off
         super(NfcHidlBasicTest, self).tearDownClass()
 

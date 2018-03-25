@@ -27,6 +27,7 @@
 #include <thread>
 #include <vector>
 
+#include <android-base/logging.h>
 #include <android-base/properties.h>
 #include <android-base/strings.h>
 #include <android/hidl/manager/1.0/IServiceManager.h>
@@ -181,6 +182,9 @@ class VtsTrebleVintfTest : public ::testing::Test {
   sp<IBase> GetHalService(const FQName &fq_name, const string &instance_name,
                           Transport, bool log = true);
 
+  static vector<string> GetInstanceNames(const sp<IServiceManager> &manager,
+                                         const FQName &fq_name);
+
   static vector<string> GetInterfaceChain(const sp<IBase> &service);
 
   // Default service manager.
@@ -245,6 +249,17 @@ sp<IBase> VtsTrebleVintfTest::GetHalService(const FQName &fq_name,
   if (base->isRemote() != wantRemote) return nullptr;
 
   return base;
+}
+
+vector<string> VtsTrebleVintfTest::GetInstanceNames(
+    const sp<IServiceManager> &manager, const FQName &fq_name) {
+  vector<string> ret;
+  auto status =
+      manager->listByInterface(fq_name.string(), [&](const auto &out) {
+        for (const auto &e : out) ret.push_back(e);
+      });
+  EXPECT_TRUE(status.isOk()) << status.description();
+  return ret;
 }
 
 vector<string> VtsTrebleVintfTest::GetInterfaceChain(const sp<IBase> &service) {
@@ -484,7 +499,12 @@ TEST_F(VtsTrebleVintfTest, InterfacesAreReleased) {
 
     ASSERT_EQ(iface_chain.size(), hash_chain.size());
     for (size_t i = 0; i < iface_chain.size(); ++i) {
-      FQName fq_iface_name{iface_chain[i]};
+      FQName fq_iface_name;
+      if (!FQName::parse(iface_chain[i], &fq_iface_name)) {
+        ADD_FAILURE() << "Could not parse iface name " << iface_chain[i]
+                      << " from interface chain of " << fq_name.string();
+        return;
+      }
       string hash = hash_chain[i];
       // No interface is allowed to have an empty hash.
       EXPECT_NE(hash, Hash::hexString(Hash::kEmptyHash))
@@ -568,51 +588,81 @@ TEST_F(DeprecateTest, ShippingFcmVersion) {
 // minor version is served.
 TEST_F(DeprecateTest, NoDeprecatedHalsOnManager) {
   // Predicate for whether an instance is served through service manager.
-  // Return {is instance in service manager, highest minor version}
+  // Return {instance name, highest minor version}
   // where "highest minor version" is the first element in getInterfaceChain()
-  // that has the same "package", major version as "version", "interface" and
-  // "instance", but a higher minor version than "version".
-  VintfObject::IsInstanceInUse is_instance_served =
-      [this](const string &package, Version version, const string &interface,
-             const string &instance) {
-        FQName fq_name(package, to_string(version), interface);
-        for (auto transport : {Transport::HWBINDER, Transport::PASSTHROUGH}) {
-          auto service =
-              GetHalService(fq_name, instance, transport, false /* log */);
-          if (service == nullptr) {
-            continue;  // try next transport
+  // that has the same "package", major version as "version" and "interface"
+  // but a higher minor version than "version".
+  VintfObject::ListInstances list_instances = [this](const string &package,
+                                                     Version version,
+                                                     const string &interface,
+                                                     const vector<string>
+                                                         &instance_hints) {
+    vector<std::pair<string, Version>> ret;
+
+    FQName fq_name(package, to_string(version), interface);
+    for (auto transport : {Transport::HWBINDER, Transport::PASSTHROUGH}) {
+      const vector<string> &instance_names =
+          transport == Transport::HWBINDER
+              ? GetInstanceNames(default_manager_, fq_name)
+              : instance_hints;
+
+      for (auto instance : instance_names) {
+        auto service =
+            GetHalService(fq_name, instance, transport, false /* log */);
+        if (service == nullptr) {
+          if (transport == Transport::PASSTHROUGH) {
+            CHECK(std::find(instance_hints.begin(), instance_hints.end(),
+                            instance) != instance_hints.end())
+                << "existing <instance>'s: ["
+                << android::base::Join(instance_hints, ",")
+                << "] but instance=" << instance;
+            continue;  // name is from instance_hints, so ignore
           }
-          vector<string> iface_chain = GetInterfaceChain(service);
-          for (const auto &fq_interface_str : iface_chain) {
-            FQName fq_interface{fq_interface_str};
-            if (!fq_interface.isValid()) {
-              // Allow CheckDeprecation to proceed with some sensible default
-              ADD_FAILURE() << "'" << fq_interface_str
-                            << "' (returned by getInterfaceChain())"
-                            << "is not a valid fully-qualified name.";
-              return std::make_pair(true, version);
-            }
-            if (fq_interface.package() == package) {
-              Version fq_version{fq_interface.getPackageMajorVersion(),
-                                 fq_interface.getPackageMinorVersion()};
-              if (fq_version.minorAtLeast(version)) {
-                return std::make_pair(true, fq_version);
-              }
+          ADD_FAILURE()
+              << fq_name.string() << "/" << instance
+              << " is registered to hwservicemanager but cannot be retrieved.";
+          continue;
+        }
+
+        vector<string> iface_chain = GetInterfaceChain(service);
+        bool done = false;
+        for (const auto &fq_interface_str : iface_chain) {
+          FQName fq_interface;
+          if (!FQName::parse(fq_interface_str, &fq_interface)) {
+            // Allow CheckDeprecation to proceed with some sensible default
+            ADD_FAILURE() << "'" << fq_interface_str
+                          << "' (returned by getInterfaceChain())"
+                          << "is not a valid fully-qualified name.";
+            ret.push_back(std::make_pair(instance, version));
+            done = true;
+            continue;
+          }
+          if (fq_interface.package() == package) {
+            Version fq_version{fq_interface.getPackageMajorVersion(),
+                               fq_interface.getPackageMinorVersion()};
+            if (fq_version.minorAtLeast(version)) {
+              ret.push_back(std::make_pair(instance, fq_version));
+              done = true;
+              break;
             }
           }
+        }
+        if (!done) {
           // Allow CheckDeprecation to proceed with some sensible default
           ADD_FAILURE() << "getInterfaceChain() does not return interface name "
                         << "with at least minor version'" << package << "@"
                         << version << "'; returned values are ["
                         << android::base::Join(iface_chain, ", ") << "]";
-          return std::make_pair(true, version);
+          ret.push_back(std::make_pair(instance, version));
         }
+      }
+    }
 
-        return std::make_pair(false, Version{});
-      };
+    return ret;
+  };
   string error;
   EXPECT_EQ(android::vintf::NO_DEPRECATED_HALS,
-            VintfObject::CheckDeprecation(is_instance_served, &error))
+            VintfObject::CheckDeprecation(list_instances, &error))
       << error;
 }
 
