@@ -215,7 +215,9 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         return extractedZones
 
 
-    def testHvacPowerOn(self):
+    def disableTestHvacPowerOn(self):
+        # Disable this test for now.  HVAC Power On will no longer behave like this now that we've
+        #   added the status field in VehiclePropValue.  Need to update the test for this.
         """Test power on/off and properties associated with it.
 
         Gets the list of properties that are affected by the HVAC power state
@@ -321,6 +323,9 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             self.vtypes.VehicleProperty.INFO_MODEL,
             self.vtypes.VehicleProperty.INFO_MODEL_YEAR,
             self.vtypes.VehicleProperty.INFO_FUEL_CAPACITY,
+            self.vtypes.VehicleProperty.INFO_FUEL_TYPE,
+            self.vtypes.VehicleProperty.INFO_EV_BATTERY_CAPACITY,
+            self.vtypes.VehicleProperty.INFO_EV_CONNECTOR_TYPE,
             self.vtypes.VehicleProperty.HVAC_FAN_DIRECTION_AVAILABLE,
             self.vtypes.VehicleProperty.AP_POWER_BOOTUP_REASON,
         ])
@@ -331,7 +336,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
                 asserts.assertEqual(self.vtypes.VehiclePropertyChangeMode.STATIC, c["changeMode"], msg)
                 asserts.assertEqual(self.vtypes.VehiclePropertyAccess.READ, c["access"], msg)
                 propValue = self.readVhalProperty(prop)
-                asserts.assertEqual(prop, propValue['prop'])
+                asserts.assertEqual(prop, propValue["prop"])
                 self.setVhalProperty(prop, propValue["value"],
                     expectedStatus=self.vtypes.StatusCode.ACCESS_DENIED)
             else:  # Non-static property
@@ -343,6 +348,17 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         This checks that the areas noted in the config all give valid area
         configs.  Once these are validated, the values for all these areas
         retrieved from the HIDL must be within the ranges defined."""
+
+        enumProperties = {
+            self.vtypes.VehicleProperty.ENGINE_OIL_LEVEL,
+            self.vtypes.VehicleProperty.GEAR_SELECTION,
+            self.vtypes.VehicleProperty.CURRENT_GEAR,
+            self.vtypes.VehicleProperty.DRIVING_STATUS,
+            self.vtypes.VehicleProperty.TURN_SIGNAL_STATE,
+            self.vtypes.VehicleProperty.IGNITION_STATE,
+            self.vtypes.VehicleProperty.HVAC_FAN_DIRECTION,
+        }
+
         for c in self.configList:
             # Continuous properties need to have a sampling frequency.
             if c["changeMode"] & self.vtypes.VehiclePropertyChangeMode.CONTINUOUS != 0:
@@ -354,6 +370,16 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
                                     "Prop 0x%x minSampleRate > maxSampleRate" %
                                         c["prop"])
 
+            if c["prop"] & self.vtypes.VehiclePropertyType.BOOLEAN != 0:
+                # Boolean types don't have ranges
+                continue
+
+            if c["prop"] in enumProperties:
+                # This property does not use traditional min/max ranges
+                continue
+
+            asserts.assertTrue(c["areaConfigs"] != None, "Prop 0x%x must have areaConfigs" %
+                               c["prop"])
             areasFound = 0
             for a in c["areaConfigs"]:
                 # Make sure this doesn't override one of the other areas found.
@@ -447,11 +473,6 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             self.vtypes.VehicleProperty.PARKING_BRAKE_ON,
             self.vtypes.VehicleProperty.FUEL_LEVEL_LOW,
             self.vtypes.VehicleProperty.NIGHT_MODE,
-            self.vtypes.VehicleProperty.DOOR_LOCK,
-            self.vtypes.VehicleProperty.MIRROR_LOCK,
-            self.vtypes.VehicleProperty.MIRROR_FOLD,
-            self.vtypes.VehicleProperty.SEAT_BELT_BUCKLED,
-            self.vtypes.VehicleProperty.WINDOW_LOCK,
         ])
         for prop in booleanProperties:
             self.verifyEnumPropIfSupported(prop, [0, 1])
@@ -459,6 +480,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
     def testGlobalEnumProperties(self):
         """Verifies that values of global enum properties are in the correct range"""
         enumProperties = {
+            self.vtypes.VehicleProperty.ENGINE_OIL_LEVEL : self.vtypes.VehicleOilLevel,
             self.vtypes.VehicleProperty.GEAR_SELECTION : self.vtypes.VehicleGear,
             self.vtypes.VehicleProperty.CURRENT_GEAR : self.vtypes.VehicleGear,
             self.vtypes.VehicleProperty.TURN_SIGNAL_STATE : self.vtypes.VehicleTurnSignal,
