@@ -26,9 +26,7 @@
 
     <target_preparer class="com.android.tradefed.targetprep.VtsHalAdapterPreparer">
         <option name="adapter-binary-name" value="android.hardware.radio@1.0-adapter"/>
-        <option name="interface-name" value="IRadio"/>
-        <option name="service-name" value="default"/>
-        <option name="thread-count" value="1"/>
+        <option name="adapter-binary-name" value="android.hardware.radio@1.0"/>
     </target_preparer>
 
     <target_preparer class="com.android.tradefed.targetprep.suite.SuiteApkInstaller">
