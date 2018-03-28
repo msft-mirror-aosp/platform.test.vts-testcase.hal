@@ -9,6 +9,8 @@ hal2vts {
     ],
     out: [
         "android/hardware/wifi/supplicant/1.1/Supplicant.vts",
+        "android/hardware/wifi/supplicant/1.1/SupplicantStaIface.vts",
+        "android/hardware/wifi/supplicant/1.1/SupplicantStaIfaceCallback.vts",
         "android/hardware/wifi/supplicant/1.1/SupplicantStaNetwork.vts",
     ],
 }
@@ -23,6 +25,8 @@ genrule {
     ],
     out: [
         "android/hardware/wifi/supplicant/1.1/Supplicant.vts.cpp",
+        "android/hardware/wifi/supplicant/1.1/SupplicantStaIface.vts.cpp",
+        "android/hardware/wifi/supplicant/1.1/SupplicantStaIfaceCallback.vts.cpp",
         "android/hardware/wifi/supplicant/1.1/SupplicantStaNetwork.vts.cpp",
     ],
 }
@@ -36,6 +40,8 @@ genrule {
     ],
     out: [
         "android/hardware/wifi/supplicant/1.1/Supplicant.vts.h",
+        "android/hardware/wifi/supplicant/1.1/SupplicantStaIface.vts.h",
+        "android/hardware/wifi/supplicant/1.1/SupplicantStaIfaceCallback.vts.h",
         "android/hardware/wifi/supplicant/1.1/SupplicantStaNetwork.vts.h",
     ],
 }
@@ -65,6 +71,8 @@ genrule {
     ],
     out: [
         "android/hardware/wifi/supplicant/1.1/Supplicant.vts.cpp",
+        "android/hardware/wifi/supplicant/1.1/SupplicantStaIface.vts.cpp",
+        "android/hardware/wifi/supplicant/1.1/SupplicantStaIfaceCallback.vts.cpp",
         "android/hardware/wifi/supplicant/1.1/SupplicantStaNetwork.vts.cpp",
     ],
 }
@@ -78,6 +86,8 @@ genrule {
     ],
     out: [
         "android/hardware/wifi/supplicant/1.1/Supplicant.vts.h",
+        "android/hardware/wifi/supplicant/1.1/SupplicantStaIface.vts.h",
+        "android/hardware/wifi/supplicant/1.1/SupplicantStaIfaceCallback.vts.h",
         "android/hardware/wifi/supplicant/1.1/SupplicantStaNetwork.vts.h",
     ],
 }
