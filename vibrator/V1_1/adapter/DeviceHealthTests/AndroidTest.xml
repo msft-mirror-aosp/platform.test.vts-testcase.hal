@@ -26,9 +26,7 @@
 
     <target_preparer class="com.android.tradefed.targetprep.VtsHalAdapterPreparer">
         <option name="adapter-binary-name" value="android.hardware.vibrator@1.0-adapter"/>
-        <option name="interface-name" value="IVibrator"/>
-        <option name="service-name" value="default"/>
-        <option name="thread-count" value="1"/>
+        <option name="hal-package-name" value="android.hardware.vibrator@1.1"/>
     </target_preparer>
 
     <target_preparer class="com.android.tradefed.targetprep.TestAppInstallSetup">
