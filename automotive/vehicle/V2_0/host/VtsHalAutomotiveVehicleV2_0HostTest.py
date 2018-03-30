@@ -73,17 +73,6 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         logging.info("all supported properties: %s", self.configList)
         asserts.assertLess(0, len(self.configList))
 
-    def testMandatoryProperties(self):
-        """Verifies that all mandatory properties are supported."""
-        # 1 property so far
-        mandatoryProps = set([self.vtypes.VehicleProperty.DRIVING_STATUS])
-        logging.info(self.vtypes.VehicleProperty.DRIVING_STATUS)
-
-        for config in self.configList:
-            mandatoryProps.discard(config['prop'])
-
-        asserts.assertEqual(0, len(mandatoryProps))
-
     def emptyValueProperty(self, propertyId, areaId=0):
         """Creates a property structure for use with the Vehicle HAL.
 
@@ -174,22 +163,6 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         propValue = self.readVhalProperty(propertyId, areaId=areaId)
         asserts.assertEqual(1, len(propValue["value"]["int32Values"]))
         asserts.assertEqual(value, propValue["value"]["int32Values"][0])
-
-    def testDrivingStatus(self):
-        """Checks that DRIVING_STATUS property returns correct result."""
-        propValue = self.readVhalProperty(
-            self.vtypes.VehicleProperty.DRIVING_STATUS)
-        asserts.assertEqual(1, len(propValue["value"]["int32Values"]))
-        drivingStatus = propValue["value"]["int32Values"][0]
-
-        allStatuses = (self.vtypes.VehicleDrivingStatus.UNRESTRICTED
-                       | self.vtypes.VehicleDrivingStatus.NO_VIDEO
-                       | self.vtypes.VehicleDrivingStatus.NO_KEYBOARD_INPUT
-                       | self.vtypes.VehicleDrivingStatus.NO_VOICE_INPUT
-                       | self.vtypes.VehicleDrivingStatus.NO_CONFIG
-                       | self.vtypes.VehicleDrivingStatus.LIMIT_MESSAGE_LEN)
-
-        asserts.assertEqual(allStatuses, allStatuses | drivingStatus)
 
     def extractZonesAsList(self, supportedAreas):
         """Converts bitwise area flags to list of zones"""
@@ -353,7 +326,6 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             self.vtypes.VehicleProperty.ENGINE_OIL_LEVEL,
             self.vtypes.VehicleProperty.GEAR_SELECTION,
             self.vtypes.VehicleProperty.CURRENT_GEAR,
-            self.vtypes.VehicleProperty.DRIVING_STATUS,
             self.vtypes.VehicleProperty.TURN_SIGNAL_STATE,
             self.vtypes.VehicleProperty.IGNITION_STATE,
             self.vtypes.VehicleProperty.HVAC_FAN_DIRECTION,
