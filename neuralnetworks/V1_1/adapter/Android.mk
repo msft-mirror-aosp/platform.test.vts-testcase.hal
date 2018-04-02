@@ -18,6 +18,6 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := VtsHalVibratorV1_1AdapterDeviceHealthTests
-VTS_CONFIG_SRC_DIR := testcases/hal/vibrator/V1_1/adapter/DeviceHealthTests
+LOCAL_MODULE := VtsHalNeuralnetworksV1_1Adapter
+VTS_CONFIG_SRC_DIR := testcases/hal/neuralnetworks/V1_1/adapter
 include test/vts/tools/build/Android.host_config.mk
