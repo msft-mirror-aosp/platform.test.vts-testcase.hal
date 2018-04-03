@@ -14,21 +14,15 @@
      limitations under the License.
 -->
 <configuration description="Config for VTS VtsHalVibratorV1_1Adapter test cases">
-    <option name="config-descriptor:metadata" key="plan" value="vts-hal-adapter" />
-    <option name="config-descriptor:metadata" key="component" value="framework" />
-
-    <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
-        <option name="abort-on-push-failure" value="true"/>
-        <option name="push" value="DATA/nativetest/android.hardware.vibrator@1.0-adapter/android.hardware.vibrator@1.0-adapter->/data/nativetest/android.hardware.vibrator@1.0-adapter"/>
-        <option name="push" value="DATA/nativetest64/android.hardware.vibrator@1.0-adapter/android.hardware.vibrator@1.0-adapter->/data/nativetest64/android.hardware.vibrator@1.0-adapter"/>
-        <option name="push" value="script/target/vts_adapter.sh->/data/local/tmp/vts_adapter.sh"/>
-    </target_preparer>
-
+    <option key="plan" name="config-descriptor:metadata" value="vts-hal-adapter"/>
     <target_preparer class="com.android.tradefed.targetprep.VtsHalAdapterPreparer">
         <option name="adapter-binary-name" value="android.hardware.vibrator@1.0-adapter"/>
         <option name="hal-package-name" value="android.hardware.vibrator@1.1"/>
     </target_preparer>
-
-    <include name="CtsOsTestCases.config"/>
-
+    <test class="com.android.tradefed.testtype.AndroidJUnitTest">
+        <option name="package" value="com.android.devicehealth.tests"/>
+        <option name="runner" value="android.support.test.runner.AndroidJUnitRunner"/>
+    </test>
+    <include name="CtsDevicePolicyManagerTestCases.config"/>
+    <include name="CtsMonkeyTestCases.config"/>
 </configuration>
