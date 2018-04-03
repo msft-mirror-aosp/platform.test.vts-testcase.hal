@@ -36,7 +36,6 @@ HAL_PACKAGE_PREFIX = 'android.hardware.'
 ANDROID_MK_FILE_NAME = 'Android.mk'
 ANDROID_TEST_XML_FILE_NAME = 'AndroidTest.xml'
 
-
 class TestCaseCreator(object):
     """Init a test case directory with helloworld test case.
 
@@ -81,7 +80,8 @@ class TestCaseCreator(object):
                        is_profiling=False,
                        is_replay=False,
                        stop_runtime=False,
-                       update_only=False):
+                       update_only=False,
+                       mapping_dir_path=""):
         """Create the necessary configuration files to launch a test case.
 
         Args:
@@ -90,6 +90,8 @@ class TestCaseCreator(object):
           is_profiling: whether to create a profiling test case.
           stop_runtime: whether to stop framework before the test.
           update_only: flag to only update existing test configure.
+          mapping_dir_path: directory that stores the cts_hal_mapping files.
+                            Used for adapter test only.
 
         Returns:
           boolean, whether created/updated a test case successfully.
@@ -99,6 +101,7 @@ class TestCaseCreator(object):
         self._is_profiling = is_profiling
         self._is_replay = is_replay
         self._stop_runtime = stop_runtime
+        self._mapping_dir_path = mapping_dir_path
 
         self._test_module_name = self.GetVtsHalTestModuleName()
         self._test_name = self._test_module_name
@@ -109,6 +112,8 @@ class TestCaseCreator(object):
         if is_profiling:
             self._test_name = self._test_module_name + 'Profiling'
             self._test_plan = 'vts-hal-profiling'
+        if self._test_type == 'adapter':
+            self._test_plan = 'vts-hal-adapter'
 
         self._test_dir = self.GetHalTestCasePath()
         # Check whether the host side test script and target test binary is available.
@@ -118,7 +123,7 @@ class TestCaseCreator(object):
                 print('Could not find the host side test script: %s.' %
                       test_script_file)
                 return False
-        else:
+        elif self._test_type == 'target':
             test_binary_file = self.GetVtsTargetTestSourceFileName()
             if not os.path.exists(test_binary_file):
                 print('Could not find the target side test binary: %s.' %
@@ -190,13 +195,13 @@ class TestCaseCreator(object):
         if self._is_profiling and not ignore_profiling:
             test_dir = test_dir + '_profiling'
         return os.path.join(self._build_top, VTS_TEST_CASE_PATH,
-                            self.GetHalPath(),
-                            self.GetHalVersionToken(), test_dir)
+                            self.GetHalPath(), self.GetHalVersionToken(),
+                            test_dir)
 
     def GetHalTracePath(self):
         """Get the directory that stores the hal trace files."""
-        return os.path.join(self._build_top, HAL_TRACE_PATH,
-                            self.GetHalPath(), self.GetHalVersionToken())
+        return os.path.join(self._build_top, HAL_TRACE_PATH, self.GetHalPath(),
+                            self.GetHalVersionToken())
 
     def CreateAndroidMk(self):
         """Create Android.mk."""
@@ -218,22 +223,28 @@ class TestCaseCreator(object):
         VTS_TEST_CLASS = 'com.android.tradefed.testtype.VtsMultiDeviceTest'
 
         configuration = ET.Element('configuration', {
-            'description': 'Config for VTS ' + self._test_name + ' test cases'
+            'description':
+            'Config for VTS ' + self._test_name + ' test cases'
         })
 
-        ET.SubElement(configuration, 'option', {
-            'name': 'config-descriptor:metadata',
-            'key': 'plan',
-            'value': self._test_plan
-        })
+        ET.SubElement(
+            configuration, 'option', {
+                'name': 'config-descriptor:metadata',
+                'key': 'plan',
+                'value': self._test_plan
+            })
 
-        file_pusher = ET.SubElement(configuration, 'target_preparer',
-                                    {'class': VTS_FILE_PUSHER})
+        if self._test_type == 'adapter':
+            self.CreateAndroidTestXmlForAdapterTest(configuration)
+        else:
+            file_pusher = ET.SubElement(configuration, 'target_preparer',
+                                        {'class': VTS_FILE_PUSHER})
 
-        self.GeneratePushFileConfigure(file_pusher)
-        test = ET.SubElement(configuration, 'test', {'class': VTS_TEST_CLASS})
+            self.GeneratePushFileConfigure(file_pusher)
+            test = ET.SubElement(configuration, 'test',
+                                 {'class': VTS_TEST_CLASS})
 
-        self.GenerateTestOptionConfigure(test)
+            self.GenerateTestOptionConfigure(test)
 
         target = os.path.join(self._test_dir, ANDROID_TEST_XML_FILE_NAME)
         with open(target, 'w') as f:
@@ -242,15 +253,74 @@ class TestCaseCreator(object):
             f.write(LICENSE_STATEMENT_XML.format(year=self._current_year))
             f.write(self.Prettify(configuration))
 
+    def CreateAndroidTestXmlForAdapterTest(self, configuration):
+        """Create the test configuration within AndroidTest.xml for adapter test.
+
+        Args:
+          configuration: parent xml element for test configure.
+        """
+
+        # Configure VtsHalAdapterPreparer.
+        adapter_preparer = ET.SubElement(configuration, 'target_preparer',
+                                         {'class': VTA_HAL_ADAPTER_PREPARER})
+        (major_version, minor_version) = self._hal_version.split('.')
+        adapter_version = major_version + '.' + str(int(minor_version) - 1)
+        ET.SubElement(
+            adapter_preparer, 'option', {
+                'name':
+                'adapter-binary-name',
+                'value':
+                HAL_PACKAGE_PREFIX + self._hal_name + '@' + adapter_version +
+                '-adapter'
+            })
+        ET.SubElement(adapter_preparer, 'option', {
+            'name': 'hal-package-name',
+            'value': self._hal_package_name
+        })
+        # Configure device health tests.
+        test = ET.SubElement(configuration, 'test',
+                             {'class': ANDROID_JUNIT_TEST})
+        ET.SubElement(test, 'option', {
+            'name': 'package',
+            'value': 'com.android.devicehealth.tests'
+        })
+        ET.SubElement(
+            test, 'option', {
+                'name': 'runner',
+                'value': 'android.support.test.runner.AndroidJUnitRunner'
+            })
+
+        # Configure CTS tests.
+        list_of_files = os.listdir(self._mapping_dir_path)
+        # Use the latest mapping file.
+        latest_file = max(
+            [
+                os.path.join(self._mapping_dir_path, basename)
+                for basename in list_of_files
+            ],
+            key=os.path.getctime)
+
+        with open(latest_file, 'r') as cts_hal_map_file:
+            for line in cts_hal_map_file.readlines():
+                if line.startswith(HAL_PACKAGE_PREFIX + self._hal_name + '@' +
+                                   adapter_version):
+                    cts_tests = line.split(':')[1].split(',')
+                    for cts_test in cts_tests:
+                        test_config_name = cts_test[0:cts_test.find(
+                            '(')] + '.config'
+                        ET.SubElement(configuration, 'include',
+                                      {'name': test_config_name})
+
     def GeneratePushFileConfigure(self, file_pusher):
         """Create the push file configuration within AndroidTest.xml
 
         Args:
           file_pusher: parent xml element for push file configure.
         """
-        ET.SubElement(file_pusher, 'option',
-                      {'name': 'abort-on-push-failure',
-                       'value': 'false'})
+        ET.SubElement(file_pusher, 'option', {
+            'name': 'abort-on-push-failure',
+            'value': 'false'
+        })
 
         if self._test_type == 'target':
             if self._is_replay:
@@ -259,10 +329,11 @@ class TestCaseCreator(object):
                     'value': 'HalHidlHostTest.push'
                 })
             elif self._is_profiling:
-                ET.SubElement(file_pusher, 'option', {
-                    'name': 'push-group',
-                    'value': 'HalHidlTargetProfilingTest.push'
-                })
+                ET.SubElement(
+                    file_pusher, 'option', {
+                        'name': 'push-group',
+                        'value': 'HalHidlTargetProfilingTest.push'
+                    })
             else:
                 ET.SubElement(file_pusher, 'option', {
                     'name': 'push-group',
@@ -285,9 +356,10 @@ class TestCaseCreator(object):
         imported_package_lists.append(self._hal_package_name)
         # Generate additional push files e.g driver/profiler/vts_spec
         if self._test_type == 'host' or self._is_replay:
-            ET.SubElement(file_pusher, 'option',
-                          {'name': 'cleanup',
-                           'value': 'true'})
+            ET.SubElement(file_pusher, 'option', {
+                'name': 'cleanup',
+                'value': 'true'
+            })
             for imported_package in imported_package_lists:
                 if imported_package.startswith(HAL_PACKAGE_PREFIX):
                     imported_package_str, imported_package_version = imported_package.split(
@@ -300,43 +372,49 @@ class TestCaseCreator(object):
                         push_spec = VTS_SPEC_PUSH_TEMPLATE.format(
                             hal_path=imported_package_name.replace('.', '/'),
                             hal_version=imported_package_version,
-                            package_path=imported_package_str.replace('.',
-                                                                      '/'),
+                            package_path=imported_package_str.replace(
+                                '.', '/'),
                             vts_file=vts_spec)
-                        ET.SubElement(file_pusher, 'option',
-                                      {'name': 'push',
-                                       'value': push_spec})
+                        ET.SubElement(file_pusher, 'option', {
+                            'name': 'push',
+                            'value': push_spec
+                        })
 
                     dirver_package_name = imported_package + '-vts.driver.so'
                     push_driver = VTS_LIB_PUSH_TEMPLATE_32.format(
                         lib_name=dirver_package_name)
-                    ET.SubElement(file_pusher, 'option',
-                                  {'name': 'push',
-                                   'value': push_driver})
+                    ET.SubElement(file_pusher, 'option', {
+                        'name': 'push',
+                        'value': push_driver
+                    })
                     push_driver = VTS_LIB_PUSH_TEMPLATE_64.format(
                         lib_name=dirver_package_name)
-                    ET.SubElement(file_pusher, 'option',
-                                  {'name': 'push',
-                                   'value': push_driver})
+                    ET.SubElement(file_pusher, 'option', {
+                        'name': 'push',
+                        'value': push_driver
+                    })
 
         if self._is_profiling:
             if self._test_type == 'target':
-                ET.SubElement(file_pusher, 'option',
-                              {'name': 'cleanup',
-                               'value': 'true'})
+                ET.SubElement(file_pusher, 'option', {
+                    'name': 'cleanup',
+                    'value': 'true'
+                })
             for imported_package in imported_package_lists:
                 if imported_package.startswith(HAL_PACKAGE_PREFIX):
                     profiler_package_name = imported_package + '-vts.profiler.so'
                     push_profiler = VTS_LIB_PUSH_TEMPLATE_32.format(
                         lib_name=profiler_package_name)
-                    ET.SubElement(file_pusher, 'option',
-                                  {'name': 'push',
-                                   'value': push_profiler})
+                    ET.SubElement(file_pusher, 'option', {
+                        'name': 'push',
+                        'value': push_profiler
+                    })
                     push_profiler = VTS_LIB_PUSH_TEMPLATE_64.format(
                         lib_name=profiler_package_name)
-                    ET.SubElement(file_pusher, 'option',
-                                  {'name': 'push',
-                                   'value': push_profiler})
+                    ET.SubElement(file_pusher, 'option', {
+                        'name': 'push',
+                        'value': push_profiler
+                    })
 
     def GenerateTestOptionConfigure(self, test):
         """Create the test option configuration within AndroidTest.xml
@@ -344,9 +422,10 @@ class TestCaseCreator(object):
         Args:
           test: parent xml element for test option configure.
         """
-        ET.SubElement(test, 'option',
-                      {'name': 'test-module-name',
-                       'value': self._test_name})
+        ET.SubElement(test, 'option', {
+            'name': 'test-module-name',
+            'value': self._test_name
+        })
 
         if self._test_type == 'target':
             if self._is_replay:
@@ -356,18 +435,20 @@ class TestCaseCreator(object):
                 })
                 for trace in self.GetVtsHalReplayTraceFiles():
                     ET.SubElement(
-                        test,
-                        'option', {
-                            'name': 'hal-hidl-replay-test-trace-path',
-                            'value': TEST_TRACE_TEMPLATE.format(
+                        test, 'option', {
+                            'name':
+                            'hal-hidl-replay-test-trace-path',
+                            'value':
+                            TEST_TRACE_TEMPLATE.format(
                                 hal_path=self.GetHalPath(),
                                 hal_version=self.GetHalVersionToken(),
                                 trace_file=trace)
                         })
-                ET.SubElement(test, 'option', {
-                    'name': 'hal-hidl-package-name',
-                    'value': self._hal_package_name
-                })
+                ET.SubElement(
+                    test, 'option', {
+                        'name': 'hal-hidl-package-name',
+                        'value': self._hal_package_name
+                    })
             else:
                 test_binary = TEST_BINEARY_TEMPLATE_32.format(
                     test_name=self._test_module_name + 'Test')
@@ -399,18 +480,21 @@ class TestCaseCreator(object):
                 hal_path=self.GetHalPath(),
                 hal_version=self.GetHalVersionToken(),
                 test_name=self._test_module_name + 'Test')
-            ET.SubElement(test, 'option',
-                          {'name': 'test-case-path',
-                           'value': test_script})
+            ET.SubElement(test, 'option', {
+                'name': 'test-case-path',
+                'value': test_script
+            })
 
         if self._is_profiling:
-            ET.SubElement(test, 'option',
-                          {'name': 'enable-profiling',
-                           'value': 'true'})
+            ET.SubElement(test, 'option', {
+                'name': 'enable-profiling',
+                'value': 'true'
+            })
 
-        ET.SubElement(test, 'option',
-                      {'name': 'test-timeout',
-                       'value': self._time_out})
+        ET.SubElement(test, 'option', {
+            'name': 'test-timeout',
+            'value': self._time_out
+        })
 
     def Prettify(self, elem):
         """Create a pretty-printed XML string for the Element.
@@ -485,3 +569,6 @@ VTS_SPEC_PUSH_TEMPLATE = (
     '/data/local/tmp/spec/{package_path}/{hal_version}/{vts_file}')
 VTS_LIB_PUSH_TEMPLATE_32 = 'DATA/lib/{lib_name}->/data/local/tmp/32/{lib_name}'
 VTS_LIB_PUSH_TEMPLATE_64 = 'DATA/lib64/{lib_name}->/data/local/tmp/64/{lib_name}'
+
+VTA_HAL_ADAPTER_PREPARER = 'com.android.tradefed.targetprep.VtsHalAdapterPreparer'
+ANDROID_JUNIT_TEST = 'com.android.tradefed.testtype.AndroidJUnitTest'

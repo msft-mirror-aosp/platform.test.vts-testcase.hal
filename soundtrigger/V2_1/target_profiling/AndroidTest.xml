@@ -35,6 +35,11 @@
         <option name="binary-test-disable-framework" value="true"/>
         <option name="binary-test-stop-native-servers" value="true"/>
         <option name="enable-profiling" value="true"/>
+        <option name="exclude-coverage-path" value="hardware/interfaces/audio/" />
+        <option name="exclude-coverage-path" value="hardware/libhardware/" />
+        <option name="exclude-coverage-path" value="hardware/qcom/audio/post_proc/" />
+        <option name="exclude-coverage-path" value="frameworks/av/media/libnbaio/" />
+        <option name="exclude-coverage-path" value="system/media/audio_utils/" />
         <option name="precondition-file-path-prefix" value="/*/lib/hw/sound_trigger.primary.*" />
         <option name="test-timeout" value="5m"/>
     </test>
