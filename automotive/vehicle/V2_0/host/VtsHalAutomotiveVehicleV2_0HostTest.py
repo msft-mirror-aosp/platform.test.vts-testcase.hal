@@ -575,7 +575,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             subscribeOptions = {
                 "propId" : self.vtypes.VehicleProperty.ENGINE_OIL_TEMP,
                 "sampleRate" : 10.0,  # Hz
-                "flags" : self.vtypes.SubscribeFlags.HAL_EVENT,
+                "flags" : self.vtypes.SubscribeFlags.EVENTS_FROM_CAR,
             }
             pbSubscribeOptions = self.vtypes.Py2Pb("SubscribeOptions", subscribeOptions)
 
