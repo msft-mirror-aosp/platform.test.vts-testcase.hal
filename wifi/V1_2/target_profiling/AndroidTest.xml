@@ -35,7 +35,6 @@
         <option name="binary-test-disable-framework" value="true"/>
         <option name="binary-test-stop-native-servers" value="true"/>
         <option name="enable-profiling" value="true"/>
-        <option name="precondition-lshal" value="android.hardware.wifi@1.2"/>
         <option name="test-timeout" value="1m"/>
     </test>
 </configuration>
