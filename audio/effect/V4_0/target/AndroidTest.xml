@@ -37,7 +37,6 @@
         <option name="exclude-coverage-path" value="hardware/libhardware/modules/" />
         <option name="exclude-coverage-path" value="hardware/qcom/audio/hal/" />
         <option name="exclude-coverage-path" value="system/media" />
-        <option name="precondition-lshal" value="android.hardware.audio.effect@4.0"/>
         <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
