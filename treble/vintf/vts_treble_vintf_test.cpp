@@ -31,7 +31,8 @@
 #include <hidl-util/FQName.h>
 #include <hidl/ServiceManagement.h>
 #include <vintf/HalManifest.h>
-#include <vintf/VintfObject.h>
+#include <vintf/parse_xml.h>    // b/77293161
+#include "VintfObjectWithOdm.h" // b/77293161
 
 using android::FQName;
 using android::Hash;
@@ -43,7 +44,7 @@ using android::sp;
 using android::vintf::HalManifest;
 using android::vintf::Transport;
 using android::vintf::Version;
-using android::vintf::VintfObject;
+using android::vintf_with_odm::VintfObject;
 
 using std::cout;
 using std::endl;
@@ -329,8 +330,11 @@ TEST(CompatiblityTest, VendorFrameworkCompatibility) {
       ::android::vintf::DISABLE_AVB_CHECK))
       << error;
 
-  EXPECT_EQ(0, VintfObject::CheckCompatibility(
-                   {}, &error, ::android::vintf::DISABLE_AVB_CHECK))
+  const std::string &deviceManifest = ::android::vintf::gHalManifestConverter(
+      *VintfObject::GetDeviceHalManifest());
+  EXPECT_EQ(
+      0, VintfObject::CheckCompatibility({deviceManifest}, &error,
+                                         ::android::vintf::DISABLE_AVB_CHECK))
       << error;
 }
 
