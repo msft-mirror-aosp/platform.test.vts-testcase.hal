@@ -28,7 +28,7 @@
 #include <hidl-util/FQName.h>
 #include <hidl/ServiceManagement.h>
 #include <vintf/HalManifest.h>
-#include <vintf/VintfObject.h>
+#include "VintfObjectWithOdm.h" // b/77293161
 
 using android::FQName;
 using android::Hash;
@@ -123,7 +123,7 @@ class VtsTrebleVintfTest : public ::testing::Test {
     ASSERT_NE(passthrough_manager_, nullptr)
         << "Failed to get passthrough service manager." << endl;
 
-    vendor_manifest_ = ::android::vintf::VintfObject::GetDeviceHalManifest();
+    vendor_manifest_ = ::android::vintf_with_odm::VintfObject::GetDeviceHalManifest();
     ASSERT_NE(passthrough_manager_, nullptr)
         << "Failed to get vendor HAL manifest." << endl;
   }
