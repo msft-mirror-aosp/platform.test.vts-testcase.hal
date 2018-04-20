@@ -23,14 +23,22 @@ from vts.runners.host import asserts
 from vts.runners.host import base_test
 from vts.runners.host import const
 from vts.runners.host import test_runner
+from vts.testcases.template.hal_hidl_host_test import hal_hidl_host_test
 from vts.utils.python.controllers import adb
 
 
-class VtsCodelabHelloWorldTest(base_test.BaseTestClass):
+class UsbGadgetHidlTest(hal_hidl_host_test.HalHidlHostTest):
+    """A host-side test for USB Gadget HAL.
+
+    This test requires Android framework to run.
+    """
+
+    TEST_HAL_SERVICES = {"android.hardware.usb.gadget@1.0::IUsbGadget"}
 
     def setUpClass(self):
-        self.dut = self.android_devices[0]
-        self.shell = self.dut.shell
+        """Creates an adb session and reads sysprop values."""
+        super(UsbGadgetHidlTest, self).setUpClass()
+
         self.adb = self.dut.adb
         try:
             self.adb.root()
@@ -52,7 +60,8 @@ class VtsCodelabHelloWorldTest(base_test.BaseTestClass):
         """
         with usb1.USBContext() as context:
             for device in context.getDeviceIterator(skip_on_error=True):
-                logging.info("ID %04x:%04x ", device.getVendorID(), device.getProductID())
+                logging.info("ID %04x:%04x ", device.getVendorID(),
+                             device.getProductID())
                 for config in device.iterConfigurations():
                     logging.info("config: %d", config.getConfigurationValue())
                     interfaces_list = iter(config)
@@ -61,8 +70,10 @@ class VtsCodelabHelloWorldTest(base_test.BaseTestClass):
                         for altsetting in altsettings_list:
                             logging.info("interfaceNum:%d altSetting:%d "
                                          "class:%d subclass:%d protocol:%d",
-                                         altsetting.getNumber(), altsetting.getAlternateSetting(),
-                                         altsetting.getClass(), altsetting.getSubClass(),
+                                         altsetting.getNumber(),
+                                         altsetting.getAlternateSetting(),
+                                         altsetting.getClass(),
+                                         altsetting.getSubClass(),
                                          altsetting.getProtocol())
                             if altsetting.getClass() == usb_class and \
                                 altsetting.getSubClass() == usb_sub_class and \
@@ -114,6 +125,6 @@ class VtsCodelabHelloWorldTest(base_test.BaseTestClass):
         time.sleep(3)
         asserts.assertTrue(self.checkProtocol(10, 0, 0), "RNDIS not present")
 
+
 if __name__ == "__main__":
     test_runner.main()
-
