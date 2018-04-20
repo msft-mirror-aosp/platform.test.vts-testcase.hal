@@ -24,7 +24,7 @@
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalUsbGadgetV1_0Host"/>
         <option name="test-case-path" value="vts/testcases/hal/usb/gadget/V1_0/host/VtsHalUsbGadgetV1_0HostTest" />
-        <option name="test-config-path" value="vts/testcases/hal/usb/gadget/V1_0/host/VtsHalUsbGadgetV1_0HostTest.config" />
+        <option name="test-config-path" value="vts/testcases/hal/usb/gadget/V1_0/host/VtsHalUsbGadgetV1_0HostTest.runner_conf" />
         <option name="binary-test-disable-framework" value="false"/>
     </test>
 </configuration>

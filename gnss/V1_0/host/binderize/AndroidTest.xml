@@ -47,7 +47,7 @@
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalGnssV1_0HostBinderize" />
         <option name="test-case-path" value="vts/testcases/hal/gnss/V1_0/host/VtsHalGnssV1_0HostTest" />
-        <option name="test-config-path" value="vts/testcases/hal/gnss/V1_0/host/binderize/VtsHalGnssV1_0HostTest.config" />
+        <option name="test-config-path" value="vts/testcases/hal/gnss/V1_0/host/binderize/VtsHalGnssV1_0HostTest.runner_conf" />
         <option name="skip-on-64bit-abi" value="true"/>
         <option name="test-timeout" value="10m"/>
     </test>
