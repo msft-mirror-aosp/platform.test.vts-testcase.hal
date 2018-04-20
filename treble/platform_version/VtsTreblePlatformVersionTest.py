@@ -21,16 +21,14 @@ from vts.runners.host import asserts
 from vts.runners.host import base_test
 from vts.runners.host import const
 from vts.runners.host import test_runner
-from vts.utils.python.controllers import android_device
+from vts.utils.python.android import api
 
-ANDROID_O_API_VERSION = 26
-ANDROID_O_MR1_API_VERSION = 27
 
 class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
     """VTS should run on devices launched with O or later."""
 
     def setUpClass(self):
-        self.dut = self.registerController(android_device)[0]
+        self.dut = self.android_devices[0]
         self.dut.shell.InvokeTerminal("VtsTreblePlatformVersionTest")
 
     def getProp(self, prop, required=True):
@@ -69,21 +67,10 @@ class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
 
         return result
 
-    def getFirstApiLevel(self):
-        """Helper to retrieve the ro.product.first_api_level property."""
-        try:
-            firstApiLevel = self.getProp("ro.product.first_api_level",
-                                         required=False)
-            if firstApiLevel is None:
-                asserts.skip("ro.product.first_api_level undefined")
-            return int(firstApiLevel)
-        except ValueError as e:
-            asserts.fail("Unexpected value returned from getprop: %s" % e)
-
     def testFirstApiLevel(self):
         """Test that device launched with O or later."""
-        firstApiLevel = self.getFirstApiLevel()
-        asserts.assertTrue(firstApiLevel >= ANDROID_O_API_VERSION,
+        firstApiLevel = self.dut.getLaunchApiLevel()
+        asserts.assertTrue(firstApiLevel >= api.PLATFORM_API_LEVEL_O,
             "VTS can only be run for new launches in O or above")
 
     def testTrebleEnabled(self):
@@ -96,7 +83,7 @@ class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
         """Test that SDK version >= O (26)."""
         try:
             sdkVersion = int(self.getProp("ro.build.version.sdk"))
-            asserts.assertTrue(sdkVersion >= ANDROID_O_API_VERSION,
+            asserts.assertTrue(sdkVersion >= api.PLATFORM_API_LEVEL_O,
                 "VTS is for devices launching in O or above")
         except ValueError as e:
             asserts.fail("Unexpected value returned from getprop: %s" % e)
@@ -107,8 +94,8 @@ class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
         If ro.vndk.version is not defined on boot, GSI sets LD_CONFIG_FILE to
         temporary configuration file and ro.vndk.version to default value.
         """
-        firstApiLevel = self.getFirstApiLevel()
-        if firstApiLevel > ANDROID_O_MR1_API_VERSION:
+        firstApiLevel = self.dut.getLaunchApiLevel()
+        if firstApiLevel > api.PLATFORM_API_LEVEL_O_MR1:
             vndkVersion = self.getProp("ro.vndk.version")
             envLdConfigFile = self.getEnv("LD_CONFIG_FILE")
             if vndkVersion is None:
