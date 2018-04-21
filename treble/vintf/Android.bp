@@ -75,6 +75,14 @@ cc_test {
         "SingleManifestTest.cpp",
         "SystemVendorTest.cpp",
     ],
+    multilib: {
+        lib32: {
+            suffix: "32",
+        },
+        lib64: {
+            suffix: "64",
+        },
+    },
 }
 
 // Tests everything.
