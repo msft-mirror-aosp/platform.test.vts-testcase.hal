@@ -41,6 +41,6 @@
         <option name="test-case-path" value="vts/testcases/acts/wifi/WifiNativeTest"/>
         <option name="test-case-path-type" value="file"/>
         <option name="test-timeout" value="10m"/>
-        <option name="test-config-path" value="vts/testcases/hal/wifi/V1_0/app/wifi_native_test/VtsAppWifiNativeTest.config" />
+        <option name="test-config-path" value="vts/testcases/hal/wifi/V1_0/app/wifi_native_test/VtsAppWifiNativeTest.runner_conf" />
     </test>
 </configuration>
