@@ -187,7 +187,13 @@ set<string> VtsTrebleVintfTestBase::GetPassthroughHals(
     if (transport == Transport::HWBINDER) {
       // ignore
     } else if (transport == Transport::PASSTHROUGH) {
-      manifest_passthrough_hals_.insert(fq_name.string() + "/" + instance_name);
+      // 1.n in manifest => 1.0, 1.1, ... 1.n are all served (if they exist)
+      FQName fq = fq_name;
+      while (true) {
+        manifest_passthrough_hals_.insert(fq.string() + "/" + instance_name);
+        if (fq.getPackageMinorVersion() <= 0) break;
+        fq = fq.downRev();
+      }
     } else {
       ADD_FAILURE() << "Unrecognized transport: " << transport;
     }
