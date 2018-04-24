@@ -113,7 +113,8 @@ TEST_P(SingleManifestTest, HalsAreServed) {
             fq_name.withVersion(fq_name.getPackageMajorVersion(), 0);
         hal_service = GetHalService(lowest_name, instance_name, transport);
         EXPECT_TRUE(
-            canCastInterface(hal_service.get(), fq_name.string().c_str()));
+            canCastInterface(hal_service.get(), fq_name.string().c_str()))
+            << fq_name.string() << " is not on the device.";
       } else {
         hal_service = GetHalService(fq_name, instance_name, transport);
       }
@@ -232,6 +233,15 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
   HalVerifyFn is_released = [](const FQName &fq_name,
                                const string &instance_name,
                                Transport transport) {
+    // See HalsAreServed. These are always retrieved through the base interface
+    // and if it is not a google defined interface, it must be an extension of
+    // one.
+    if (transport == Transport::PASSTHROUGH &&
+        (!IsGoogleDefinedIface(fq_name) ||
+         fq_name.getPackageMinorVersion() != 0)) {
+      return;
+    }
+
     sp<IBase> hal_service = GetHalService(fq_name, instance_name, transport);
 
     if (hal_service == nullptr) {
