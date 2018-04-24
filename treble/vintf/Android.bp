@@ -48,10 +48,10 @@ cc_defaults {
 // test is modified to compile against latest libvintf.
 // VendorFrameworkCompatibility is removed because it has framework dependency.
 cc_test {
-    name: "vts_treble_vintf_test",
+    name: "vts_treble_vintf_test_o_mr1",
     defaults: ["vts_treble_vintf_test_defaults"],
     srcs: [
-        "vts_treble_vintf_test.cpp",
+        "vts_treble_vintf_test_o_mr1.cpp",
     ],
 }
 
