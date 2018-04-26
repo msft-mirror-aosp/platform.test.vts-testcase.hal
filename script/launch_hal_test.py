@@ -20,14 +20,14 @@ import os
 import re
 import sys
 
+from build.build_rule_gen import BuildRuleGen
 from build.vts_spec_parser import VtsSpecParser
 from configure.test_case_creator import TestCaseCreator
 from utils.const import Constant
 
-HAL_PACKAGE_NAME_PATTERN = '(([a-zA-Z_0-9]*)(?:[.][a-zA-Z_0-9]*)*)@([0-9]+)[.]([0-9]+)'
 TEST_TIME_OUT_PATTERN = '(([0-9]+)(m|s|h))+'
 
-"""Generate Android.mk and AndroidTest.xml files for given hal
+"""Generate Android.mk, Android.bp, and AndroidTest.xml files for given hal
 
 Usage:
   python launch_hal_test.py [--options] hal_package name
@@ -118,10 +118,14 @@ def main():
         help='hal package name (e.g. android.hardware.nfc@1.0).')
     args = parser.parse_args()
 
-    regex = re.compile(HAL_PACKAGE_NAME_PATTERN)
+    regex = re.compile(Constant.HAL_PACKAGE_NAME_PATTERN)
     result = re.match(regex, args.hal_package_name)
     if not result:
         print 'Invalid hal package name. Exiting..'
+        sys.exit(1)
+
+    if not args.hal_package_name.startswith(args.package_root + '.'):
+        print 'hal_package_name does not start with package_root. Exiting...'
         sys.exit(1)
 
     if args.test_type != 'target' and args.test_type != 'host':
@@ -165,6 +169,12 @@ def main():
               args.hal_package_name)
         sys.exit(1)
 
+    if args.test_type == "host" or args.enable_profiling:
+        build_rule_gen = BuildRuleGen(
+            Constant.BP_WARNING_HEADER, args.package_root, args.path_root)
+        name_version = args.hal_package_name[len(args.package_root) + 1:]
+        build_rule_gen.UpdateHalDirBuildRule(
+            [name_version.split('@')], args.test_config_dir)
 
 if __name__ == '__main__':
     main()
