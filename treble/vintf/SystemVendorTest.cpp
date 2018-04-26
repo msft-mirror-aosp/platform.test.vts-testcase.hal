@@ -85,6 +85,11 @@ TEST_F(SystemVendorTest, ServedHwbinderHalsAreInManifest) {
 // Tests that deprecated HALs are not served, unless a higher, non-deprecated
 // minor version is served.
 TEST_F(SystemVendorTest, NoDeprecatedHalsOnManager) {
+  if (vendor_manifest_->level() == Level::UNSPECIFIED) {
+    // On a legacy device, no HALs are deprecated.
+    return;
+  }
+
   // Predicate for whether an instance is served through service manager.
   // Return {instance name, highest minor version}
   // where "highest minor version" is the first element in getInterfaceChain()
