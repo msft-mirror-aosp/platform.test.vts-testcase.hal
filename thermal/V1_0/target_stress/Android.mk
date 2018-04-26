@@ -21,5 +21,4 @@ include $(call all-subdir-makefiles)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := ThermalHidlTargetStressTest
-VTS_CONFIG_SRC_DIR := testcases/hal/thermal/V1_0/target_stress
 include test/vts/tools/build/Android.host_config.mk
