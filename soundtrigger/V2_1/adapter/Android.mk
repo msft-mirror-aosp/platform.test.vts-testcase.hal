@@ -19,5 +19,4 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := VtsHalSoundtriggerV2_1Adapter
-VTS_CONFIG_SRC_DIR := testcases/hal/soundtrigger/V2_1/adapter
 include test/vts/tools/build/Android.host_config.mk
