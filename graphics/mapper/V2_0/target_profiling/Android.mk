@@ -19,5 +19,4 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := VtsHalGraphicsMapperV2_0TargetProfiling
-VTS_CONFIG_SRC_DIR := testcases/hal/graphics/mapper/V2_0/target_profiling
 include test/vts/tools/build/Android.host_config.mk
