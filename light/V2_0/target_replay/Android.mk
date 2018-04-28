@@ -19,5 +19,4 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := VtsHalLightV2_0TargetReplay
-VTS_CONFIG_SRC_DIR := testcases/hal/light/V2_0/target_replay
 include test/vts/tools/build/Android.host_config.mk

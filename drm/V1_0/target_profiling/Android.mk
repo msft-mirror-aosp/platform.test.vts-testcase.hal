@@ -21,6 +21,4 @@ include $(call all-subdir-makefiles)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := VtsHalDrmV1_0TargetProfiling
-VTS_CONFIG_SRC_DIR := testcases/hal/drm/V1_0/target_profiling
-
 include test/vts/tools/build/Android.host_config.mk
