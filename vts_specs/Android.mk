@@ -17,7 +17,10 @@
 spec_copy_pairs :=
 $(foreach m,$(VTS_SPEC_FILE_LIST),\
   $(eval spec_copy_dir :=\
-    spec/$(word 2,$(subst android/hardware/, ,$(dir $(m)))))\
+    spec/$(word 2,$(subst android/frameworks/, ,\
+                    $(subst android/hardware/, ,\
+                      $(subst android/hidl/, ,\
+                        $(subst android/system/, ,$(dir $(m))))))))\
   $(eval spec_copy_file := $(notdir $(m)))\
   $(eval spec_copy_dest := $(spec_copy_dir)/$(spec_copy_file))\
   $(eval spec_copy_pairs += $(m):$(TARGET_OUT_DATA)/vts_specs/$(spec_copy_dest)))
