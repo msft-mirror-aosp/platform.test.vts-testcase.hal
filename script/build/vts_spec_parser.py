@@ -22,6 +22,8 @@ import subprocess
 import sys
 import tempfile
 
+from utils.const import Constant
+
 ANDROID_BUILD_TOP = os.environ.get('ANDROID_BUILD_TOP')
 if not ANDROID_BUILD_TOP:
     print 'Run "lunch" command first.'
@@ -37,9 +39,11 @@ import build_rule_gen_utils as utils
 
 class VtsSpecParser(object):
     """Provides an API to generate a parse .vts spec files."""
-    HW_IFACE_DIR = os.path.join(ANDROID_BUILD_TOP, 'hardware', 'interfaces')
+    HW_IFACE_DIR = os.path.join(ANDROID_BUILD_TOP, Constant.HAL_INTERFACE_PATH)
 
-    def __init__(self):
+    def __init__(self,
+                 package_root=Constant.HAL_PACKAGE_PREFIX,
+                 path_root=Constant.HAL_INTERFACE_PATH):
         """VtsSpecParser constructor.
 
         For every unique pair of (hal name, hal version) available under
@@ -50,6 +54,8 @@ class VtsSpecParser(object):
         """
         self._cache = set()
         self._tmp_dir = tempfile.mkdtemp()
+        self._package_root = package_root
+        self._path_root = path_root
         hal_list = self.HalNamesAndVersions()
 
     def __del__(self):
@@ -83,9 +89,8 @@ class VtsSpecParser(object):
 
         # Exclude the current package and packages with no corresponding libs.
         exclude_packages = [
-            "android.hidl.base@1.0",
-            "android.hidl.manager@1.0",
-            'android.hardware.%s@%s' % (hal_name, hal_version)
+            "android.hidl.base@1.0", "android.hidl.manager@1.0",
+            '%s.%s@%s' % (self._package_root, hal_name, hal_version)
         ]
 
         return sorted(list(set(imported_packages) - set(exclude_packages)))
@@ -103,9 +108,11 @@ class VtsSpecParser(object):
         if (hal_name, hal_version) in self._cache:
             return
         hidl_gen_cmd = (
-            'hidl-gen -o {TEMP_DIR} -L vts '
-            'android.hardware.{HAL_NAME}@{HAL_VERSION}').format(
+            'hidl-gen -o {TEMP_DIR} -L vts -r {PACKAGE_ROOT}:{PATH_ROOT} '
+            '{PACKAGE_ROOT}.{HAL_NAME}@{HAL_VERSION}').format(
                 TEMP_DIR=self._tmp_dir,
+                PACKAGE_ROOT=self._package_root,
+                PATH_ROOT=self._path_root,
                 HAL_NAME=hal_name,
                 HAL_VERSION=hal_version)
         subprocess.call(hidl_gen_cmd, shell=True)
@@ -148,7 +155,8 @@ class VtsSpecParser(object):
               e.g. ['Vibrator.vts', 'types.vts']
         """
         self.GenerateVtsSpecs(hal_name, hal_version)
-        vts_spec_dir = os.path.join(self._tmp_dir, 'android', 'hardware',
+        vts_spec_dir = os.path.join(self._tmp_dir,
+                                    self._package_root.replace('.', '/'),
                                     utils.HalNameDir(hal_name), hal_version)
         vts_spec_names = filter(lambda x: x.endswith('.vts'),
                                 os.listdir(vts_spec_dir))
@@ -164,7 +172,8 @@ class VtsSpecParser(object):
           list of ComponentSpecificationMessages
         """
         self.GenerateVtsSpecs(hal_name, hal_version)
-        vts_spec_dir = os.path.join(self._tmp_dir, 'android', 'hardware',
+        vts_spec_dir = os.path.join(self._tmp_dir,
+                                    self._package_root.replace('.', '/'),
                                     utils.HalNameDir(hal_name), hal_version)
         vts_spec_protos = []
         for vts_spec in self.VtsSpecNames(hal_name, hal_version):

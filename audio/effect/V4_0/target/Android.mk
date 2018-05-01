@@ -19,5 +19,4 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := VtsHalAudioEffectV4_0Target
-VTS_CONFIG_SRC_DIR := testcases/hal/audio/effect/V4_0/target
 include test/vts/tools/build/Android.host_config.mk
