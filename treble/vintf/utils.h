@@ -77,7 +77,9 @@ extern const set<string> kPassthroughHals;
 extern const map<size_t /* Shipping API Level */, Level /* FCM Version */>
     kFcm2ApiLevelMap;
 
-extern const string kShippingApiLevelProp;
+// Returns ro.product.first_api_level if it is defined and not 0. Returns
+// ro.build.version.sdk otherwise.
+uint64_t GetShippingApiLevel();
 
 // For a given interface returns package root if known. Returns empty string
 // otherwise.
