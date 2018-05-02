@@ -16,11 +16,8 @@
 
 #include "DeviceManifestTest.h"
 
-#include <android-base/properties.h>
 #include <vintf/VintfObject.h>
 #include "SingleManifestTest.h"
-
-using android::base::GetUintProperty;
 
 namespace android {
 namespace vintf {
@@ -37,11 +34,10 @@ void DeviceManifestTest::SetUp() {
 // Tests that Shipping FCM Version in the device manifest is at least the
 // minimum Shipping FCM Version as required by Shipping API level.
 TEST_F(DeviceManifestTest, ShippingFcmVersion) {
-  uint64_t shipping_api_level =
-      GetUintProperty<uint64_t>(kShippingApiLevelProp, 0);
+  uint64_t shipping_api_level = GetShippingApiLevel();
+  ASSERT_NE(shipping_api_level, 0u)
+      << "Device's shipping API level cannot be determined.";
 
-  ASSERT_NE(shipping_api_level, 0u) << "sysprop " << kShippingApiLevelProp
-                                    << " is missing or cannot be parsed.";
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   if (shipping_fcm_version == Level::UNSPECIFIED) {
     // O / O-MR1 vendor image doesn't have shipping FCM version declared and
