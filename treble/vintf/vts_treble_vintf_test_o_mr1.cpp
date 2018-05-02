@@ -137,17 +137,6 @@ sp<android::hidl::base::V1_0::IBase> VtsTrebleVintfTest::GetHalService(
                                                transport);
 }
 
-// Tests that all HAL entries in VINTF has all required fields filled out.
-TEST_F(VtsTrebleVintfTest, HalEntriesAreComplete) {
-  for (const auto &hal_name : vendor_manifest_->getHalNames()) {
-    for (const ManifestHal *hal : vendor_manifest_->getHals(hal_name)) {
-      EXPECT_TRUE(!hal->isDisabledHal())
-          << hal->getName() << " has no instances declared. Suggested fix: "
-          << "Add <version>, <interface> and <instance> tags.\n";
-    }
-  }
-}
-
 // Tests that no HAL outside of the allowed set is specified as passthrough in
 // VINTF.
 TEST_F(VtsTrebleVintfTest, HalsAreBinderized) {
