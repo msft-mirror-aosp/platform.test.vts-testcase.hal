@@ -21,6 +21,10 @@
 #include <string>
 #include <vector>
 
+#include <android-base/properties.h>
+
+using android::base::GetUintProperty;
+
 namespace android {
 namespace vintf {
 namespace testing {
@@ -71,7 +75,16 @@ const map<size_t /* Shipping API Level */, Level /* FCM Version */>
                       // P
                       {28, static_cast<Level>(3)}}};
 
-const string kShippingApiLevelProp = "ro.product.first_api_level";
+// Returns ro.product.first_api_level if it is defined and not 0. Returns
+// ro.build.version.sdk otherwise.
+uint64_t GetShippingApiLevel() {
+  uint64_t api_level =
+      GetUintProperty<uint64_t>("ro.product.first_api_level", 0);
+  if (api_level != 0) {
+    return api_level;
+  }
+  return GetUintProperty<uint64_t>("ro.build.version.sdk", 0);
+}
 
 // For a given interface returns package root if known. Returns empty string
 // otherwise.
