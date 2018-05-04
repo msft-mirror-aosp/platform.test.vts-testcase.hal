@@ -193,24 +193,6 @@ sp<android::hidl::base::V1_0::IBase> VtsTrebleVintfTest::GetHalService(
   return hal_service;
 }
 
-// Tests that all HAL entries in VINTF has all required fields filled out.
-TEST_F(VtsTrebleVintfTest, HalEntriesAreComplete) {
-  auto hal_names = vendor_manifest_->getHalNames();
-  for (const auto &hal_name : hal_names) {
-    auto versions = vendor_manifest_->getSupportedVersions(hal_name);
-    EXPECT_FALSE(versions.empty())
-        << hal_name << " has no version specified in VINTF.";
-    auto iface_names = vendor_manifest_->getInterfaceNames(hal_name);
-    EXPECT_FALSE(iface_names.empty())
-        << hal_name << " has no interface specified in VINTF.";
-    for (const auto &iface_name : iface_names) {
-      auto instances = vendor_manifest_->getInstances(hal_name, iface_name);
-      EXPECT_FALSE(instances.empty())
-          << hal_name << " has no instance specified in VINTF.";
-    }
-  }
-}
-
 // Tests that no HAL outside of the allowed set is specified as passthrough in
 // VINTF.
 TEST_F(VtsTrebleVintfTest, HalsAreBinderized) {
