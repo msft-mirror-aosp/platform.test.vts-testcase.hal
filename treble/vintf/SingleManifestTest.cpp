@@ -29,27 +29,6 @@ namespace testing {
 using android::FqInstance;
 using android::vintf::toFQNameString;
 
-// Tests that all HAL entries in VINTF has all required fields filled out.
-TEST_P(SingleManifestTest, HalEntriesAreComplete) {
-  auto manifest = GetParam();
-  for (const auto &hal_name : manifest->getHalNames()) {
-    for (const ManifestHal *hal : manifest->getHals(hal_name)) {
-      // Do not suggest <fqname> for target FCM version < P.
-      bool allow_fqname = manifest->level() != Level::UNSPECIFIED &&
-                          manifest->level() >= 3 /* P */;
-
-      EXPECT_TRUE(hal->isOverride() || !hal->isDisabledHal())
-          << hal->getName()
-          << " has no instances declared and does not have override=\"true\". "
-          << "Do one of the following to fix: \n"
-          << (allow_fqname ? "  * Add <fqname> tags.\n" : "")
-          << "  * Add <version>, <interface> and <instance> tags.\n"
-          << "  * If the component should be disabled, add attribute "
-          << "override=\"true\".";
-    }
-  }
-}
-
 // Tests that no HAL outside of the allowed set is specified as passthrough in
 // VINTF.
 TEST_P(SingleManifestTest, HalsAreBinderized) {
