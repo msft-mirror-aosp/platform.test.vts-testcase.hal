@@ -14,7 +14,8 @@
      limitations under the License.
 -->
 <configuration description="Config for CtsOnGsiTrebleFrameworkVintfTest">
-    <option name="config-descriptor:metadata" key="component" value="systems" />
+    <option name="test-suite-tag" value="cts" />
+    <option name="config-descriptor:metadata" key="component" value="vintf" />
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
         <option name="abort-on-push-failure" value="false"/>
         <option name="push" value="DATA/nativetest/vts_treble_vintf_framework_test/vts_treble_vintf_framework_test->/data/nativetest/vts_treble_vintf_framework_test"/>
