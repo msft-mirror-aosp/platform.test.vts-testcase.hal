@@ -94,17 +94,19 @@ class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
         If ro.vndk.version is not defined on boot, GSI sets LD_CONFIG_FILE to
         temporary configuration file and ro.vndk.version to default value.
         """
+
+        vndkVersion = self.getProp("ro.vndk.version")
+        if vndkVersion is None:
+            asserts.fail("VNDK version is not defined")
+
         firstApiLevel = self.dut.getLaunchApiLevel()
         if firstApiLevel > api.PLATFORM_API_LEVEL_O_MR1:
-            vndkVersion = self.getProp("ro.vndk.version")
+            vndkLite = self.getProp("ro.vndk.lite")
+            if vndkLite is not None:
+                asserts.fail("ro.vndk.lite is defined as %s" % vndkLite)
             envLdConfigFile = self.getEnv("LD_CONFIG_FILE")
-            if vndkVersion is None:
-                asserts.fail("VNDK version is not defined")
             if envLdConfigFile is not None:
                 asserts.fail("LD_CONFIG_FILE is defined as %s" % envLdConfigFile)
-        else:
-            asserts.skip(
-                "VndkVersion can only be run for new launches in P or above")
 
 if __name__ == "__main__":
     test_runner.main()
