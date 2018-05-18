@@ -353,6 +353,10 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             asserts.assertTrue(c["areaConfigs"] != None, "Prop 0x%x must have areaConfigs" %
                                c["prop"])
             areasFound = 0
+            if c["prop"] == self.vtypes.VehicleProperty.HVAC_TEMPERATURE_DISPLAY_UNITS:
+                # This property doesn't have sensible min/max
+                continue
+
             for a in c["areaConfigs"]:
                 # Make sure this doesn't override one of the other areas found.
                 asserts.assertEqual(0, areasFound & a["areaId"])
@@ -422,7 +426,6 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
     def testGlobalFloatProperties(self):
         """Verifies that values of global float properties are in the correct range"""
         floatProperties = {
-            self.vtypes.VehicleProperty.ENV_CABIN_TEMPERATURE: (-50, 100),  # celsius
             self.vtypes.VehicleProperty.ENV_OUTSIDE_TEMPERATURE: (-50, 100),  # celsius
             self.vtypes.VehicleProperty.ENGINE_RPM : (0, 30000),  # RPMs
             self.vtypes.VehicleProperty.ENGINE_OIL_TEMP : (-50, 150),  # celsius

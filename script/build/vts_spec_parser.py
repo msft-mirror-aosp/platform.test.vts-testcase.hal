@@ -39,7 +39,6 @@ import build_rule_gen_utils as utils
 
 class VtsSpecParser(object):
     """Provides an API to generate a parse .vts spec files."""
-    HW_IFACE_DIR = os.path.join(ANDROID_BUILD_TOP, Constant.HAL_INTERFACE_PATH)
 
     def __init__(self,
                  package_root=Constant.HAL_PACKAGE_PREFIX,
@@ -47,7 +46,7 @@ class VtsSpecParser(object):
         """VtsSpecParser constructor.
 
         For every unique pair of (hal name, hal version) available under
-        hardware/interfaces, generates .vts files using hidl-gen.
+        path_root, generates .vts files using hidl-gen.
 
         Args:
             tmp_dir: string, temporary directory to which to write .vts files.
@@ -119,21 +118,22 @@ class VtsSpecParser(object):
         self._cache.add((hal_name, hal_version))
 
     def HalNamesAndVersions(self):
-        """Returns a list of hals and version present under hardware/interfaces.
+        """Returns a list of hals and versions under hal interface directory.
 
         Returns:
-          List of tuples of strings containing hal names and hal versions.
-          For example, [('vibrator', '1.3'), ('sensors', '1.7')]
+            List of tuples of strings containing hal names and hal versions.
+            For example, [('vibrator', '1.3'), ('sensors', '1.7')]
         """
+        full_path_root = os.path.join(ANDROID_BUILD_TOP, self._path_root)
         result = set()
-        # Walk through ANDROID_BUILD_TOP/hardware/interfaces and heuristically
+        # Walk through ANDROID_BUILD_TOP/self._path_root and heuristically
         # figure out all the HAL names and versions in the source tree.
-        for base, dirs, files in os.walk(self.HW_IFACE_DIR):
+        for base, dirs, files in os.walk(full_path_root):
             has_hals = any(f.endswith('.hal') for f in files)
             if not has_hals:
                 continue
 
-            hal_dir = os.path.relpath(base, self.HW_IFACE_DIR)
+            hal_dir = os.path.relpath(base, full_path_root)
             # Find the first occurance of version in directory path.
             match = re.search("(\d+)\.(\d+)", hal_dir)
             if match and 'example' not in hal_dir:
