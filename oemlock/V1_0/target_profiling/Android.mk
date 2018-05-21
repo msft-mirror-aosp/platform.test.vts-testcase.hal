@@ -19,5 +19,4 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := VtsHalOemLockV1_0TargetProfiling
-VTS_CONFIG_SRC_DIR := testcases/hal/oemlock/V1_0/target_profiling
 include test/vts/tools/build/Android.host_config.mk

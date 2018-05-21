@@ -19,5 +19,4 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := VtsHalRadioV1_0Host
-VTS_CONFIG_SRC_DIR := testcases/hal/radio/V1_0/host
 include test/vts/tools/build/Android.host_config.mk

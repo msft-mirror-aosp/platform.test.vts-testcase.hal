@@ -127,6 +127,10 @@ func (h *hal2vts) GeneratedHeaderDirs() android.Paths {
 }
 
 func (h *hal2vts) GeneratedSourceFiles() android.Paths {
+	return nil
+}
+
+func (h *hal2vts) GeneratedDeps() android.Paths {
 	return h.generatedHeaders
 }
 

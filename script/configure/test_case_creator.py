@@ -47,6 +47,7 @@ class TestCaseCreator(object):
         test_type: string, type of the test, currently support host and target.
         test_name_prefix: prefix of generated test name. e.g. android.hardware.nfc@1.0-test-target.
         test_name: test name generated. e.g. android.hardware.nfc@1.0-test-target-profiling.
+        test_plan: string, the plan that the test belongs to.
         test_dir: string, test case absolute directory.
         time_out: string, timeout of the test, default is 1m.
         is_profiling: boolean, whether to create a profiling test case.
@@ -101,10 +102,13 @@ class TestCaseCreator(object):
 
         self._test_module_name = self.GetVtsHalTestModuleName()
         self._test_name = self._test_module_name
+        self._test_plan = 'vts-staging-default'
         if is_replay:
             self._test_name = self._test_module_name + 'Replay'
+            self._test_plan = 'vts-hal-replay'
         if is_profiling:
             self._test_name = self._test_module_name + 'Profiling'
+            self._test_plan = 'vts-hal-profiling'
 
         self._test_dir = self.GetHalTestCasePath()
         # Check whether the host side test script and target test binary is available.
@@ -211,18 +215,22 @@ class TestCaseCreator(object):
     def CreateAndroidTestXml(self):
         """Create AndroidTest.xml."""
         VTS_FILE_PUSHER = 'com.android.compatibility.common.tradefed.targetprep.VtsFilePusher'
-        VTS_PYTHON_PREPARER = 'com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer'
         VTS_TEST_CLASS = 'com.android.tradefed.testtype.VtsMultiDeviceTest'
 
         configuration = ET.Element('configuration', {
             'description': 'Config for VTS ' + self._test_name + ' test cases'
         })
+
+        ET.SubElement(configuration, 'option', {
+            'name': 'config-descriptor:metadata',
+            'key': 'plan',
+            'value': self._test_plan
+        })
+
         file_pusher = ET.SubElement(configuration, 'target_preparer',
                                     {'class': VTS_FILE_PUSHER})
 
         self.GeneratePushFileConfigure(file_pusher)
-        python_preparer = ET.SubElement(configuration, 'target_preparer',
-                                        {'class': VTS_PYTHON_PREPARER})
         test = ET.SubElement(configuration, 'test', {'class': VTS_TEST_CLASS})
 
         self.GenerateTestOptionConfigure(test)
@@ -400,10 +408,6 @@ class TestCaseCreator(object):
                           {'name': 'enable-profiling',
                            'value': 'true'})
 
-        ET.SubElement(test, 'option', {
-            'name': 'precondition-lshal',
-            'value': self._hal_package_name
-        })
         ET.SubElement(test, 'option',
                       {'name': 'test-timeout',
                        'value': self._time_out})

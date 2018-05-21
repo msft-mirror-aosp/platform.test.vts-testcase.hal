@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-import fnmatch
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -118,14 +118,23 @@ class VtsSpecParser(object):
           List of tuples of strings containing hal names and hal versions.
           For example, [('vibrator', '1.3'), ('sensors', '1.7')]
         """
-        result = []
+        result = set()
+        # Walk through ANDROID_BUILD_TOP/hardware/interfaces and heuristically
+        # figure out all the HAL names and versions in the source tree.
         for base, dirs, files in os.walk(self.HW_IFACE_DIR):
-            pattern = self.HW_IFACE_DIR + '*/[0-9].[0-9]'
-            if fnmatch.fnmatch(base, pattern) and 'example' not in base:
-                hal_dir = os.path.relpath(base, self.HW_IFACE_DIR)
-                (hal_name, hal_version) = os.path.split(hal_dir)
-                hal_name = hal_name.replace('/', '.')
-                result.append((hal_name, hal_version))
+            has_hals = any(f.endswith('.hal') for f in files)
+            if not has_hals:
+                continue
+
+            hal_dir = os.path.relpath(base, self.HW_IFACE_DIR)
+            # Find the first occurance of version in directory path.
+            match = re.search("(\d+)\.(\d+)", hal_dir)
+            if match and 'example' not in hal_dir:
+                hal_version = match.group(0)
+                # Name of the hal preceds hal version in the directory path.
+                hal_dir = hal_dir[:match.end()]
+                hal_name = os.path.dirname(hal_dir).replace('/', '.')
+                result.add((hal_name, hal_version))
         return sorted(result)
 
     def VtsSpecNames(self, hal_name, hal_version):
