@@ -101,7 +101,7 @@ class VtsTreblePlatformVersionTest(base_test.BaseTestClass):
 
         firstApiLevel = self.dut.getLaunchApiLevel()
         if firstApiLevel > api.PLATFORM_API_LEVEL_O_MR1:
-            vndkLite = self.getProp("ro.vndk.lite")
+            vndkLite = self.getProp("ro.vndk.lite", False)
             if vndkLite is not None:
                 asserts.fail("ro.vndk.lite is defined as %s" % vndkLite)
             envLdConfigFile = self.getEnv("LD_CONFIG_FILE")
