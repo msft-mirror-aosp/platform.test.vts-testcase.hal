@@ -64,6 +64,7 @@ using HalVerifyFn = std::function<void(const FQName& fq_name,
                                        const string& instance_name, Transport)>;
 using HashCharArray = hidl_array<unsigned char, 32>;
 using HalManifestPtr = std::shared_ptr<const HalManifest>;
+using MatrixPtr = std::shared_ptr<const CompatibilityMatrix>;
 
 // Path to directory on target containing test data.
 extern const string kDataDir;
