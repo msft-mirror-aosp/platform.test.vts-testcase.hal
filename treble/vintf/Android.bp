@@ -62,6 +62,7 @@ cc_test {
     defaults: ["vts_treble_vintf_test_defaults"],
     srcs: [
         "DeviceManifestTest.cpp",
+        "DeviceMatrixTest.cpp",
         "SingleManifestTest.cpp",
     ],
 }
@@ -93,6 +94,7 @@ cc_test {
     defaults: ["vts_treble_vintf_test_defaults"],
     srcs: [
         "DeviceManifestTest.cpp",
+        "DeviceMatrixTest.cpp",
         "SingleManifestTest.cpp",
         "SystemVendorTest.cpp",
     ],
