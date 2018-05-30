@@ -17,16 +17,17 @@
     <option name="test-suite-tag" value="cts" />
     <option name="config-descriptor:metadata" key="component" value="vintf" />
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
-        <option name="abort-on-push-failure" value="false"/>
-        <option name="push" value="DATA/nativetest/vts_treble_vintf_framework_test/vts_treble_vintf_framework_test->/data/nativetest/vts_treble_vintf_framework_test"/>
-        <option name="push" value="DATA/nativetest64/vts_treble_vintf_framework_test/vts_treble_vintf_framework_test->/data/nativetest/vts_treble_vintf_framework_test"/>
-        <option name="append-bitness" value="true" />
-    </target_preparer>
-    <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
         <option name="push" value="hal-hidl-hash/frameworks/hardware/interfaces/current.txt->/data/local/tmp/frameworks/hardware/interfaces/current.txt"/>
         <option name="push" value="hal-hidl-hash/hardware/interfaces/current.txt->/data/local/tmp/hardware/interfaces/current.txt"/>
         <option name="push" value="hal-hidl-hash/system/hardware/interfaces/current.txt->/data/local/tmp/system/hardware/interfaces/current.txt"/>
         <option name="push" value="hal-hidl-hash/system/libhidl/transport/current.txt->/data/local/tmp/system/libhidl/transport/current.txt"/>
+    </target_preparer>
+    <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
+        <option name="abort-on-push-failure" value="false"/>
+        <option name="push" value="DATA/nativetest/vts_treble_vintf_framework_test/vts_treble_vintf_framework_test->/data/nativetest/vts_treble_vintf_framework_test"/>
+        <option name="push" value="DATA/nativetest64/vts_treble_vintf_framework_test/vts_treble_vintf_framework_test->/data/nativetest/vts_treble_vintf_framework_test"/>
+        <option name="append-bitness" value="true" />
+        <option name="post-push" value="chmod a+x /data/nativetest/vts_treble_vintf_framework_test" />
     </target_preparer>
     <test class="com.android.tradefed.testtype.GTest" >
         <option name="module-name" value="vts_treble_vintf_framework_test" />
