@@ -434,6 +434,14 @@ class VtsHalMediaOmxStoreV1_0Host(hal_hidl_host_test.HalHidlHostTest):
                     'does not report some roles for node "' + node + '": ' +
                     ', '.join(node2roles[node] - role_set))
 
+                # Try creating the node.
+                status, omxNode = omx.allocateNode(node, None)
+                asserts.assertEqual(
+                    self.vtypes.Status.OK, status,
+                    'IOmx::allocateNode() for IOmx instance "' + owner + '" ' +
+                    'fails to allocate node "' + node +'".')
+
+
             # Check that all nodes obtained from IOmxStore::listRoles() are
             # supported by the their corresponding IOmx instances.
             node_set_diff = owner2nodes[owner] - node_set
