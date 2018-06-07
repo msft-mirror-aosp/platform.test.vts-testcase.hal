@@ -123,7 +123,7 @@ TEST_F(SystemVendorTest, NoDeprecatedHalsOnManager) {
           }
           ADD_FAILURE()
               << fq_name.string() << "/" << instance
-              << " is listed in VINTF manifest but cannot be retrieved.";
+              << " is registered to hwservicemanager but cannot be retrieved.";
           continue;
         }
 
