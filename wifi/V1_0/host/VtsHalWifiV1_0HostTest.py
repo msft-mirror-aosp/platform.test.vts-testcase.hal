@@ -48,7 +48,7 @@ class VtsHalWifiV1_0Host(hal_hidl_gtest.HidlHalGTest):
         gtest_cases = super(VtsHalWifiV1_0Host, self).CreateTestCase(path, tag)
         for gtest_case in gtest_cases:
             if self._nan_on:
-                gtest_cases.args += "--nan_on"
+                gtest_case.args += " --nan_on"
         return gtest_cases
 
 

@@ -36,7 +36,7 @@ class VtsHalRadioV1_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             target_version=1.0,
             target_package="android.hardware.radio",
             target_component_name="IRadio",
-            hw_binder_service_name="Radio",
+            hw_binder_service_name="slot1",
             bits=int(self.abi_bitness))
 
         self.radio = self.dut.hal.radio  # shortcut
