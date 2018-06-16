@@ -26,6 +26,5 @@
         <option name="package" value="com.android.devicehealth.tests"/>
         <option name="runner" value="android.support.test.runner.AndroidJUnitRunner"/>
     </test>
-    <include name="CtsDevicePolicyManagerTestCases.config"/>
     <include name="CtsNetTestCases.config"/>
 </configuration>
