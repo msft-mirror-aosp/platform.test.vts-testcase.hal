@@ -29,5 +29,9 @@
         <option name="test-timeout" value="15m"/>
         <!-- The following test is disabled due to b/64734869 -->
         <option name="exclude-filter" value="RadioHidlTest.requestShutdown" />
+        <!-- b/109889468: Requires a live SIM card or a vendor code update -->
+        <option name="exclude-filter" value="RadioHidlTest.getImsiForApp" />
+        <!-- b/79930549: Flaky test -->
+        <option name="exclude-filter" value="RadioHidlTest.setAllowedCarriers" />
     </test>
 </configuration>
