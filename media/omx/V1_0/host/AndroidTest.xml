@@ -102,7 +102,6 @@
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalMediaOmxV1_0TargetVideoEncTest/VtsHalMediaOmxV1_0TargetVideoEncTest"/>
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalMediaOmxV1_0TargetVideoDecTest/VtsHalMediaOmxV1_0TargetVideoDecTest"/>
         <option name="binary-test-disable-framework" value="true"/>
-        <option name="binary-test-stop-native-servers" value="true"/>
         <option name="test-timeout" value="2h"/>
         <option name="runtime-hint" value="10m"/>
     </test>
