@@ -448,7 +448,7 @@ class VtsHalMediaOmxStoreV1_0Host(hal_hidl_host_test.HalHidlHostTest):
                     self.vtypes.Status.OK, status,
                     'IOmx::allocateNode() for IOmx instance "' + owner + '" ' +
                     'fails to allocate node "' + node +'".')
-
+                status = omxNode.freeNode()
 
             # Check that all nodes obtained from IOmxStore::listRoles() are
             # supported by the their corresponding IOmx instances.
