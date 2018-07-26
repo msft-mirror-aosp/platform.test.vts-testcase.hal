@@ -16,6 +16,7 @@
 <configuration description="Config for CtsOnGsiTrebleFrameworkVintfTest">
     <option name="test-suite-tag" value="cts" />
     <option name="config-descriptor:metadata" key="component" value="vintf" />
+    <target_preparer class="com.android.tradefed.targetprep.RootTargetPreparer" />
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
         <option name="push" value="hal-hidl-hash/frameworks/hardware/interfaces/current.txt->/data/local/tmp/frameworks/hardware/interfaces/current.txt"/>
         <option name="push" value="hal-hidl-hash/hardware/interfaces/current.txt->/data/local/tmp/hardware/interfaces/current.txt"/>
