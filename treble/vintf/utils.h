@@ -86,8 +86,8 @@ uint64_t GetShippingApiLevel();
 // otherwise.
 const string PackageRoot(const FQName& fq_iface_name);
 
-// Returns true iff HAL interface is Google-defined.
-bool IsGoogleDefinedIface(const FQName& fq_iface_name);
+// Returns true iff HAL interface is Android platform.
+bool IsAndroidPlatformInterface(const FQName& fq_iface_name);
 
 // Returns the set of released hashes for a given HAL interface.
 set<string> ReleasedHashes(const FQName& fq_iface_name);
