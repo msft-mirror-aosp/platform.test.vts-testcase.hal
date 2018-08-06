@@ -29,6 +29,38 @@ namespace testing {
 using android::FqInstance;
 using android::vintf::toFQNameString;
 
+// For devices that launched <= Android O-MR1, systems/hals/implementations
+// were delivered to companies which either don't start up on device boot.
+bool LegacyAndExempt(const FQName &fq_name) {
+  return GetShippingApiLevel() <= 27 && !IsGoogleDefinedIface(fq_name);
+}
+
+void FailureHalMissing(const FQName &fq_name) {
+  if (LegacyAndExempt(fq_name)) {
+    cout << "[  WARNING ] " << fq_name.string()
+         << " not available but is exempted because it is legacy. It is still "
+            "recommended to fix this."
+         << endl;
+  } else {
+    ADD_FAILURE() << fq_name.string() << " not available.";
+  }
+}
+
+void FailureHashMissing(const FQName &fq_name) {
+  if (LegacyAndExempt(fq_name)) {
+    cout << "[  WARNING ] " << fq_name.string()
+         << " has an empty hash but is exempted because it is legacy. It is "
+            "still recommended to fix this. This is because it was compiled "
+            "without being frozen in a corresponding current.txt file."
+         << endl;
+  } else {
+    ADD_FAILURE()
+        << fq_name.string()
+        << " has an empty hash. This is because it was compiled "
+           "without being frozen in a corresponding current.txt file.";
+  }
+}
+
 // Tests that no HAL outside of the allowed set is specified as passthrough in
 // VINTF.
 TEST_P(SingleManifestTest, HalsAreBinderized) {
@@ -98,10 +130,10 @@ TEST_P(SingleManifestTest, HalsAreServed) {
         hal_service = GetHalService(fq_name, instance_name, transport);
       }
 
-      EXPECT_NE(hal_service, nullptr)
-          << fq_name.string() << " not available." << endl;
-
-      if (hal_service == nullptr) return;
+      if (hal_service == nullptr) {
+        FailureHalMissing(fq_name);
+        return;
+      }
 
       EXPECT_EQ(transport == Transport::HWBINDER, hal_service->isRemote())
           << "transport is " << transport << "but HAL service is "
@@ -224,7 +256,7 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
     sp<IBase> hal_service = GetHalService(fq_name, instance_name, transport);
 
     if (hal_service == nullptr) {
-      ADD_FAILURE() << fq_name.string() << " not available." << endl;
+      FailureHalMissing(fq_name);
       return;
     }
 
@@ -249,11 +281,10 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
         return;
       }
       string hash = hash_chain[i];
-      // No interface is allowed to have an empty hash.
-      EXPECT_NE(hash, Hash::hexString(Hash::kEmptyHash))
-          << fq_iface_name.string()
-          << " has an empty hash. This is because it was compiled without"
-             " being frozen in a corresponding current.txt file.";
+
+      if (hash == Hash::hexString(Hash::kEmptyHash)) {
+        FailureHashMissing(fq_iface_name);
+      }
 
       if (IsGoogleDefinedIface(fq_iface_name)) {
         set<string> released_hashes = ReleasedHashes(fq_iface_name);
