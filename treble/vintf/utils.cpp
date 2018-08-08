@@ -97,9 +97,9 @@ const string PackageRoot(const FQName &fq_iface_name) {
   return "";
 }
 
-// Returns true iff HAL interface is Google-defined.
-bool IsGoogleDefinedIface(const FQName &fq_iface_name) {
-  // Package roots are only known for Google-defined packages.
+// Returns true iff HAL interface is Android platform.
+bool IsAndroidPlatformInterface(const FQName &fq_iface_name) {
+  // Package roots are only known for Android platform packages.
   return !PackageRoot(fq_iface_name).empty();
 }
 
