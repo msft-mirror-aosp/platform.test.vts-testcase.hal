@@ -32,7 +32,7 @@ using android::vintf::toFQNameString;
 // For devices that launched <= Android O-MR1, systems/hals/implementations
 // were delivered to companies which either don't start up on device boot.
 bool LegacyAndExempt(const FQName &fq_name) {
-  return GetShippingApiLevel() <= 27 && !IsGoogleDefinedIface(fq_name);
+  return GetShippingApiLevel() <= 27 && !IsAndroidPlatformInterface(fq_name);
 }
 
 void FailureHalMissing(const FQName &fq_name) {
@@ -115,7 +115,7 @@ TEST_P(SingleManifestTest, HalsAreServed) {
         // for both versions (mFoo1_1 != nullptr => you have 1.1)
         // and a 1.0 client still works with the 1.1 interface.
 
-        if (!IsGoogleDefinedIface(fq_name)) {
+        if (!IsAndroidPlatformInterface(fq_name)) {
           // This isn't the case for extensions of core Google interfaces.
           return;
         }
@@ -208,7 +208,7 @@ TEST_P(SingleManifestTest, ServedPassthroughHalsAreInManifest) {
     // See HalsAreServed. These are always retrieved through the base interface
     // and if it is not a google defined interface, it must be an extension of
     // one.
-    if (!IsGoogleDefinedIface(fq_name)) return;
+    if (!IsAndroidPlatformInterface(fq_name)) return;
 
     const FQName lowest_name =
         fq_name.withVersion(fq_name.getPackageMajorVersion(), 0);
@@ -248,7 +248,7 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
     // and if it is not a google defined interface, it must be an extension of
     // one.
     if (transport == Transport::PASSTHROUGH &&
-        (!IsGoogleDefinedIface(fq_name) ||
+        (!IsAndroidPlatformInterface(fq_name) ||
          fq_name.getPackageMinorVersion() != 0)) {
       return;
     }
@@ -286,7 +286,7 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
         FailureHashMissing(fq_iface_name);
       }
 
-      if (IsGoogleDefinedIface(fq_iface_name)) {
+      if (IsAndroidPlatformInterface(fq_iface_name)) {
         set<string> released_hashes = ReleasedHashes(fq_iface_name);
         EXPECT_NE(released_hashes.find(hash), released_hashes.end())
             << "Hash not found. This interface was not released." << endl
