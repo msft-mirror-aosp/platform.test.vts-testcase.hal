@@ -148,5 +148,4 @@ void PrintTo(const android::vintf::testing::HalManifestPtr &v, ostream *os) {
   }
   *os << to_string(v->type()) << " manifest";
 }
-void PrintTo(nullptr_t, ostream *os) { *os << "nullptr"; }
 }  // namespace std
