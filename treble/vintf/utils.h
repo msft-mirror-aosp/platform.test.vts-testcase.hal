@@ -86,8 +86,8 @@ uint64_t GetShippingApiLevel();
 // otherwise.
 const string PackageRoot(const FQName& fq_iface_name);
 
-// Returns true iff HAL interface is Google-defined.
-bool IsGoogleDefinedIface(const FQName& fq_iface_name);
+// Returns true iff HAL interface is Android platform.
+bool IsAndroidPlatformInterface(const FQName& fq_iface_name);
 
 // Returns the set of released hashes for a given HAL interface.
 set<string> ReleasedHashes(const FQName& fq_iface_name);
@@ -118,7 +118,6 @@ void PrintTo(const T* v, std::ostream* os) {
 // Allows GTest to print pointers with a human readable string.
 namespace std {
 void PrintTo(const android::vintf::testing::HalManifestPtr& v, ostream* os);
-void PrintTo(nullptr_t, ostream* os);
 template <typename T>
 void PrintTo(const T* v, ostream* os) {
   *os << android::hardware::details::toHexString<uintptr_t>(
