@@ -1,9 +1,10 @@
 // This file was auto-generated. Do not edit manually.
-// Use test/vts-testcase/hal/script/update_makefiles.py to generate this file.
+// Use launch_hal_test.py or update_makefiles.py in test/vts-testcase/hal/script/ to generate this file.
 
 // Generate .vts spec files.
 hal2vts {
     name: "android.hardware.wifi.offload@1.0-vts.spec",
+    hidl_gen_args: "-r android.hardware:hardware/interfaces",
     srcs: [
         ":android.hardware.wifi.offload@1.0_hal",
     ],
@@ -18,7 +19,7 @@ hal2vts {
 genrule {
     name: "android.hardware.wifi.offload@1.0-vts.driver_genc++",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.wifi.offload@1.0 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/wifi/offload/1.0/ $(genDir)/android/hardware/wifi/offload/1.0/",
+    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.wifi.offload@1.0 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/wifi/offload/1.0/ $(genDir)/android/hardware/wifi/offload/1.0/",
     srcs: [
         ":android.hardware.wifi.offload@1.0_hal",
     ],
@@ -32,7 +33,7 @@ genrule {
 genrule {
     name: "android.hardware.wifi.offload@1.0-vts.driver_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.wifi.offload@1.0 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/wifi/offload/1.0/ $(genDir)/android/hardware/wifi/offload/1.0/",
+    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.wifi.offload@1.0 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/wifi/offload/1.0/ $(genDir)/android/hardware/wifi/offload/1.0/",
     srcs: [
         ":android.hardware.wifi.offload@1.0_hal",
     ],
@@ -59,7 +60,7 @@ cc_library_shared {
 genrule {
     name: "android.hardware.wifi.offload@1.0-vts.profiler_genc++",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.wifi.offload@1.0 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/hardware/wifi/offload/1.0/ $(genDir)/android/hardware/wifi/offload/1.0/",
+    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.wifi.offload@1.0 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/hardware/wifi/offload/1.0/ $(genDir)/android/hardware/wifi/offload/1.0/",
     srcs: [
         ":android.hardware.wifi.offload@1.0_hal",
     ],
@@ -73,7 +74,7 @@ genrule {
 genrule {
     name: "android.hardware.wifi.offload@1.0-vts.profiler_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport android.hardware.wifi.offload@1.0 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/hardware/wifi/offload/1.0/ $(genDir)/android/hardware/wifi/offload/1.0/",
+    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.wifi.offload@1.0 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/hardware/wifi/offload/1.0/ $(genDir)/android/hardware/wifi/offload/1.0/",
     srcs: [
         ":android.hardware.wifi.offload@1.0_hal",
     ],

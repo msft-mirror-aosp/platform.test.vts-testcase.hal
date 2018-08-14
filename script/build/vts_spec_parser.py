@@ -22,6 +22,8 @@ import subprocess
 import sys
 import tempfile
 
+from utils.const import Constant
+
 ANDROID_BUILD_TOP = os.environ.get('ANDROID_BUILD_TOP')
 if not ANDROID_BUILD_TOP:
     print 'Run "lunch" command first.'
@@ -37,19 +39,22 @@ import build_rule_gen_utils as utils
 
 class VtsSpecParser(object):
     """Provides an API to generate a parse .vts spec files."""
-    HW_IFACE_DIR = os.path.join(ANDROID_BUILD_TOP, 'hardware', 'interfaces')
 
-    def __init__(self):
+    def __init__(self,
+                 package_root=Constant.HAL_PACKAGE_PREFIX,
+                 path_root=Constant.HAL_INTERFACE_PATH):
         """VtsSpecParser constructor.
 
         For every unique pair of (hal name, hal version) available under
-        hardware/interfaces, generates .vts files using hidl-gen.
+        path_root, generates .vts files using hidl-gen.
 
         Args:
             tmp_dir: string, temporary directory to which to write .vts files.
         """
         self._cache = set()
         self._tmp_dir = tempfile.mkdtemp()
+        self._package_root = package_root
+        self._path_root = path_root
         hal_list = self.HalNamesAndVersions()
 
     def __del__(self):
@@ -83,9 +88,8 @@ class VtsSpecParser(object):
 
         # Exclude the current package and packages with no corresponding libs.
         exclude_packages = [
-            "android.hidl.base@1.0",
-            "android.hidl.manager@1.0",
-            'android.hardware.%s@%s' % (hal_name, hal_version)
+            "android.hidl.base@1.0", "android.hidl.manager@1.0",
+            '%s.%s@%s' % (self._package_root, hal_name, hal_version)
         ]
 
         return sorted(list(set(imported_packages) - set(exclude_packages)))
@@ -103,30 +107,33 @@ class VtsSpecParser(object):
         if (hal_name, hal_version) in self._cache:
             return
         hidl_gen_cmd = (
-            'hidl-gen -o {TEMP_DIR} -L vts '
-            'android.hardware.{HAL_NAME}@{HAL_VERSION}').format(
+            'hidl-gen -o {TEMP_DIR} -L vts -r {PACKAGE_ROOT}:{PATH_ROOT} '
+            '{PACKAGE_ROOT}.{HAL_NAME}@{HAL_VERSION}').format(
                 TEMP_DIR=self._tmp_dir,
+                PACKAGE_ROOT=self._package_root,
+                PATH_ROOT=self._path_root,
                 HAL_NAME=hal_name,
                 HAL_VERSION=hal_version)
         subprocess.call(hidl_gen_cmd, shell=True)
         self._cache.add((hal_name, hal_version))
 
     def HalNamesAndVersions(self):
-        """Returns a list of hals and version present under hardware/interfaces.
+        """Returns a list of hals and versions under hal interface directory.
 
         Returns:
-          List of tuples of strings containing hal names and hal versions.
-          For example, [('vibrator', '1.3'), ('sensors', '1.7')]
+            List of tuples of strings containing hal names and hal versions.
+            For example, [('vibrator', '1.3'), ('sensors', '1.7')]
         """
+        full_path_root = os.path.join(ANDROID_BUILD_TOP, self._path_root)
         result = set()
-        # Walk through ANDROID_BUILD_TOP/hardware/interfaces and heuristically
+        # Walk through ANDROID_BUILD_TOP/self._path_root and heuristically
         # figure out all the HAL names and versions in the source tree.
-        for base, dirs, files in os.walk(self.HW_IFACE_DIR):
+        for base, dirs, files in os.walk(full_path_root):
             has_hals = any(f.endswith('.hal') for f in files)
             if not has_hals:
                 continue
 
-            hal_dir = os.path.relpath(base, self.HW_IFACE_DIR)
+            hal_dir = os.path.relpath(base, full_path_root)
             # Find the first occurance of version in directory path.
             match = re.search("(\d+)\.(\d+)", hal_dir)
             if match and 'example' not in hal_dir:
@@ -148,7 +155,8 @@ class VtsSpecParser(object):
               e.g. ['Vibrator.vts', 'types.vts']
         """
         self.GenerateVtsSpecs(hal_name, hal_version)
-        vts_spec_dir = os.path.join(self._tmp_dir, 'android', 'hardware',
+        vts_spec_dir = os.path.join(self._tmp_dir,
+                                    self._package_root.replace('.', '/'),
                                     utils.HalNameDir(hal_name), hal_version)
         vts_spec_names = filter(lambda x: x.endswith('.vts'),
                                 os.listdir(vts_spec_dir))
@@ -164,7 +172,8 @@ class VtsSpecParser(object):
           list of ComponentSpecificationMessages
         """
         self.GenerateVtsSpecs(hal_name, hal_version)
-        vts_spec_dir = os.path.join(self._tmp_dir, 'android', 'hardware',
+        vts_spec_dir = os.path.join(self._tmp_dir,
+                                    self._package_root.replace('.', '/'),
                                     utils.HalNameDir(hal_name), hal_version)
         vts_spec_protos = []
         for vts_spec in self.VtsSpecNames(hal_name, hal_version):

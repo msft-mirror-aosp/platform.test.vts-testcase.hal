@@ -29,24 +29,18 @@ import logging
 import re
 
 from vts.runners.host import asserts
-from vts.runners.host import base_test
 from vts.runners.host import test_runner
-from vts.utils.python.controllers import android_device
-from vts.utils.python.precondition import precondition_utils
+from vts.testcases.template.hal_hidl_host_test import hal_hidl_host_test
 
+OMXSTORE_V1_0_HAL = "android.hardware.media.omx@1.0::IOmxStore"
 
-class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
+class VtsHalMediaOmxStoreV1_0Host(hal_hidl_host_test.HalHidlHostTest):
     """Host test class to run the Media_OmxStore HAL."""
 
-    def setUpClass(self):
-        self.dut = self.registerController(android_device)[0]
+    TEST_HAL_SERVICES = {OMXSTORE_V1_0_HAL}
 
-        self.dut.shell.InvokeTerminal('one')
-        self.dut.shell.one.Execute('setenforce 0')  # SELinux permissive mode
-        if not precondition_utils.CanRunHidlHalTest(
-            self, self.dut, self.dut.shell.one):
-            self.skipAllTests("precondition check for hidl hal test didn't pass")
-            return
+    def setUpClass(self):
+        super(VtsHalMediaOmxStoreV1_0Host, self).setUpClass()
 
         self.dut.hal.InitHidlHal(
             target_type='media_omx',
@@ -54,14 +48,11 @@ class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
             target_version=1.0,
             target_package='android.hardware.media.omx',
             target_component_name='IOmxStore',
+            hw_binder_service_name=self.getHalServiceName(OMXSTORE_V1_0_HAL),
             bits=int(self.abi_bitness))
 
         self.omxstore = self.dut.hal.media_omx
         self.vtypes = self.omxstore.GetHidlTypeInterface('types')
-
-        if self.coverage.enabled:
-            self.coverage.LoadArtifacts()
-            self.coverage.InitializeDeviceCoverage(self._dut)
 
     def testListServiceAttributes(self):
         """Test IOmxStore::listServiceAttributes().
@@ -111,7 +102,7 @@ class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
             attr_value = attr['value']
 
             # attr_key must not have been seen before.
-            assert(
+            asserts.assertTrue(
                 attr_key not in key_set,
                 'Service attribute "' + attr_key + '" has duplicates.')
             key_set.add(attr_key)
@@ -221,31 +212,34 @@ class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
         # Mapping from mime types to roles.
         # These values come from MediaDefs.cpp and OMXUtils.cpp
         audio_mime_to_role = {
-            '3gpp'          : 'amrnb',
-            'ac3'           : 'ac3',
-            'amr-wb'        : 'amrwb',
-            'eac3'          : 'eac3',
-            'flac'          : 'flac',
-            'g711-alaw'     : 'g711alaw',
-            'g711-mlaw'     : 'g711mlaw',
-            'gsm'           : 'gsm',
-            'mp4a-latm'     : 'aac',
-            'mpeg'          : 'mp3',
-            'mpeg-L1'       : 'mp1',
-            'mpeg-L2'       : 'mp2',
-            'opus'          : 'opus',
-            'raw'           : 'raw',
-            'vorbis'        : 'vorbis',
+            '3gpp'             : 'amrnb',
+            'ac3'              : 'ac3',
+            'amr-wb'           : 'amrwb',
+            'eac3'             : 'eac3',
+            'flac'             : 'flac',
+            'g711-alaw'        : 'g711alaw',
+            'g711-mlaw'        : 'g711mlaw',
+            'gsm'              : 'gsm',
+            'mp4a-latm'        : 'aac',
+            'mpeg'             : 'mp3',
+            'mpeg-L1'          : 'mp1',
+            'mpeg-L2'          : 'mp2',
+            'opus'             : 'opus',
+            'raw'              : 'raw',
+            'vorbis'           : 'vorbis',
         }
         video_mime_to_role = {
-            '3gpp'          : 'h263',
-            'avc'           : 'avc',
-            'dolby-vision'  : 'dolby-vision',
-            'hevc'          : 'hevc',
-            'mp4v-es'       : 'mpeg4',
-            'mpeg2'         : 'mpeg2',
-            'x-vnd.on2.vp8' : 'vp8',
-            'x-vnd.on2.vp9' : 'vp9',
+            '3gpp'             : 'h263',
+            'avc'              : 'avc',
+            'dolby-vision'     : 'dolby-vision',
+            'hevc'             : 'hevc',
+            'mp4v-es'          : 'mpeg4',
+            'mpeg2'            : 'mpeg2',
+            'x-vnd.on2.vp8'    : 'vp8',
+            'x-vnd.on2.vp9'    : 'vp9',
+        }
+        image_mime_to_role = {
+            'vnd.android.heic' : 'heic',
         }
         def get_role(is_encoder, mime):
             """Returns the role based on is_encoder and mime.
@@ -277,12 +271,20 @@ class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
                     return None
                 prefix = 'video_'
                 suffix = video_mime_to_role[mime_suffix]
+            elif mime.startswith('image/'):
+                if mime_suffix not in image_mime_to_role:
+                    return None
+                prefix = 'image_'
+                suffix = image_mime_to_role[mime_suffix]
             else:
                 return None
             return prefix + middle + suffix
 
         # The test code starts here.
         roles = self.omxstore.listRoles()
+        if len(roles) == 0:
+            logging.warning('IOmxStore has an empty implementation. Skipping...')
+            return
 
         # A map from a node name to a set of roles.
         node2roles = {}
@@ -305,12 +307,14 @@ class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
                 'Role "' + role_name + '" has duplicates.')
 
             queried_role = get_role(is_encoder, mime_type)
-            # type and isEncoder must be known.
-            asserts.assertTrue(
-                queried_role,
-                'Invalid mime type "' + mime_type + '" for ' +
-                ('an encoder.' if is_encoder else 'a decoder.'))
-            # type and isEncoder must be consistent with role.
+            # If mime_type is not recognized, skip it.
+            if queried_role is None:
+                logging.info(
+                    'Unrecognized mime type  "' +
+                    mime_type + '", skipping.')
+                continue
+
+            # Otherwise, type and isEncoder must be consistent with role.
             asserts.assertEqual(
                 role_name, queried_role,
                 'Role "' + role_name + '" does not match ' +
@@ -439,6 +443,14 @@ class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
                     'IOmx::listNodes() for IOmx instance "' + owner + '" ' +
                     'does not report some roles for node "' + node + '": ' +
                     ', '.join(node2roles[node] - role_set))
+
+                # Try creating the node.
+                status, omxNode = omx.allocateNode(node, None)
+                asserts.assertEqual(
+                    self.vtypes.Status.OK, status,
+                    'IOmx::allocateNode() for IOmx instance "' + owner + '" ' +
+                    'fails to allocate node "' + node +'".')
+                status = omxNode.freeNode()
 
             # Check that all nodes obtained from IOmxStore::listRoles() are
             # supported by the their corresponding IOmx instances.

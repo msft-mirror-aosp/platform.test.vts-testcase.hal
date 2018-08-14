@@ -39,8 +39,8 @@
         <option name="push" value="DATA/media/res/bbb_352x288_420p_30fps_32frames.yuv->/sdcard/media/bbb_352x288_420p_30fps_32frames.yuv"/>
         <option name="push" value="DATA/media/res/bbb_avc_176x144_300kbps_60fps.h264->/sdcard/media/bbb_avc_176x144_300kbps_60fps.h264"/>
         <option name="push" value="DATA/media/res/bbb_avc_176x144_300kbps_60fps.info->/sdcard/media/bbb_avc_176x144_300kbps_60fps.info"/>
-        <option name="push" value="DATA/media/res/bbb_avc_1920x1080_5000kbps_30fps.h264->/sdcard/media/bbb_avc_1920x1080_5000kbps_30fps.h264"/>
-        <option name="push" value="DATA/media/res/bbb_avc_1920x1080_5000kbps_30fps.info->/sdcard/media/bbb_avc_1920x1080_5000kbps_30fps.info"/>
+        <option name="push" value="DATA/media/res/bbb_avc_640x360_768kbps_30fps.h264->/sdcard/media/bbb_avc_640x360_768kbps_30fps.h264"/>
+        <option name="push" value="DATA/media/res/bbb_avc_640x360_768kbps_30fps.info->/sdcard/media/bbb_avc_640x360_768kbps_30fps.info"/>
         <option name="push" value="DATA/media/res/bbb_mp3_stereo_192kbps_48000hz.info->/sdcard/media/bbb_mp3_stereo_192kbps_48000hz.info"/>
         <option name="push" value="DATA/media/res/bbb_mp3_stereo_192kbps_48000hz.mp3->/sdcard/media/bbb_mp3_stereo_192kbps_48000hz.mp3"/>
         <option name="push" value="DATA/media/res/bbb_flac_stereo_680kbps_48000hz.flac->/sdcard/media/bbb_flac_stereo_680kbps_48000hz.flac"/>
@@ -60,8 +60,8 @@
         <option name="push" value="DATA/media/res/bbb_mpeg2_176x144_105kbps_25fps.info->/sdcard/media/bbb_mpeg2_176x144_105kbps_25fps.info"/>
         <option name="push" value="DATA/media/res/bbb_mpeg2_352x288_1mbps_60fps.m2v->/sdcard/media/bbb_mpeg2_352x288_1mbps_60fps.m2v"/>
         <option name="push" value="DATA/media/res/bbb_mpeg2_352x288_1mbps_60fps.info->/sdcard/media/bbb_mpeg2_352x288_1mbps_60fps.info"/>
-        <option name="push" value="DATA/media/res/bbb_mpeg4_1280x720_1000kbps_25fps.m4v->/sdcard/media/bbb_mpeg4_1280x720_1000kbps_25fps.m4v"/>
-        <option name="push" value="DATA/media/res/bbb_mpeg4_1280x720_1000kbps_25fps.info->/sdcard/media/bbb_mpeg4_1280x720_1000kbps_25fps.info"/>
+        <option name="push" value="DATA/media/res/bbb_mpeg4_352x288_512kbps_30fps.m4v->/sdcard/media/bbb_mpeg4_352x288_512kbps_30fps.m4v"/>
+        <option name="push" value="DATA/media/res/bbb_mpeg4_352x288_512kbps_30fps.info->/sdcard/media/bbb_mpeg4_352x288_512kbps_30fps.info"/>
         <option name="push" value="DATA/media/res/bbb_vp8_176x144_240kbps_60fps.vp8->/sdcard/media/bbb_vp8_176x144_240kbps_60fps.vp8"/>
         <option name="push" value="DATA/media/res/bbb_vp8_176x144_240kbps_60fps.info->/sdcard/media/bbb_vp8_176x144_240kbps_60fps.info"/>
         <option name="push" value="DATA/media/res/bbb_vp8_640x360_2mbps_30fps.vp8->/sdcard/media/bbb_vp8_640x360_2mbps_30fps.vp8"/>
@@ -104,6 +104,6 @@
         <option name="binary-test-disable-framework" value="true"/>
         <option name="binary-test-stop-native-servers" value="true"/>
         <option name="test-timeout" value="2h"/>
-        <option name="runtime-hint" value="40m"/>
+        <option name="runtime-hint" value="10m"/>
     </test>
 </configuration>
