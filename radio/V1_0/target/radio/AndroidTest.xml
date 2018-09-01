@@ -19,6 +19,10 @@
         <option name="abort-on-push-failure" value="false"/>
         <option name="push-group" value="HalHidlTargetTest.push"/>
     </target_preparer>
+    <target_preparer class="com.android.tradefed.targetprep.VtsDevicePreparer">
+        <option name="enable-radio-log" value="true"/>
+        <option name="restore-radio-log" value="true"/>
+    </target_preparer>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalRadioV1_0Target"/>
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalRadioV1_0TargetTest/VtsHalRadioV1_0TargetTest"/>
