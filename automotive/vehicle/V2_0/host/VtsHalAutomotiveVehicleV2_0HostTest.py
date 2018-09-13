@@ -431,6 +431,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             self.vtypes.VehicleProperty.ENGINE_OIL_TEMP : (-50, 150),  # celsius
             self.vtypes.VehicleProperty.ENGINE_COOLANT_TEMP : (-50, 150),  #
             self.vtypes.VehicleProperty.PERF_VEHICLE_SPEED : (0, 150),  # m/s, 150 m/s = 330 mph
+            self.vtypes.VehicleProperty.PERF_VEHICLE_SPEED_DISPLAY : (0, 150),  # 150 m/s = 330 mph
+            self.vtypes.VehicleProperty.PERF_STEERING_ANGLE : (-180, 180),  # degrees
             self.vtypes.VehicleProperty.PERF_ODOMETER : (0, 1000000),  # km
             self.vtypes.VehicleProperty.INFO_FUEL_CAPACITY : (0, 1000000),  # milliliter
             self.vtypes.VehicleProperty.INFO_MODEL_YEAR : (1901, 2101),  # year
