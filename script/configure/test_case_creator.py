@@ -51,7 +51,6 @@ class TestCaseCreator(object):
         test_plan: string, the plan that the test belongs to.
         test_dir: string, test case absolute directory.
         time_out: string, timeout of the test, default is 1m.
-        is_profiling: boolean, whether to create a profiling test case.
         stop_runtime: boolean whether to stop framework before the test.
         build_top: string, equal to environment variable ANDROID_BUILD_TOP.
         vts_spec_parser: tools that generates and parses vts spec with hidl-gen.
@@ -75,7 +74,6 @@ class TestCaseCreator(object):
     def LaunchTestCase(self,
                        test_type,
                        time_out='1m',
-                       is_profiling=False,
                        is_replay=False,
                        stop_runtime=False,
                        update_only=False,
@@ -90,7 +88,6 @@ class TestCaseCreator(object):
         Args:
           test_type: type of the test.
           time_out: timeout of the test.
-          is_profiling: whether to create a profiling test case.
           stop_runtime: whether to stop framework before the test.
           update_only: flag to only update existing test configure.
           mapping_dir_path: directory that stores the cts_hal_mapping files.
@@ -101,7 +98,6 @@ class TestCaseCreator(object):
         """
         self._test_type = test_type
         self._time_out = time_out
-        self._is_profiling = is_profiling
         self._is_replay = is_replay
         self._stop_runtime = stop_runtime
         self._mapping_dir_path = mapping_dir_path
@@ -121,9 +117,6 @@ class TestCaseCreator(object):
         if is_replay:
             self._test_name = self._test_module_name + 'Replay'
             self._test_plan = 'vts-hal-replay'
-        if is_profiling:
-            self._test_name = self._test_module_name + 'Profiling'
-            self._test_plan = 'vts-hal-profiling'
         if self._test_type == 'adapter':
             self._test_plan = 'vts-hal-adapter'
 
@@ -173,7 +166,7 @@ class TestCaseCreator(object):
         """Get the name of host side test script file ."""
         test_script_name = self._test_module_name + 'Test.py'
         return os.path.join(
-            self.GetHalTestCasePath(ignore_profiling=True), test_script_name)
+            self.GetHalTestCasePath(), test_script_name)
 
     def GetVtsHalTestModuleName(self):
         """Get the test model name with format VtsHalHalNameVersionTestType."""
@@ -203,13 +196,11 @@ class TestCaseCreator(object):
         return os.path.join(self._build_top, self._path_root,
                             self.GetHalPath(), self._hal_version)
 
-    def GetHalTestCasePath(self, ignore_profiling=False):
+    def GetHalTestCasePath(self):
         """Get the directory that stores the test case."""
         test_dir = self._test_type
         if self._is_replay:
             test_dir = test_dir + '_replay'
-        if self._is_profiling and not ignore_profiling:
-            test_dir = test_dir + '_profiling'
         return os.path.join(self._build_top, self._test_config_dir,
                             self.GetHalPath(), self.GetHalVersionToken(),
                             test_dir)
@@ -346,28 +337,16 @@ class TestCaseCreator(object):
                     'name': 'push-group',
                     'value': 'HalHidlHostTest.push'
                 })
-            elif self._is_profiling:
-                ET.SubElement(
-                    file_pusher, 'option', {
-                        'name': 'push-group',
-                        'value': 'HalHidlTargetProfilingTest.push'
-                    })
             else:
                 ET.SubElement(file_pusher, 'option', {
                     'name': 'push-group',
                     'value': 'HalHidlTargetTest.push'
                 })
         else:
-            if self._is_profiling:
-                ET.SubElement(file_pusher, 'option', {
-                    'name': 'push-group',
-                    'value': 'HalHidlHostProfilingTest.push'
-                })
-            else:
-                ET.SubElement(file_pusher, 'option', {
-                    'name': 'push-group',
-                    'value': 'HalHidlHostTest.push'
-                })
+            ET.SubElement(file_pusher, 'option', {
+                'name': 'push-group',
+                'value': 'HalHidlHostTest.push'
+            })
 
         imported_package_lists = self._vts_spec_parser.ImportedPackagesList(
             self._hal_name, self._hal_version)
@@ -408,27 +387,6 @@ class TestCaseCreator(object):
                 ET.SubElement(file_pusher, 'option', {
                     'name': 'push',
                     'value': push_driver
-                })
-
-        if self._is_profiling:
-            if self._test_type == 'target':
-                ET.SubElement(file_pusher, 'option', {
-                    'name': 'cleanup',
-                    'value': 'true'
-                })
-            for imported_package in imported_package_lists:
-                profiler_package_name = imported_package + '-vts.profiler.so'
-                push_profiler = VTS_LIB_PUSH_TEMPLATE_32.format(
-                    lib_name=profiler_package_name)
-                ET.SubElement(file_pusher, 'option', {
-                    'name': 'push',
-                    'value': push_profiler
-                })
-                push_profiler = VTS_LIB_PUSH_TEMPLATE_64.format(
-                    lib_name=profiler_package_name)
-                ET.SubElement(file_pusher, 'option', {
-                    'name': 'push',
-                    'value': push_profiler
                 })
 
     def GenerateTestOptionConfigure(self, test):
@@ -498,12 +456,6 @@ class TestCaseCreator(object):
             ET.SubElement(test, 'option', {
                 'name': 'test-case-path',
                 'value': test_script_file
-            })
-
-        if self._is_profiling:
-            ET.SubElement(test, 'option', {
-                'name': 'enable-profiling',
-                'value': 'true'
             })
 
         ET.SubElement(test, 'option', {
