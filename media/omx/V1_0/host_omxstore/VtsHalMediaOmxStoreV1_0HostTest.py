@@ -308,12 +308,14 @@ class VtsHalMediaOmxStoreV1_0Host(base_test.BaseTestClass):
                 'Role "' + role_name + '" has duplicates.')
 
             queried_role = get_role(is_encoder, mime_type)
-            # type and isEncoder must be known.
-            asserts.assertTrue(
-                queried_role,
-                'Invalid mime type "' + mime_type + '" for ' +
-                ('an encoder.' if is_encoder else 'a decoder.'))
-            # type and isEncoder must be consistent with role.
+            # If mime_type is not recognized, skip it.
+            if queried_role is None:
+                logging.info(
+                    'Unrecognized mime type  "' +
+                    mime_type + '", skipping.')
+                continue
+
+            # Otherwise, type and isEncoder must be consistent with role.
             asserts.assertEqual(
                 role_name, queried_role,
                 'Role "' + role_name + '" does not match ' +
