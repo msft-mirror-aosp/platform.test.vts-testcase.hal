@@ -31,27 +31,76 @@ namespace testing {
 
 using std::endl;
 
+// Tests that device manifest and framework compatibility matrix are compatible.
+TEST_F(SystemVendorTest, DeviceManifestFrameworkMatrixCompatibility) {
+  auto device_manifest = VintfObject::GetDeviceHalManifest();
+  ASSERT_NE(device_manifest, nullptr) << "Failed to get device HAL manifest.";
+  auto fwk_matrix = VintfObject::GetFrameworkCompatibilityMatrix();
+  ASSERT_NE(fwk_matrix, nullptr)
+      << "Failed to get framework compatibility matrix.";
+
+  string error;
+  EXPECT_TRUE(device_manifest->checkCompatibility(*fwk_matrix, &error))
+      << error;
+}
+
+// Tests that framework manifest and device compatibility matrix are compatible.
+TEST_F(SystemVendorTest, FrameworkManifestDeviceMatrixCompatibility) {
+  auto fwk_manifest = VintfObject::GetFrameworkHalManifest();
+  ASSERT_NE(fwk_manifest, nullptr) << "Failed to get framework HAL manifest.";
+  auto device_matrix = VintfObject::GetDeviceCompatibilityMatrix();
+  ASSERT_NE(device_matrix, nullptr)
+      << "Failed to get device compatibility matrix.";
+
+  string error;
+  EXPECT_TRUE(fwk_manifest->checkCompatibility(*device_matrix, &error))
+      << error;
+}
+
+// Tests that framework compatibility matrix and runtime info are compatible.
+// AVB version is not a compliance requirement.
+TEST_F(SystemVendorTest, FrameworkMatrixDeviceRuntimeCompatibility) {
+  auto fwk_matrix = VintfObject::GetFrameworkCompatibilityMatrix();
+  ASSERT_NE(fwk_matrix, nullptr)
+      << "Failed to get framework compatibility matrix.";
+  auto runtime_info = VintfObject::GetRuntimeInfo();
+  ASSERT_NE(nullptr, runtime_info) << "Failed to get runtime info.";
+
+  string error;
+  EXPECT_TRUE(runtime_info->checkCompatibility(
+      *fwk_matrix, &error,
+      ::android::vintf::CheckFlags::ENABLE_ALL_CHECKS.disableAvb()
+          .disableKernel()))
+      << error;
+}
+
+// Tests that runtime kernel matches requirements in compatibility matrix.
+// This includes testing kernel version and kernel configurations.
+TEST_F(SystemVendorTest, KernelCompatibility) {
+  auto fwk_matrix = VintfObject::GetFrameworkCompatibilityMatrix();
+  ASSERT_NE(fwk_matrix, nullptr)
+      << "Failed to get framework compatibility matrix.";
+  auto runtime_info = VintfObject::GetRuntimeInfo();
+  ASSERT_NE(nullptr, runtime_info) << "Failed to get runtime info.";
+
+  string error;
+  EXPECT_TRUE(runtime_info->checkCompatibility(
+      *fwk_matrix, &error,
+      ::android::vintf::CheckFlags::DISABLE_ALL_CHECKS.enableKernel()))
+      << error;
+}
+
 // Tests that vendor and framework are compatible.
+// If any of the other tests in SystemVendorTest fails, this test will fail as
+// well. This is a sanity check in case the sub-tests do not cover some
+// checks.
+// AVB version is not a compliance requirement.
 TEST_F(SystemVendorTest, VendorFrameworkCompatibility) {
   string error;
-
-  EXPECT_TRUE(vendor_manifest_->checkCompatibility(
-      *VintfObject::GetFrameworkCompatibilityMatrix(), &error))
-      << error;
-
-  EXPECT_TRUE(fwk_manifest_->checkCompatibility(
-      *VintfObject::GetDeviceCompatibilityMatrix(), &error))
-      << error;
-
-  // AVB version is not a compliance requirement.
-  EXPECT_TRUE(VintfObject::GetRuntimeInfo()->checkCompatibility(
-      *VintfObject::GetFrameworkCompatibilityMatrix(), &error,
-      ::android::vintf::CheckFlags::DISABLE_AVB_CHECK))
-      << error;
-
   EXPECT_EQ(android::vintf::COMPATIBLE,
             VintfObject::CheckCompatibility(
-                {}, &error, ::android::vintf::CheckFlags::DISABLE_AVB_CHECK))
+                {}, &error,
+                ::android::vintf::CheckFlags::ENABLE_ALL_CHECKS.disableAvb()))
       << error;
 }
 
@@ -64,18 +113,22 @@ static void insert(D *d, const S &s) {
 // SingleManifestTest.ServedHwbinderHalsAreInManifest because some HALs may
 // refuse to provide its PID, and the partition cannot be inferred.
 TEST_F(SystemVendorTest, ServedHwbinderHalsAreInManifest) {
-  std::set<std::string> manifest_hwbinder_hals_;
+  auto device_manifest = VintfObject::GetDeviceHalManifest();
+  ASSERT_NE(device_manifest, nullptr) << "Failed to get device HAL manifest.";
+  auto fwk_manifest = VintfObject::GetFrameworkHalManifest();
+  ASSERT_NE(fwk_manifest, nullptr) << "Failed to get framework HAL manifest.";
 
-  insert(&manifest_hwbinder_hals_, GetHwbinderHals(fwk_manifest_));
-  insert(&manifest_hwbinder_hals_, GetHwbinderHals(vendor_manifest_));
+  std::set<std::string> manifest_hwbinder_hals;
+
+  insert(&manifest_hwbinder_hals, GetHwbinderHals(fwk_manifest));
+  insert(&manifest_hwbinder_hals, GetHwbinderHals(device_manifest));
 
   Return<void> ret = default_manager_->list([&](const auto &list) {
     for (const auto &name : list) {
       // TODO(b/73774955): use standardized parsing code for fqinstancename
       if (std::string(name).find(IBase::descriptor) == 0) continue;
 
-      EXPECT_NE(manifest_hwbinder_hals_.find(name),
-                manifest_hwbinder_hals_.end())
+      EXPECT_NE(manifest_hwbinder_hals.find(name), manifest_hwbinder_hals.end())
           << name << " is being served, but it is not in a manifest.";
     }
   });
@@ -85,7 +138,10 @@ TEST_F(SystemVendorTest, ServedHwbinderHalsAreInManifest) {
 // Tests that deprecated HALs are not served, unless a higher, non-deprecated
 // minor version is served.
 TEST_F(SystemVendorTest, NoDeprecatedHalsOnManager) {
-  if (vendor_manifest_->level() == Level::UNSPECIFIED) {
+  auto device_manifest = VintfObject::GetDeviceHalManifest();
+  ASSERT_NE(device_manifest, nullptr) << "Failed to get device HAL manifest.";
+
+  if (device_manifest->level() == Level::UNSPECIFIED) {
     // On a legacy device, no HALs are deprecated.
     return;
   }
