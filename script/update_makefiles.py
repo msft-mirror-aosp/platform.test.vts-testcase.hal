@@ -21,15 +21,41 @@ Among .bp and .mk files affected are:
 2. files matching: test/vts-testcase/hal/<hal_name>/<hal_version>/Android.bp
 
 Usage:
-  cd test/vts-testcase/hal; ./script/update_makefiles.py
+  To update build files for all HALs:
+     cd test/vts-testcase/hal; ./script/update_makefiles.py
+  To update build files for a specific HAL:
+     cd test/vts-testcase/hal; ./script/update_makefiles.py --hal nfc@1.0
 """
+import argparse
+import re
 
 from build.build_rule_gen import BuildRuleGen
 from utils.const import Constant
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description='Update build files for HAL driver/profiler.')
+    parser.add_argument(
+        '--hal',
+        dest='hal_package_name',
+        required=False,
+        help='hal package name (e.g. nfc@1.0).')
+    args = parser.parse_args()
+
     print 'Updating build rules.'
     build_rule_gen = BuildRuleGen(Constant.BP_WARNING_HEADER,
                                   Constant.HAL_PACKAGE_PREFIX,
                                   Constant.HAL_INTERFACE_PATH)
-    build_rule_gen.UpdateBuildRule(Constant.VTS_HAL_TEST_CASE_PATH)
+
+    if args.hal_package_name:
+        regex = re.compile(Constant.HAL_PACKAGE_NAME_PATTERN)
+        result = re.match(regex, args.hal_package_name)
+        if not result:
+            print 'Invalid hal package name. Exiting..'
+            sys.exit(1)
+        package_name, version = args.hal_package_name.split('@')
+        hal_list = [(package_name, version)]
+        build_rule_gen.UpdateHalDirBuildRule(hal_list,
+                                             Constant.VTS_HAL_TEST_CASE_PATH)
+    else:
+        build_rule_gen.UpdateBuildRule(Constant.VTS_HAL_TEST_CASE_PATH)
