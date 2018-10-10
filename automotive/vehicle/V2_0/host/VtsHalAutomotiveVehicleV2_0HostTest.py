@@ -440,7 +440,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
 
         for c in self.configList:
             # Continuous properties need to have a sampling frequency.
-            if c["changeMode"] != self.vtypes.VehiclePropertyChangeMode.CONTINUOUS:
+            if c["changeMode"] == self.vtypes.VehiclePropertyChangeMode.CONTINUOUS:
                 asserts.assertLess(
                     0.0, c["minSampleRate"],
                     "minSampleRate should be > 0. Config list: %s" % c)
