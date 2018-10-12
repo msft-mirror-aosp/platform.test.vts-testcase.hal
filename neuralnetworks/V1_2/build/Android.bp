@@ -9,6 +9,8 @@ hal2vts {
         ":android.hardware.neuralnetworks@1.2_hal",
     ],
     out: [
+        "android/hardware/neuralnetworks/1.2/BurstCallback.vts",
+        "android/hardware/neuralnetworks/1.2/BurstContext.vts",
         "android/hardware/neuralnetworks/1.2/Device.vts",
         "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts",
         "android/hardware/neuralnetworks/1.2/PreparedModel.vts",
@@ -26,6 +28,8 @@ genrule {
         ":android.hardware.neuralnetworks@1.2_hal",
     ],
     out: [
+        "android/hardware/neuralnetworks/1.2/BurstCallback.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/BurstContext.vts.cpp",
         "android/hardware/neuralnetworks/1.2/Device.vts.cpp",
         "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.cpp",
         "android/hardware/neuralnetworks/1.2/PreparedModel.vts.cpp",
@@ -43,6 +47,8 @@ genrule {
         ":android.hardware.neuralnetworks@1.2_hal",
     ],
     out: [
+        "android/hardware/neuralnetworks/1.2/BurstCallback.vts.h",
+        "android/hardware/neuralnetworks/1.2/BurstContext.vts.h",
         "android/hardware/neuralnetworks/1.2/Device.vts.h",
         "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.h",
         "android/hardware/neuralnetworks/1.2/PreparedModel.vts.h",
@@ -80,6 +86,8 @@ genrule {
         ":android.hardware.neuralnetworks@1.2_hal",
     ],
     out: [
+        "android/hardware/neuralnetworks/1.2/BurstCallback.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/BurstContext.vts.cpp",
         "android/hardware/neuralnetworks/1.2/Device.vts.cpp",
         "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.cpp",
         "android/hardware/neuralnetworks/1.2/PreparedModel.vts.cpp",
@@ -97,6 +105,8 @@ genrule {
         ":android.hardware.neuralnetworks@1.2_hal",
     ],
     out: [
+        "android/hardware/neuralnetworks/1.2/BurstCallback.vts.h",
+        "android/hardware/neuralnetworks/1.2/BurstContext.vts.h",
         "android/hardware/neuralnetworks/1.2/Device.vts.h",
         "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.h",
         "android/hardware/neuralnetworks/1.2/PreparedModel.vts.h",
