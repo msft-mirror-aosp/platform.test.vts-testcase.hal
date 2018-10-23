@@ -147,8 +147,8 @@ TEST_P(SingleManifestTest, HalsAreServed) {
       Partition partition = GetPartition(hal_service);
       if (partition == Partition::UNKNOWN) return;
       EXPECT_EQ(expected_partition, partition)
-          << fq_name.string() << " is in partition " << partition
-          << " but is expected to be in " << expected_partition;
+          << fq_name.string() << "/" << instance_name << " is in partition "
+          << partition << " but is expected to be in " << expected_partition;
     };
   };
 
