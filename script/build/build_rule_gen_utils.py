@@ -36,15 +36,29 @@ def WriteBuildRule(file_path, build_rule):
     Args:
       file_path: string, path to file to which to write.
       build_rule: string, build rule to be written into file.
-    """
-    print 'Updating %s' % file_path
-    dir_path = os.path.dirname(file_path)
 
+    Returns:
+      True if updated, False otherwise
+    """
+    exist = True
+    dir_path = os.path.dirname(file_path)
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
+        exist = False
+    elif not os.path.isfile(file_path):
+        exist = False
 
+    if exist:
+        with open(file_path, 'r') as existing_file:
+            existing_content = "".join(existing_file.readlines())
+        if build_rule == existing_content:
+            print 'Skipping %s' % file_path
+            return False
+
+    print 'Updating %s' % file_path
     with open(file_path, 'w') as bp_file:
         bp_file.write(build_rule)
+    return True
 
 
 def OnlySubdirsBpRule(warning_header, subdirs):
@@ -64,6 +78,7 @@ def OnlySubdirsBpRule(warning_header, subdirs):
     result += ']\n'
     return result
 
+
 def RemoveFilesInDirIf(dir_path, condition):
     """Removes all files under directory under given condition.
 
@@ -76,4 +91,5 @@ def RemoveFilesInDirIf(dir_path, condition):
         for f in files:
             abs_path = os.path.join(base, f)
             if condition(abs_path):
+                print "Removing", abs_path
                 os.remove(abs_path)
