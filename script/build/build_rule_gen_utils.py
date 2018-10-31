@@ -50,10 +50,9 @@ def WriteBuildRule(file_path, build_rule):
 
     if exist:
         with open(file_path, 'r') as existing_file:
-            existing_content = "".join(existing_file.readlines())
-        if build_rule == existing_content:
-            print 'Skipping %s' % file_path
-            return False
+            if build_rule == existing_file.read():
+                print 'Skipping %s' % file_path
+                return False
 
     print 'Updating %s' % file_path
     with open(file_path, 'w') as bp_file:
@@ -86,10 +85,16 @@ def RemoveFilesInDirIf(dir_path, condition):
         dir_path: string, path to directory
         condition: boolean function takes absolute file path,
             returns True iff file needs to be removed.
+
+    Returns:
+        True if removed, False otherwise
     """
+    removed = False
     for base, _, files in os.walk(dir_path):
         for f in files:
             abs_path = os.path.join(base, f)
             if condition(abs_path):
                 print "Removing", abs_path
                 os.remove(abs_path)
+                removed = True
+    return removed
