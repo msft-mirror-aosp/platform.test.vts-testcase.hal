@@ -28,6 +28,7 @@ Usage:
 """
 import argparse
 import re
+import sys
 
 from build.build_rule_gen import BuildRuleGen
 from utils.const import Constant
@@ -55,7 +56,10 @@ if __name__ == "__main__":
             sys.exit(1)
         package_name, version = args.hal_package_name.split('@')
         hal_list = [(package_name, version)]
-        build_rule_gen.UpdateHalDirBuildRule(hal_list,
-                                             Constant.VTS_HAL_TEST_CASE_PATH)
+        _, updated = build_rule_gen.UpdateHalDirBuildRule(
+            hal_list, Constant.VTS_HAL_TEST_CASE_PATH)
     else:
-        build_rule_gen.UpdateBuildRule(Constant.VTS_HAL_TEST_CASE_PATH)
+        updated = build_rule_gen.UpdateBuildRule(Constant.VTS_HAL_TEST_CASE_PATH)
+    if updated:
+        sys.exit(-1)
+
