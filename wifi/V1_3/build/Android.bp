@@ -10,6 +10,7 @@ hal2vts {
     ],
     out: [
         "android/hardware/wifi/1.3/Wifi.vts",
+        "android/hardware/wifi/1.3/WifiChip.vts",
         "android/hardware/wifi/1.3/WifiStaIface.vts",
         "android/hardware/wifi/1.3/types.vts",
     ],
@@ -25,6 +26,7 @@ genrule {
     ],
     out: [
         "android/hardware/wifi/1.3/Wifi.vts.cpp",
+        "android/hardware/wifi/1.3/WifiChip.vts.cpp",
         "android/hardware/wifi/1.3/WifiStaIface.vts.cpp",
         "android/hardware/wifi/1.3/types.vts.cpp",
     ],
@@ -39,6 +41,7 @@ genrule {
     ],
     out: [
         "android/hardware/wifi/1.3/Wifi.vts.h",
+        "android/hardware/wifi/1.3/WifiChip.vts.h",
         "android/hardware/wifi/1.3/WifiStaIface.vts.h",
         "android/hardware/wifi/1.3/types.vts.h",
     ],
@@ -73,6 +76,7 @@ genrule {
     ],
     out: [
         "android/hardware/wifi/1.3/Wifi.vts.cpp",
+        "android/hardware/wifi/1.3/WifiChip.vts.cpp",
         "android/hardware/wifi/1.3/WifiStaIface.vts.cpp",
         "android/hardware/wifi/1.3/types.vts.cpp",
     ],
@@ -87,6 +91,7 @@ genrule {
     ],
     out: [
         "android/hardware/wifi/1.3/Wifi.vts.h",
+        "android/hardware/wifi/1.3/WifiChip.vts.h",
         "android/hardware/wifi/1.3/WifiStaIface.vts.h",
         "android/hardware/wifi/1.3/types.vts.h",
     ],
