@@ -272,6 +272,13 @@ class TestCaseCreator(object):
         """
 
         # Configure VtsHalAdapterPreparer.
+        adapter_module_controller = ET.SubElement(configuration, 'object',
+                                         {'type': 'module_controller',
+                                          'class': VTA_HAL_ADAPTER_MODULE_CONTROLLER})
+        ET.SubElement(adapter_module_controller, 'option', {
+            'name': 'hal-package-name',
+            'value': self._hal_package_name
+        })
         adapter_preparer = ET.SubElement(configuration, 'target_preparer',
                                          {'class': VTA_HAL_ADAPTER_PREPARER})
         (major_version, minor_version) = self._hal_version.split('.')
@@ -281,7 +288,7 @@ class TestCaseCreator(object):
                 'name':
                 'adapter-binary-name',
                 'value':
-                Constant.HAL_PACKAGE_PREFIX + self._hal_name + '@' +
+                Constant.HAL_PACKAGE_PREFIX + '.' + self._hal_name + '@' +
                 adapter_version + '-adapter'
             })
         ET.SubElement(adapter_preparer, 'option', {
@@ -313,7 +320,7 @@ class TestCaseCreator(object):
 
         with open(latest_file, 'r') as cts_hal_map_file:
             for line in cts_hal_map_file.readlines():
-                if line.startswith(Constant.HAL_PACKAGE_PREFIX +
+                if line.startswith(Constant.HAL_PACKAGE_PREFIX + '.' +
                                    self._hal_name + '@' + adapter_version):
                     cts_tests = line.split(':')[1].split(',')
                     for cts_test in cts_tests:
@@ -577,5 +584,6 @@ VTS_SPEC_PUSH_TEMPLATE = (
 VTS_LIB_PUSH_TEMPLATE_32 = 'DATA/lib/{lib_name}->/data/local/tmp/32/{lib_name}'
 VTS_LIB_PUSH_TEMPLATE_64 = 'DATA/lib64/{lib_name}->/data/local/tmp/64/{lib_name}'
 
+VTA_HAL_ADAPTER_MODULE_CONTROLLER = 'com.android.tradefed.module.VtsHalAdapterModuleController'
 VTA_HAL_ADAPTER_PREPARER = 'com.android.tradefed.targetprep.VtsHalAdapterPreparer'
 ANDROID_JUNIT_TEST = 'com.android.tradefed.testtype.AndroidJUnitTest'
