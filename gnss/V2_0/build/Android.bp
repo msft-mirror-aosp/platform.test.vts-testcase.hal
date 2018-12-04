@@ -10,6 +10,7 @@ hal2vts {
     ],
     out: [
         "android/hardware/gnss/2.0/Gnss.vts",
+        "android/hardware/gnss/2.0/GnssCallback.vts",
         "android/hardware/gnss/2.0/GnssMeasurement.vts",
         "android/hardware/gnss/2.0/GnssMeasurementCallback.vts",
     ],
@@ -25,6 +26,7 @@ genrule {
     ],
     out: [
         "android/hardware/gnss/2.0/Gnss.vts.cpp",
+        "android/hardware/gnss/2.0/GnssCallback.vts.cpp",
         "android/hardware/gnss/2.0/GnssMeasurement.vts.cpp",
         "android/hardware/gnss/2.0/GnssMeasurementCallback.vts.cpp",
     ],
@@ -39,6 +41,7 @@ genrule {
     ],
     out: [
         "android/hardware/gnss/2.0/Gnss.vts.h",
+        "android/hardware/gnss/2.0/GnssCallback.vts.h",
         "android/hardware/gnss/2.0/GnssMeasurement.vts.h",
         "android/hardware/gnss/2.0/GnssMeasurementCallback.vts.h",
     ],
@@ -51,10 +54,12 @@ cc_library_shared {
     export_generated_headers: ["android.hardware.gnss@2.0-vts.driver_genc++_headers"],
     defaults: ["VtsHalDriverDefaults"],
     shared_libs: [
+        "android.hardware.gnss.measurement_corrections@1.0-vts.driver",
         "android.hardware.gnss@1.0-vts.driver",
         "android.hardware.gnss@1.1-vts.driver",
     ],
     static_libs: [
+        "android.hardware.gnss.measurement_corrections@1.0",
         "android.hardware.gnss@1.0",
         "android.hardware.gnss@1.1",
         "android.hardware.gnss@2.0",
@@ -71,6 +76,7 @@ genrule {
     ],
     out: [
         "android/hardware/gnss/2.0/Gnss.vts.cpp",
+        "android/hardware/gnss/2.0/GnssCallback.vts.cpp",
         "android/hardware/gnss/2.0/GnssMeasurement.vts.cpp",
         "android/hardware/gnss/2.0/GnssMeasurementCallback.vts.cpp",
     ],
@@ -85,6 +91,7 @@ genrule {
     ],
     out: [
         "android/hardware/gnss/2.0/Gnss.vts.h",
+        "android/hardware/gnss/2.0/GnssCallback.vts.h",
         "android/hardware/gnss/2.0/GnssMeasurement.vts.h",
         "android/hardware/gnss/2.0/GnssMeasurementCallback.vts.h",
     ],
@@ -97,10 +104,12 @@ cc_library_shared {
     export_generated_headers: ["android.hardware.gnss@2.0-vts.profiler_genc++_headers"],
     defaults: ["VtsHalProfilerDefaults"],
     shared_libs: [
+        "android.hardware.gnss.measurement_corrections@1.0-vts.profiler",
         "android.hardware.gnss@1.0-vts.profiler",
         "android.hardware.gnss@1.1-vts.profiler",
     ],
     static_libs: [
+        "android.hardware.gnss.measurement_corrections@1.0",
         "android.hardware.gnss@1.0",
         "android.hardware.gnss@1.1",
         "android.hardware.gnss@2.0",
