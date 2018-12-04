@@ -10,6 +10,7 @@ hal2vts {
     ],
     out: [
         "android/hardware/configstore/1.2/SurfaceFlingerConfigs.vts",
+        "android/hardware/configstore/1.2/types.vts",
     ],
 }
 
@@ -23,6 +24,7 @@ genrule {
     ],
     out: [
         "android/hardware/configstore/1.2/SurfaceFlingerConfigs.vts.cpp",
+        "android/hardware/configstore/1.2/types.vts.cpp",
     ],
 }
 
@@ -35,6 +37,7 @@ genrule {
     ],
     out: [
         "android/hardware/configstore/1.2/SurfaceFlingerConfigs.vts.h",
+        "android/hardware/configstore/1.2/types.vts.h",
     ],
 }
 
@@ -71,6 +74,7 @@ genrule {
     ],
     out: [
         "android/hardware/configstore/1.2/SurfaceFlingerConfigs.vts.cpp",
+        "android/hardware/configstore/1.2/types.vts.cpp",
     ],
 }
 
@@ -83,6 +87,7 @@ genrule {
     ],
     out: [
         "android/hardware/configstore/1.2/SurfaceFlingerConfigs.vts.h",
+        "android/hardware/configstore/1.2/types.vts.h",
     ],
 }
 
