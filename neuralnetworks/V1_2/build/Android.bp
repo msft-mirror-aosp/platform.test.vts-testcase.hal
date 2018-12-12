@@ -10,6 +10,9 @@ hal2vts {
     ],
     out: [
         "android/hardware/neuralnetworks/1.2/Device.vts",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts",
         "android/hardware/neuralnetworks/1.2/types.vts",
     ],
 }
@@ -24,6 +27,9 @@ genrule {
     ],
     out: [
         "android/hardware/neuralnetworks/1.2/Device.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts.cpp",
         "android/hardware/neuralnetworks/1.2/types.vts.cpp",
     ],
 }
@@ -37,6 +43,9 @@ genrule {
     ],
     out: [
         "android/hardware/neuralnetworks/1.2/Device.vts.h",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.h",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts.h",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts.h",
         "android/hardware/neuralnetworks/1.2/types.vts.h",
     ],
 }
@@ -68,6 +77,9 @@ genrule {
     ],
     out: [
         "android/hardware/neuralnetworks/1.2/Device.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts.cpp",
         "android/hardware/neuralnetworks/1.2/types.vts.cpp",
     ],
 }
@@ -81,6 +93,9 @@ genrule {
     ],
     out: [
         "android/hardware/neuralnetworks/1.2/Device.vts.h",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.h",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts.h",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts.h",
         "android/hardware/neuralnetworks/1.2/types.vts.h",
     ],
 }
