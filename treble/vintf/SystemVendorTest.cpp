@@ -165,7 +165,7 @@ TEST_F(SystemVendorTest, NoDeprecatedHalsOnManager) {
               ? GetInstanceNames(default_manager_, fq_name)
               : instance_hints;
 
-      for (auto instance : instance_names) {
+      for (const auto& instance : instance_names) {
         auto service =
             GetHalService(fq_name, instance, transport, false /* log */);
         if (service == nullptr) {
