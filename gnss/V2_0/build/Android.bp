@@ -9,10 +9,12 @@ hal2vts {
         ":android.hardware.gnss@2.0_hal",
     ],
     out: [
+        "android/hardware/gnss/2.0/AGnssRil.vts",
         "android/hardware/gnss/2.0/Gnss.vts",
         "android/hardware/gnss/2.0/GnssCallback.vts",
         "android/hardware/gnss/2.0/GnssMeasurement.vts",
         "android/hardware/gnss/2.0/GnssMeasurementCallback.vts",
+        "android/hardware/gnss/2.0/types.vts",
     ],
 }
 
@@ -25,10 +27,12 @@ genrule {
         ":android.hardware.gnss@2.0_hal",
     ],
     out: [
+        "android/hardware/gnss/2.0/AGnssRil.vts.cpp",
         "android/hardware/gnss/2.0/Gnss.vts.cpp",
         "android/hardware/gnss/2.0/GnssCallback.vts.cpp",
         "android/hardware/gnss/2.0/GnssMeasurement.vts.cpp",
         "android/hardware/gnss/2.0/GnssMeasurementCallback.vts.cpp",
+        "android/hardware/gnss/2.0/types.vts.cpp",
     ],
 }
 
@@ -40,10 +44,12 @@ genrule {
         ":android.hardware.gnss@2.0_hal",
     ],
     out: [
+        "android/hardware/gnss/2.0/AGnssRil.vts.h",
         "android/hardware/gnss/2.0/Gnss.vts.h",
         "android/hardware/gnss/2.0/GnssCallback.vts.h",
         "android/hardware/gnss/2.0/GnssMeasurement.vts.h",
         "android/hardware/gnss/2.0/GnssMeasurementCallback.vts.h",
+        "android/hardware/gnss/2.0/types.vts.h",
     ],
 }
 
@@ -75,10 +81,12 @@ genrule {
         ":android.hardware.gnss@2.0_hal",
     ],
     out: [
+        "android/hardware/gnss/2.0/AGnssRil.vts.cpp",
         "android/hardware/gnss/2.0/Gnss.vts.cpp",
         "android/hardware/gnss/2.0/GnssCallback.vts.cpp",
         "android/hardware/gnss/2.0/GnssMeasurement.vts.cpp",
         "android/hardware/gnss/2.0/GnssMeasurementCallback.vts.cpp",
+        "android/hardware/gnss/2.0/types.vts.cpp",
     ],
 }
 
@@ -90,10 +98,12 @@ genrule {
         ":android.hardware.gnss@2.0_hal",
     ],
     out: [
+        "android/hardware/gnss/2.0/AGnssRil.vts.h",
         "android/hardware/gnss/2.0/Gnss.vts.h",
         "android/hardware/gnss/2.0/GnssCallback.vts.h",
         "android/hardware/gnss/2.0/GnssMeasurement.vts.h",
         "android/hardware/gnss/2.0/GnssMeasurementCallback.vts.h",
+        "android/hardware/gnss/2.0/types.vts.h",
     ],
 }
 
