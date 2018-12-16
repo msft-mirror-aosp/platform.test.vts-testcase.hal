@@ -10,6 +10,9 @@ hal2vts {
     ],
     out: [
         "android/hardware/neuralnetworks/1.2/Device.vts",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts",
         "android/hardware/neuralnetworks/1.2/types.vts",
     ],
 }
@@ -24,6 +27,9 @@ genrule {
     ],
     out: [
         "android/hardware/neuralnetworks/1.2/Device.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts.cpp",
         "android/hardware/neuralnetworks/1.2/types.vts.cpp",
     ],
 }
@@ -37,6 +43,9 @@ genrule {
     ],
     out: [
         "android/hardware/neuralnetworks/1.2/Device.vts.h",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.h",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts.h",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts.h",
         "android/hardware/neuralnetworks/1.2/types.vts.h",
     ],
 }
@@ -50,11 +59,13 @@ cc_library_shared {
     shared_libs: [
         "android.hardware.neuralnetworks@1.0-vts.driver",
         "android.hardware.neuralnetworks@1.1-vts.driver",
+        "android.hidl.safe_union@1.0-vts.driver",
     ],
     static_libs: [
         "android.hardware.neuralnetworks@1.0",
         "android.hardware.neuralnetworks@1.1",
         "android.hardware.neuralnetworks@1.2",
+        "android.hidl.safe_union@1.0",
     ],
 }
 
@@ -68,6 +79,9 @@ genrule {
     ],
     out: [
         "android/hardware/neuralnetworks/1.2/Device.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts.cpp",
         "android/hardware/neuralnetworks/1.2/types.vts.cpp",
     ],
 }
@@ -81,6 +95,9 @@ genrule {
     ],
     out: [
         "android/hardware/neuralnetworks/1.2/Device.vts.h",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.h",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts.h",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts.h",
         "android/hardware/neuralnetworks/1.2/types.vts.h",
     ],
 }
@@ -94,11 +111,13 @@ cc_library_shared {
     shared_libs: [
         "android.hardware.neuralnetworks@1.0-vts.profiler",
         "android.hardware.neuralnetworks@1.1-vts.profiler",
+        "android.hidl.safe_union@1.0-vts.profiler",
     ],
     static_libs: [
         "android.hardware.neuralnetworks@1.0",
         "android.hardware.neuralnetworks@1.1",
         "android.hardware.neuralnetworks@1.2",
+        "android.hidl.safe_union@1.0",
     ],
 }
 
