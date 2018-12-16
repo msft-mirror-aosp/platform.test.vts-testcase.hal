@@ -9,6 +9,8 @@ hal2vts {
         ":android.hardware.gnss@2.0_hal",
     ],
     out: [
+        "android/hardware/gnss/2.0/AGnss.vts",
+        "android/hardware/gnss/2.0/AGnssCallback.vts",
         "android/hardware/gnss/2.0/AGnssRil.vts",
         "android/hardware/gnss/2.0/Gnss.vts",
         "android/hardware/gnss/2.0/GnssCallback.vts",
@@ -27,6 +29,8 @@ genrule {
         ":android.hardware.gnss@2.0_hal",
     ],
     out: [
+        "android/hardware/gnss/2.0/AGnss.vts.cpp",
+        "android/hardware/gnss/2.0/AGnssCallback.vts.cpp",
         "android/hardware/gnss/2.0/AGnssRil.vts.cpp",
         "android/hardware/gnss/2.0/Gnss.vts.cpp",
         "android/hardware/gnss/2.0/GnssCallback.vts.cpp",
@@ -44,6 +48,8 @@ genrule {
         ":android.hardware.gnss@2.0_hal",
     ],
     out: [
+        "android/hardware/gnss/2.0/AGnss.vts.h",
+        "android/hardware/gnss/2.0/AGnssCallback.vts.h",
         "android/hardware/gnss/2.0/AGnssRil.vts.h",
         "android/hardware/gnss/2.0/Gnss.vts.h",
         "android/hardware/gnss/2.0/GnssCallback.vts.h",
@@ -81,6 +87,8 @@ genrule {
         ":android.hardware.gnss@2.0_hal",
     ],
     out: [
+        "android/hardware/gnss/2.0/AGnss.vts.cpp",
+        "android/hardware/gnss/2.0/AGnssCallback.vts.cpp",
         "android/hardware/gnss/2.0/AGnssRil.vts.cpp",
         "android/hardware/gnss/2.0/Gnss.vts.cpp",
         "android/hardware/gnss/2.0/GnssCallback.vts.cpp",
@@ -98,6 +106,8 @@ genrule {
         ":android.hardware.gnss@2.0_hal",
     ],
     out: [
+        "android/hardware/gnss/2.0/AGnss.vts.h",
+        "android/hardware/gnss/2.0/AGnssCallback.vts.h",
         "android/hardware/gnss/2.0/AGnssRil.vts.h",
         "android/hardware/gnss/2.0/Gnss.vts.h",
         "android/hardware/gnss/2.0/GnssCallback.vts.h",
