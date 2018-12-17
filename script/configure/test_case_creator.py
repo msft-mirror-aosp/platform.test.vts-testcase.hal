@@ -296,7 +296,7 @@ class TestCaseCreator(object):
         ET.SubElement(
             test, 'option', {
                 'name': 'runner',
-                'value': 'android.support.test.runner.AndroidJUnitRunner'
+                'value': 'androidx.test.runner.AndroidJUnitRunner'
             })
 
         # Configure CTS tests.
