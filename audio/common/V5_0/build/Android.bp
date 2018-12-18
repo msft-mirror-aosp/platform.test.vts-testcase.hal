@@ -44,9 +44,12 @@ cc_library_shared {
     generated_headers: ["android.hardware.audio.common@5.0-vts.driver_genc++_headers"],
     export_generated_headers: ["android.hardware.audio.common@5.0-vts.driver_genc++_headers"],
     defaults: ["VtsHalDriverDefaults"],
-    shared_libs: [],
+    shared_libs: [
+        "android.hidl.safe_union@1.0-vts.driver",
+    ],
     static_libs: [
         "android.hardware.audio.common@5.0",
+        "android.hidl.safe_union@1.0",
     ],
 }
 
@@ -81,9 +84,12 @@ cc_library_shared {
     generated_headers: ["android.hardware.audio.common@5.0-vts.profiler_genc++_headers"],
     export_generated_headers: ["android.hardware.audio.common@5.0-vts.profiler_genc++_headers"],
     defaults: ["VtsHalProfilerDefaults"],
-    shared_libs: [],
+    shared_libs: [
+        "android.hidl.safe_union@1.0-vts.profiler",
+    ],
     static_libs: [
         "android.hardware.audio.common@5.0",
+        "android.hidl.safe_union@1.0",
     ],
 }
 
