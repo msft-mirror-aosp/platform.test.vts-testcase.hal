@@ -70,11 +70,13 @@ cc_library_shared {
     defaults: ["VtsHalDriverDefaults"],
     shared_libs: [
         "android.hardware.gnss.measurement_corrections@1.0-vts.driver",
+        "android.hardware.gnss.visibility_control@1.0-vts.driver",
         "android.hardware.gnss@1.0-vts.driver",
         "android.hardware.gnss@1.1-vts.driver",
     ],
     static_libs: [
         "android.hardware.gnss.measurement_corrections@1.0",
+        "android.hardware.gnss.visibility_control@1.0",
         "android.hardware.gnss@1.0",
         "android.hardware.gnss@1.1",
         "android.hardware.gnss@2.0",
@@ -130,11 +132,13 @@ cc_library_shared {
     defaults: ["VtsHalProfilerDefaults"],
     shared_libs: [
         "android.hardware.gnss.measurement_corrections@1.0-vts.profiler",
+        "android.hardware.gnss.visibility_control@1.0-vts.profiler",
         "android.hardware.gnss@1.0-vts.profiler",
         "android.hardware.gnss@1.1-vts.profiler",
     ],
     static_libs: [
         "android.hardware.gnss.measurement_corrections@1.0",
+        "android.hardware.gnss.visibility_control@1.0",
         "android.hardware.gnss@1.0",
         "android.hardware.gnss@1.1",
         "android.hardware.gnss@2.0",
