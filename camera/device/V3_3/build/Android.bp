@@ -18,7 +18,7 @@ hal2vts {
 genrule {
     name: "android.hardware.camera.device@3.3-vts.driver_genc++",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.camera.device@3.3 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/camera/device/3.3/ $(genDir)/android/hardware/camera/device/3.3/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.camera.device@3.3 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/camera/device/3.3/ $(genDir)/android/hardware/camera/device/3.3/",
     srcs: [
         ":android.hardware.camera.device@3.3_hal",
     ],
@@ -26,12 +26,13 @@ genrule {
         "android/hardware/camera/device/3.3/CameraDeviceSession.vts.cpp",
         "android/hardware/camera/device/3.3/types.vts.cpp",
     ],
+    depfile: true,
 }
 
 genrule {
     name: "android.hardware.camera.device@3.3-vts.driver_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.camera.device@3.3 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/camera/device/3.3/ $(genDir)/android/hardware/camera/device/3.3/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.camera.device@3.3 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/camera/device/3.3/ $(genDir)/android/hardware/camera/device/3.3/",
     srcs: [
         ":android.hardware.camera.device@3.3_hal",
     ],
@@ -39,6 +40,7 @@ genrule {
         "android/hardware/camera/device/3.3/CameraDeviceSession.vts.h",
         "android/hardware/camera/device/3.3/types.vts.h",
     ],
+    depfile: true,
 }
 
 cc_library_shared {
@@ -64,7 +66,7 @@ cc_library_shared {
 genrule {
     name: "android.hardware.camera.device@3.3-vts.profiler_genc++",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.camera.device@3.3 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/hardware/camera/device/3.3/ $(genDir)/android/hardware/camera/device/3.3/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.camera.device@3.3 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/hardware/camera/device/3.3/ $(genDir)/android/hardware/camera/device/3.3/",
     srcs: [
         ":android.hardware.camera.device@3.3_hal",
     ],
@@ -72,12 +74,13 @@ genrule {
         "android/hardware/camera/device/3.3/CameraDeviceSession.vts.cpp",
         "android/hardware/camera/device/3.3/types.vts.cpp",
     ],
+    depfile: true,
 }
 
 genrule {
     name: "android.hardware.camera.device@3.3-vts.profiler_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.camera.device@3.3 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/hardware/camera/device/3.3/ $(genDir)/android/hardware/camera/device/3.3/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.camera.device@3.3 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/hardware/camera/device/3.3/ $(genDir)/android/hardware/camera/device/3.3/",
     srcs: [
         ":android.hardware.camera.device@3.3_hal",
     ],
@@ -85,6 +88,7 @@ genrule {
         "android/hardware/camera/device/3.3/CameraDeviceSession.vts.h",
         "android/hardware/camera/device/3.3/types.vts.h",
     ],
+    depfile: true,
 }
 
 cc_library_shared {
