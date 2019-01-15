@@ -73,7 +73,9 @@ const map<size_t /* Shipping API Level */, Level /* FCM Version */>
                       // O MR-1
                       {27, static_cast<Level>(2)},
                       // P
-                      {28, static_cast<Level>(3)}}};
+                      {28, static_cast<Level>(3)},
+                      // Q
+                      {29, static_cast<Level>(4)}}};
 
 // Returns ro.product.first_api_level if it is defined and not 0. Returns
 // ro.build.version.sdk otherwise.

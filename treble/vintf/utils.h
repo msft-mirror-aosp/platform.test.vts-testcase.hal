@@ -46,6 +46,7 @@ using android::procpartition::Partition;
 using android::vintf::HalManifest;
 using android::vintf::Level;
 using android::vintf::ManifestHal;
+using android::vintf::RuntimeInfo;
 using android::vintf::SchemaType;
 using android::vintf::to_string;
 using android::vintf::Transport;
@@ -65,6 +66,7 @@ using HalVerifyFn = std::function<void(const FQName& fq_name,
 using HashCharArray = hidl_array<unsigned char, 32>;
 using HalManifestPtr = std::shared_ptr<const HalManifest>;
 using MatrixPtr = std::shared_ptr<const CompatibilityMatrix>;
+using RuntimeInfoPtr = std::shared_ptr<const RuntimeInfo>;
 
 // Path to directory on target containing test data.
 extern const string kDataDir;

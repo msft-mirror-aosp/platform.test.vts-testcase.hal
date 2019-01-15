@@ -22,7 +22,7 @@ hal2vts {
 genrule {
     name: "android.hardware.tests.bar@1.0-vts.driver_genc++",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.tests.bar@1.0 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/tests/bar/1.0/ $(genDir)/android/hardware/tests/bar/1.0/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.tests.bar@1.0 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/tests/bar/1.0/ $(genDir)/android/hardware/tests/bar/1.0/",
     srcs: [
         ":android.hardware.tests.bar@1.0_hal",
     ],
@@ -34,12 +34,13 @@ genrule {
         "android/hardware/tests/bar/1.0/ImportTypes.vts.cpp",
         "android/hardware/tests/bar/1.0/types.vts.cpp",
     ],
+    depfile: true,
 }
 
 genrule {
     name: "android.hardware.tests.bar@1.0-vts.driver_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.tests.bar@1.0 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/tests/bar/1.0/ $(genDir)/android/hardware/tests/bar/1.0/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.tests.bar@1.0 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/tests/bar/1.0/ $(genDir)/android/hardware/tests/bar/1.0/",
     srcs: [
         ":android.hardware.tests.bar@1.0_hal",
     ],
@@ -51,6 +52,7 @@ genrule {
         "android/hardware/tests/bar/1.0/ImportTypes.vts.h",
         "android/hardware/tests/bar/1.0/types.vts.h",
     ],
+    depfile: true,
 }
 
 cc_library_shared {
@@ -72,7 +74,7 @@ cc_library_shared {
 genrule {
     name: "android.hardware.tests.bar@1.0-vts.profiler_genc++",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.tests.bar@1.0 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/hardware/tests/bar/1.0/ $(genDir)/android/hardware/tests/bar/1.0/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.tests.bar@1.0 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/hardware/tests/bar/1.0/ $(genDir)/android/hardware/tests/bar/1.0/",
     srcs: [
         ":android.hardware.tests.bar@1.0_hal",
     ],
@@ -84,12 +86,13 @@ genrule {
         "android/hardware/tests/bar/1.0/ImportTypes.vts.cpp",
         "android/hardware/tests/bar/1.0/types.vts.cpp",
     ],
+    depfile: true,
 }
 
 genrule {
     name: "android.hardware.tests.bar@1.0-vts.profiler_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.tests.bar@1.0 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/hardware/tests/bar/1.0/ $(genDir)/android/hardware/tests/bar/1.0/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.tests.bar@1.0 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/hardware/tests/bar/1.0/ $(genDir)/android/hardware/tests/bar/1.0/",
     srcs: [
         ":android.hardware.tests.bar@1.0_hal",
     ],
@@ -101,6 +104,7 @@ genrule {
         "android/hardware/tests/bar/1.0/ImportTypes.vts.h",
         "android/hardware/tests/bar/1.0/types.vts.h",
     ],
+    depfile: true,
 }
 
 cc_library_shared {

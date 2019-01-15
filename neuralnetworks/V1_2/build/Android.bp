@@ -1,0 +1,127 @@
+// This file was auto-generated. Do not edit manually.
+// Use launch_hal_test.py or update_makefiles.py in test/vts-testcase/hal/script/ to generate this file.
+
+// Generate .vts spec files.
+hal2vts {
+    name: "android.hardware.neuralnetworks@1.2-vts.spec",
+    hidl_gen_args: "-r android.hardware:hardware/interfaces",
+    srcs: [
+        ":android.hardware.neuralnetworks@1.2_hal",
+    ],
+    out: [
+        "android/hardware/neuralnetworks/1.2/Device.vts",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts",
+        "android/hardware/neuralnetworks/1.2/types.vts",
+    ],
+}
+
+// Build VTS driver.
+genrule {
+    name: "android.hardware.neuralnetworks@1.2-vts.driver_genc++",
+    tools: ["hidl-gen", "vtsc"],
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.neuralnetworks@1.2 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/neuralnetworks/1.2/ $(genDir)/android/hardware/neuralnetworks/1.2/",
+    srcs: [
+        ":android.hardware.neuralnetworks@1.2_hal",
+    ],
+    out: [
+        "android/hardware/neuralnetworks/1.2/Device.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/types.vts.cpp",
+    ],
+    depfile: true,
+}
+
+genrule {
+    name: "android.hardware.neuralnetworks@1.2-vts.driver_genc++_headers",
+    tools: ["hidl-gen", "vtsc"],
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.neuralnetworks@1.2 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/neuralnetworks/1.2/ $(genDir)/android/hardware/neuralnetworks/1.2/",
+    srcs: [
+        ":android.hardware.neuralnetworks@1.2_hal",
+    ],
+    out: [
+        "android/hardware/neuralnetworks/1.2/Device.vts.h",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.h",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts.h",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts.h",
+        "android/hardware/neuralnetworks/1.2/types.vts.h",
+    ],
+    depfile: true,
+}
+
+cc_library_shared {
+    name: "android.hardware.neuralnetworks@1.2-vts.driver",
+    generated_sources: ["android.hardware.neuralnetworks@1.2-vts.driver_genc++"],
+    generated_headers: ["android.hardware.neuralnetworks@1.2-vts.driver_genc++_headers"],
+    export_generated_headers: ["android.hardware.neuralnetworks@1.2-vts.driver_genc++_headers"],
+    defaults: ["VtsHalDriverDefaults"],
+    shared_libs: [
+        "android.hardware.neuralnetworks@1.0-vts.driver",
+        "android.hardware.neuralnetworks@1.1-vts.driver",
+        "android.hidl.safe_union@1.0-vts.driver",
+    ],
+    static_libs: [
+        "android.hardware.neuralnetworks@1.0",
+        "android.hardware.neuralnetworks@1.1",
+        "android.hardware.neuralnetworks@1.2",
+        "android.hidl.safe_union@1.0",
+    ],
+}
+
+// Build VTS profiler.
+genrule {
+    name: "android.hardware.neuralnetworks@1.2-vts.profiler_genc++",
+    tools: ["hidl-gen", "vtsc"],
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.neuralnetworks@1.2 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/hardware/neuralnetworks/1.2/ $(genDir)/android/hardware/neuralnetworks/1.2/",
+    srcs: [
+        ":android.hardware.neuralnetworks@1.2_hal",
+    ],
+    out: [
+        "android/hardware/neuralnetworks/1.2/Device.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts.cpp",
+        "android/hardware/neuralnetworks/1.2/types.vts.cpp",
+    ],
+    depfile: true,
+}
+
+genrule {
+    name: "android.hardware.neuralnetworks@1.2-vts.profiler_genc++_headers",
+    tools: ["hidl-gen", "vtsc"],
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.neuralnetworks@1.2 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/hardware/neuralnetworks/1.2/ $(genDir)/android/hardware/neuralnetworks/1.2/",
+    srcs: [
+        ":android.hardware.neuralnetworks@1.2_hal",
+    ],
+    out: [
+        "android/hardware/neuralnetworks/1.2/Device.vts.h",
+        "android/hardware/neuralnetworks/1.2/ExecutionCallback.vts.h",
+        "android/hardware/neuralnetworks/1.2/PreparedModel.vts.h",
+        "android/hardware/neuralnetworks/1.2/PreparedModelCallback.vts.h",
+        "android/hardware/neuralnetworks/1.2/types.vts.h",
+    ],
+    depfile: true,
+}
+
+cc_library_shared {
+    name: "android.hardware.neuralnetworks@1.2-vts.profiler",
+    generated_sources: ["android.hardware.neuralnetworks@1.2-vts.profiler_genc++"],
+    generated_headers: ["android.hardware.neuralnetworks@1.2-vts.profiler_genc++_headers"],
+    export_generated_headers: ["android.hardware.neuralnetworks@1.2-vts.profiler_genc++_headers"],
+    defaults: ["VtsHalProfilerDefaults"],
+    shared_libs: [
+        "android.hardware.neuralnetworks@1.0-vts.profiler",
+        "android.hardware.neuralnetworks@1.1-vts.profiler",
+        "android.hidl.safe_union@1.0-vts.profiler",
+    ],
+    static_libs: [
+        "android.hardware.neuralnetworks@1.0",
+        "android.hardware.neuralnetworks@1.1",
+        "android.hardware.neuralnetworks@1.2",
+        "android.hidl.safe_union@1.0",
+    ],
+}
+
