@@ -18,7 +18,7 @@ hal2vts {
 genrule {
     name: "android.hardware.power@1.2-vts.driver_genc++",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.power@1.2 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/power/1.2/ $(genDir)/android/hardware/power/1.2/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.power@1.2 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/power/1.2/ $(genDir)/android/hardware/power/1.2/",
     srcs: [
         ":android.hardware.power@1.2_hal",
     ],
@@ -26,12 +26,13 @@ genrule {
         "android/hardware/power/1.2/Power.vts.cpp",
         "android/hardware/power/1.2/types.vts.cpp",
     ],
+    depfile: true,
 }
 
 genrule {
     name: "android.hardware.power@1.2-vts.driver_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.power@1.2 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/power/1.2/ $(genDir)/android/hardware/power/1.2/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.power@1.2 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/power/1.2/ $(genDir)/android/hardware/power/1.2/",
     srcs: [
         ":android.hardware.power@1.2_hal",
     ],
@@ -39,6 +40,7 @@ genrule {
         "android/hardware/power/1.2/Power.vts.h",
         "android/hardware/power/1.2/types.vts.h",
     ],
+    depfile: true,
 }
 
 cc_library_shared {
@@ -62,7 +64,7 @@ cc_library_shared {
 genrule {
     name: "android.hardware.power@1.2-vts.profiler_genc++",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.power@1.2 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/hardware/power/1.2/ $(genDir)/android/hardware/power/1.2/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.power@1.2 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/hardware/power/1.2/ $(genDir)/android/hardware/power/1.2/",
     srcs: [
         ":android.hardware.power@1.2_hal",
     ],
@@ -70,12 +72,13 @@ genrule {
         "android/hardware/power/1.2/Power.vts.cpp",
         "android/hardware/power/1.2/types.vts.cpp",
     ],
+    depfile: true,
 }
 
 genrule {
     name: "android.hardware.power@1.2-vts.profiler_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.power@1.2 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/hardware/power/1.2/ $(genDir)/android/hardware/power/1.2/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.power@1.2 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/hardware/power/1.2/ $(genDir)/android/hardware/power/1.2/",
     srcs: [
         ":android.hardware.power@1.2_hal",
     ],
@@ -83,6 +86,7 @@ genrule {
         "android/hardware/power/1.2/Power.vts.h",
         "android/hardware/power/1.2/types.vts.h",
     ],
+    depfile: true,
 }
 
 cc_library_shared {
