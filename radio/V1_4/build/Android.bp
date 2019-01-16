@@ -20,7 +20,7 @@ hal2vts {
 genrule {
     name: "android.hardware.radio@1.4-vts.driver_genc++",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.radio@1.4 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/radio/1.4/ $(genDir)/android/hardware/radio/1.4/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.radio@1.4 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/radio/1.4/ $(genDir)/android/hardware/radio/1.4/",
     srcs: [
         ":android.hardware.radio@1.4_hal",
     ],
@@ -30,12 +30,13 @@ genrule {
         "android/hardware/radio/1.4/RadioResponse.vts.cpp",
         "android/hardware/radio/1.4/types.vts.cpp",
     ],
+    depfile: true,
 }
 
 genrule {
     name: "android.hardware.radio@1.4-vts.driver_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.radio@1.4 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/radio/1.4/ $(genDir)/android/hardware/radio/1.4/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.radio@1.4 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/radio/1.4/ $(genDir)/android/hardware/radio/1.4/",
     srcs: [
         ":android.hardware.radio@1.4_hal",
     ],
@@ -45,6 +46,7 @@ genrule {
         "android/hardware/radio/1.4/RadioResponse.vts.h",
         "android/hardware/radio/1.4/types.vts.h",
     ],
+    depfile: true,
 }
 
 cc_library_shared {
@@ -74,7 +76,7 @@ cc_library_shared {
 genrule {
     name: "android.hardware.radio@1.4-vts.profiler_genc++",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.radio@1.4 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/hardware/radio/1.4/ $(genDir)/android/hardware/radio/1.4/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.radio@1.4 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/hardware/radio/1.4/ $(genDir)/android/hardware/radio/1.4/",
     srcs: [
         ":android.hardware.radio@1.4_hal",
     ],
@@ -84,12 +86,13 @@ genrule {
         "android/hardware/radio/1.4/RadioResponse.vts.cpp",
         "android/hardware/radio/1.4/types.vts.cpp",
     ],
+    depfile: true,
 }
 
 genrule {
     name: "android.hardware.radio@1.4-vts.profiler_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.radio@1.4 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/hardware/radio/1.4/ $(genDir)/android/hardware/radio/1.4/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.radio@1.4 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/hardware/radio/1.4/ $(genDir)/android/hardware/radio/1.4/",
     srcs: [
         ":android.hardware.radio@1.4_hal",
     ],
@@ -99,6 +102,7 @@ genrule {
         "android/hardware/radio/1.4/RadioResponse.vts.h",
         "android/hardware/radio/1.4/types.vts.h",
     ],
+    depfile: true,
 }
 
 cc_library_shared {

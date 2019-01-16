@@ -20,7 +20,7 @@ hal2vts {
 genrule {
     name: "android.hardware.graphics.composer@2.1-vts.driver_genc++",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.graphics.composer@2.1 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/graphics/composer/2.1/ $(genDir)/android/hardware/graphics/composer/2.1/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.graphics.composer@2.1 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/hardware/graphics/composer/2.1/ $(genDir)/android/hardware/graphics/composer/2.1/",
     srcs: [
         ":android.hardware.graphics.composer@2.1_hal",
     ],
@@ -30,12 +30,13 @@ genrule {
         "android/hardware/graphics/composer/2.1/ComposerClient.vts.cpp",
         "android/hardware/graphics/composer/2.1/types.vts.cpp",
     ],
+    depfile: true,
 }
 
 genrule {
     name: "android.hardware.graphics.composer@2.1-vts.driver_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.graphics.composer@2.1 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/graphics/composer/2.1/ $(genDir)/android/hardware/graphics/composer/2.1/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.graphics.composer@2.1 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/hardware/graphics/composer/2.1/ $(genDir)/android/hardware/graphics/composer/2.1/",
     srcs: [
         ":android.hardware.graphics.composer@2.1_hal",
     ],
@@ -45,6 +46,7 @@ genrule {
         "android/hardware/graphics/composer/2.1/ComposerClient.vts.h",
         "android/hardware/graphics/composer/2.1/types.vts.h",
     ],
+    depfile: true,
 }
 
 cc_library_shared {
@@ -66,7 +68,7 @@ cc_library_shared {
 genrule {
     name: "android.hardware.graphics.composer@2.1-vts.profiler_genc++",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.graphics.composer@2.1 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/hardware/graphics/composer/2.1/ $(genDir)/android/hardware/graphics/composer/2.1/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.graphics.composer@2.1 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/hardware/graphics/composer/2.1/ $(genDir)/android/hardware/graphics/composer/2.1/",
     srcs: [
         ":android.hardware.graphics.composer@2.1_hal",
     ],
@@ -76,12 +78,13 @@ genrule {
         "android/hardware/graphics/composer/2.1/ComposerClient.vts.cpp",
         "android/hardware/graphics/composer/2.1/types.vts.cpp",
     ],
+    depfile: true,
 }
 
 genrule {
     name: "android.hardware.graphics.composer@2.1-vts.profiler_genc++_headers",
     tools: ["hidl-gen", "vtsc"],
-    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.graphics.composer@2.1 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/hardware/graphics/composer/2.1/ $(genDir)/android/hardware/graphics/composer/2.1/",
+    cmd: "$(location hidl-gen) -d $(depfile) -o $(genDir) -Lvts -r android.hardware:hardware/interfaces android.hardware.graphics.composer@2.1 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/hardware/graphics/composer/2.1/ $(genDir)/android/hardware/graphics/composer/2.1/",
     srcs: [
         ":android.hardware.graphics.composer@2.1_hal",
     ],
@@ -91,6 +94,7 @@ genrule {
         "android/hardware/graphics/composer/2.1/ComposerClient.vts.h",
         "android/hardware/graphics/composer/2.1/types.vts.h",
     ],
+    depfile: true,
 }
 
 cc_library_shared {
