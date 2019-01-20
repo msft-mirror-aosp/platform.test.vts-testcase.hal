@@ -41,7 +41,6 @@
         <option name="test-case-path" value="vts/testcases/hal/wifi/supplicant/V1_0/host/VtsHalWifiSupplicantV1_0HostTest"/>
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalWifiSupplicantV1_0TargetTest/VtsHalWifiSupplicantV1_0TargetTest" />
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalWifiSupplicantV1_0TargetTest/VtsHalWifiSupplicantV1_0TargetTest" />
-        <option name="binary-test-stop-native-servers" value="true"/>
         <option name="test-timeout" value="10m"/>
     </test>
 </configuration>
