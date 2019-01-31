@@ -28,6 +28,18 @@ class VtsHalWifiV1_0Host(hal_hidl_gtest.HidlHalGTest):
     WIFI_AWARE_FEATURE_NAME = "android.hardware.wifi.aware"
     WIFI_SOFTAP_FEATURE_NAME = "android.hardware.wifi.hostapd"
 
+    def setUpClass(self):
+        """Disable android framework."""
+        super(VtsHalWifiV1_0Host, self).setUpClass()
+        self.dut = self.android_devices[0]
+        self.shell = self.dut.shell
+        self.dut.stop(True)
+
+    def tearDownClass(self):
+        """Enable android framework."""
+        self.dut.start()
+        super(VtsHalWifiV1_0Host, self).tearDownClass()
+
     def CreateTestCases(self):
         """Get all registered test components and create test case objects."""
         pm_list = self.shell.Execute("pm list features")
