@@ -1,0 +1,94 @@
+// This file was auto-generated. Do not edit manually.
+// Use launch_hal_test.py or update_makefiles.py in test/vts-testcase/hal/script/ to generate this file.
+
+// Generate .vts spec files.
+hal2vts {
+    name: "android.frameworks.stats@1.0-vts.spec",
+    hidl_gen_args: "-r android.frameworks:frameworks/hardware/interfaces",
+    srcs: [
+        ":android.frameworks.stats@1.0_hal",
+    ],
+    out: [
+        "android/frameworks/stats/1.0/Stats.vts",
+        "android/frameworks/stats/1.0/types.vts",
+    ],
+}
+
+// Build VTS driver.
+genrule {
+    name: "android.frameworks.stats@1.0-vts.driver_genc++",
+    tools: ["hidl-gen", "vtsc"],
+    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.frameworks:frameworks/hardware/interfaces android.frameworks.stats@1.0 && $(location vtsc) -mDRIVER -tSOURCE -b$(genDir) android/frameworks/stats/1.0/ $(genDir)/android/frameworks/stats/1.0/",
+    srcs: [
+        ":android.frameworks.stats@1.0_hal",
+    ],
+    out: [
+        "android/frameworks/stats/1.0/Stats.vts.cpp",
+        "android/frameworks/stats/1.0/types.vts.cpp",
+    ],
+}
+
+genrule {
+    name: "android.frameworks.stats@1.0-vts.driver_genc++_headers",
+    tools: ["hidl-gen", "vtsc"],
+    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.frameworks:frameworks/hardware/interfaces android.frameworks.stats@1.0 && $(location vtsc) -mDRIVER -tHEADER -b$(genDir) android/frameworks/stats/1.0/ $(genDir)/android/frameworks/stats/1.0/",
+    srcs: [
+        ":android.frameworks.stats@1.0_hal",
+    ],
+    out: [
+        "android/frameworks/stats/1.0/Stats.vts.h",
+        "android/frameworks/stats/1.0/types.vts.h",
+    ],
+}
+
+cc_library_shared {
+    name: "android.frameworks.stats@1.0-vts.driver",
+    generated_sources: ["android.frameworks.stats@1.0-vts.driver_genc++"],
+    generated_headers: ["android.frameworks.stats@1.0-vts.driver_genc++_headers"],
+    export_generated_headers: ["android.frameworks.stats@1.0-vts.driver_genc++_headers"],
+    defaults: ["VtsHalDriverDefaults"],
+    shared_libs: [],
+    static_libs: [
+        "android.frameworks.stats@1.0",
+    ],
+}
+
+// Build VTS profiler.
+genrule {
+    name: "android.frameworks.stats@1.0-vts.profiler_genc++",
+    tools: ["hidl-gen", "vtsc"],
+    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.frameworks:frameworks/hardware/interfaces android.frameworks.stats@1.0 && $(location vtsc) -mPROFILER -tSOURCE -b$(genDir) android/frameworks/stats/1.0/ $(genDir)/android/frameworks/stats/1.0/",
+    srcs: [
+        ":android.frameworks.stats@1.0_hal",
+    ],
+    out: [
+        "android/frameworks/stats/1.0/Stats.vts.cpp",
+        "android/frameworks/stats/1.0/types.vts.cpp",
+    ],
+}
+
+genrule {
+    name: "android.frameworks.stats@1.0-vts.profiler_genc++_headers",
+    tools: ["hidl-gen", "vtsc"],
+    cmd: "$(location hidl-gen) -o $(genDir) -Lvts -r android.frameworks:frameworks/hardware/interfaces android.frameworks.stats@1.0 && $(location vtsc) -mPROFILER -tHEADER -b$(genDir) android/frameworks/stats/1.0/ $(genDir)/android/frameworks/stats/1.0/",
+    srcs: [
+        ":android.frameworks.stats@1.0_hal",
+    ],
+    out: [
+        "android/frameworks/stats/1.0/Stats.vts.h",
+        "android/frameworks/stats/1.0/types.vts.h",
+    ],
+}
+
+cc_library_shared {
+    name: "android.frameworks.stats@1.0-vts.profiler",
+    generated_sources: ["android.frameworks.stats@1.0-vts.profiler_genc++"],
+    generated_headers: ["android.frameworks.stats@1.0-vts.profiler_genc++_headers"],
+    export_generated_headers: ["android.frameworks.stats@1.0-vts.profiler_genc++_headers"],
+    defaults: ["VtsHalProfilerDefaults"],
+    shared_libs: [],
+    static_libs: [
+        "android.frameworks.stats@1.0",
+    ],
+}
+
