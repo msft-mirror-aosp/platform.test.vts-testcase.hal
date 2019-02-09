@@ -13,7 +13,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<configuration description="Config for VTS VtsHalSoundtriggerV2_1Adapter test cases">
+<configuration description="Config for VTS VtsHalSoundtriggerV2_1AdapterCtsStatsdHostTestCases test cases">
     <option key="plan" name="config-descriptor:metadata" value="vts-hal-adapter"/>
     <object class="com.android.tradefed.module.VtsHalAdapterModuleController" type="module_controller">
         <option name="hal-package-name" value="android.hardware.soundtrigger@2.1"/>
@@ -27,5 +27,4 @@
         <option name="runner" value="androidx.test.runner.AndroidJUnitRunner"/>
     </test>
     <include name="CtsStatsdHostTestCases.config"/>
-    <include name="CtsWidgetTestCases.config"/>
 </configuration>
