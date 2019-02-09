@@ -18,5 +18,5 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := VtsHalGnssV1_1Adapter
+LOCAL_MODULE := VtsHalGnssV1_1AdapterCtsStatsdHostTestCases
 include test/vts/tools/build/Android.host_config.mk
