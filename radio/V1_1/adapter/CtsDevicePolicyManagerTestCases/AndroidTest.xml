@@ -13,19 +13,18 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<configuration description="Config for VTS VtsHalGnssV1_1Adapter test cases">
+<configuration description="Config for VTS VtsHalRadioV1_1AdapterCtsDevicePolicyManagerTestCases test cases">
     <option key="plan" name="config-descriptor:metadata" value="vts-hal-adapter"/>
     <object class="com.android.tradefed.module.VtsHalAdapterModuleController" type="module_controller">
-        <option name="hal-package-name" value="android.hardware.gnss@1.1"/>
+        <option name="hal-package-name" value="android.hardware.radio@1.1"/>
     </object>
     <target_preparer class="com.android.tradefed.targetprep.VtsHalAdapterPreparer">
-        <option name="adapter-binary-name" value="android.hardware.gnss@1.0-adapter"/>
-        <option name="hal-package-name" value="android.hardware.gnss@1.1"/>
+        <option name="adapter-binary-name" value="android.hardware.radio@1.0-adapter"/>
+        <option name="hal-package-name" value="android.hardware.radio@1.1"/>
     </target_preparer>
     <test class="com.android.tradefed.testtype.AndroidJUnitTest">
         <option name="package" value="com.android.devicehealth.tests"/>
         <option name="runner" value="androidx.test.runner.AndroidJUnitRunner"/>
     </test>
-    <include name="CtsLocationTestCases.config"/>
-    <include name="CtsStatsdHostTestCases.config"/>
+    <include name="CtsDevicePolicyManagerTestCases.config"/>
 </configuration>

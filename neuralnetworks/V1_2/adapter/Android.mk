@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018 The Android Open Source Project
+# Copyright (C) 2019 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,5 +18,5 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := VtsHalCameraDeviceV3_3Adapter
+LOCAL_MODULE := VtsHalNeuralnetworksV1_2Adapter
 include test/vts/tools/build/Android.host_config.mk
