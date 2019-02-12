@@ -47,8 +47,8 @@ var (
 
 type hal2vtsProperties struct {
 	Hidl_gen_args string
-	Srcs []string
-	Out  []string
+	Srcs          []string
+	Out           []string
 }
 
 type hal2vts struct {
@@ -142,8 +142,10 @@ func hal2vtsFactory() android.Module {
 	return h
 }
 
+var vtsListKey = android.NewOnceKey("vtsList")
+
 func vtsList(config android.Config) *android.Paths {
-	return config.Once("vtsList", func() interface{} {
+	return config.Once(vtsListKey, func() interface{} {
 		return &android.Paths{}
 	}).(*android.Paths)
 }

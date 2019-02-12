@@ -18,6 +18,5 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := VtsHalCameraDeviceV3_3Adapter
-VTS_CONFIG_SRC_DIR := testcases/hal/camera/device/V3_3/adapter
+LOCAL_MODULE := VtsHalCameraDeviceV3_3AdapterCtsStatsdHostTestCases
 include test/vts/tools/build/Android.host_config.mk
