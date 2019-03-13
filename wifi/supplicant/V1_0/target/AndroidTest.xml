@@ -18,6 +18,10 @@
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
         <option name="abort-on-push-failure" value="false"/>
         <option name="push-group" value="HalHidlTargetTest.push"/>
+        <option name="push" value="DATA/lib/libwifi-system.so->/data/local/tmp/32/libwifi-system.so"/>
+        <option name="push" value="DATA/lib64/libwifi-system.so->/data/local/tmp/64/libwifi-system.so"/>
+        <option name="push" value="DATA/vendor/lib/libwifi-hal.so->/data/local/tmp/32/libwifi-hal.so"/>
+        <option name="push" value="DATA/vendor/lib64/libwifi-hal.so->/data/local/tmp/64/libwifi-hal.so"/>
     </target_preparer>
     <target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer"/>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
