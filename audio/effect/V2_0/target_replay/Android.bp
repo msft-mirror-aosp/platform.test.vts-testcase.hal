@@ -13,31 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-
-cc_test {
-    name: "thermal_hidl_stress_test",
-    gtest: true,
-    srcs: ["thermal_hidl_stress_test.cpp"],
-    shared_libs: [
-        "libbase",
-        "liblog",
-        "libcutils",
-        "libhidlbase",
-        "libhidltransport",
-        "libhwbinder",
-        "libnativehelper",
-        "libutils",
-        "android.hardware.thermal@1.0",
-    ],
-    static_libs: ["libgtest"],
-    cflags: [
-        "-O0",
-        "-g",
-        "-Wall",
-        "-Werror",
-    ],
-}
-
 vts_config {
-    name: "ThermalHidlTargetStressTest",
+
+    name: "VtsHalAudioEffectV2_0TargetReplay",
 }
