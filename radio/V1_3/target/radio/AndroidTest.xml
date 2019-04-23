@@ -30,5 +30,7 @@
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="binary-test-disable-framework" value="true"/>
         <option name="test-timeout" value="15m"/>
+        <!--Disable the test because it's not implemented in Q, b/130254624-->
+        <option name="exclude-filter" value="RadioHidlTest_v1_3.setSystemSelectionChannels" />
     </test>
 </configuration>
