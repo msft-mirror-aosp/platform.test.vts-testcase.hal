@@ -29,6 +29,7 @@ cc_defaults {
         "libz",
     ],
     static_libs: [
+        "libgmock",
         "libhidl-gen-hash",
         "libhidl-gen-utils",
         "libprocpartition",
