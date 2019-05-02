@@ -56,6 +56,7 @@ using android::vintf::VintfObject;
 using std::cout;
 using std::endl;
 using std::map;
+using std::multimap;
 using std::set;
 using std::string;
 
