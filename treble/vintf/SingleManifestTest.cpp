@@ -41,14 +41,14 @@ bool LegacyAndExempt(const FQName &fq_name) {
   return GetShippingApiLevel() <= 27 && !IsAndroidPlatformInterface(fq_name);
 }
 
-void FailureHalMissing(const FQName &fq_name) {
+void FailureHalMissing(const FQName &fq_name, const std::string &instance) {
   if (LegacyAndExempt(fq_name)) {
-    cout << "[  WARNING ] " << fq_name.string()
+    cout << "[  WARNING ] " << fq_name.string() << "/" << instance
          << " not available but is exempted because it is legacy. It is still "
             "recommended to fix this."
          << endl;
   } else {
-    ADD_FAILURE() << fq_name.string() << " not available.";
+    ADD_FAILURE() << fq_name.string() << "/" << instance << " not available.";
   }
 }
 
@@ -287,7 +287,7 @@ TEST_P(SingleManifestTest, HalsAreServed) {
       }
 
       if (hal_service == nullptr) {
-        FailureHalMissing(fq_name);
+        FailureHalMissing(fq_name, instance_name);
         return;
       }
 
@@ -412,7 +412,7 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
     sp<IBase> hal_service = GetHalService(fq_name, instance_name, transport);
 
     if (hal_service == nullptr) {
-      FailureHalMissing(fq_name);
+      FailureHalMissing(fq_name, instance_name);
       return;
     }
 

@@ -177,8 +177,8 @@ TEST_F(VtsTrebleVintfTest, VintfHalsAreServed) {
 
     sp<android::hidl::base::V1_0::IBase> hal_service =
         GetHalService(fq_name, instance_name);
-    EXPECT_NE(hal_service, nullptr)
-        << fq_name.string() << " not available." << endl;
+    EXPECT_NE(hal_service, nullptr) << fq_name.string() << "/" << instance_name
+                                    << " not available." << endl;
   };
 
   ForEachHalInstance(is_available);
@@ -197,7 +197,8 @@ TEST_F(VtsTrebleVintfTest, InterfacesAreReleased) {
       if (IsExempt(fq_name)) {
         cout << fq_name.string() << " is exempt for O-MR1 vendor." << endl;
       } else {
-        ADD_FAILURE() << fq_name.package() << " not available." << endl;
+        ADD_FAILURE() << fq_name.string() << "/" << instance_name
+                      << " not available." << endl;
       }
       return;
     }
