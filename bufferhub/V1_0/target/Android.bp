@@ -15,5 +15,5 @@
 //
 
 vts_config {
-    name: "VtsHalGraphicsComposerV2_3Target",
+    name: "VtsHalBufferHubV1_0Target",
 }

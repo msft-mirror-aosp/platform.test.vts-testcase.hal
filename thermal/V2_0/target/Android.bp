@@ -15,5 +15,5 @@
 //
 
 vts_config {
-    name: "VtsHalGraphicsComposerV2_3Target",
+    name: "VtsHalThermalV2_0Target",
 }
