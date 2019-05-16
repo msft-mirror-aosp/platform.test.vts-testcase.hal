@@ -15,5 +15,5 @@
 //
 
 vts_config {
-    name: "VtsHalGraphicsComposerV2_2Target",
+    name: "VtsHalGraphicsMapperV2_1Adapter",
 }
