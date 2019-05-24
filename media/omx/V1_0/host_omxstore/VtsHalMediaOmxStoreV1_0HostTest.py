@@ -461,22 +461,23 @@ class VtsHalMediaOmxStoreV1_0Host(hal_hidl_host_test.HalHidlHostTest):
                 'does not report some expected nodes: ' +
                 ', '.join(node_set_diff) + '.')
 
-        # Call IOmxStore::getNodePrefix().
-        prefix = self.omxstore.getNodePrefix()
-        logging.info('Checking node prefix: ' +
-                     'IOmxStore::getNodePrefix() returns "' + prefix + '".')
-
         # Check that the prefix is a sensible string.
-        asserts.assertTrue(
-            node_name_re.match(prefix),
-            '"' + prefix + '" is not a valid prefix for node names.')
+        if node2roles:
+            # Call IOmxStore::getNodePrefix().
+            prefix = self.omxstore.getNodePrefix()
+            logging.info('Checking node prefix: ' +
+                         'IOmxStore::getNodePrefix() returns "' + prefix + '".')
 
-        # Check that all node names have the said prefix.
-        for node in node2roles:
             asserts.assertTrue(
-                node.startswith(prefix),
-                'Node "' + node + '" does not start with ' +
-                'prefix "' + prefix + '".')
+                node_name_re.match(prefix),
+                '"' + prefix + '" is not a valid prefix for node names.')
+
+            # Check that all node names have the said prefix.
+            for node in node2roles:
+                asserts.assertTrue(
+                    node.startswith(prefix),
+                    'Node "' + node + '" does not start with ' +
+                    'prefix "' + prefix + '".')
 
 if __name__ == '__main__':
     test_runner.main()
