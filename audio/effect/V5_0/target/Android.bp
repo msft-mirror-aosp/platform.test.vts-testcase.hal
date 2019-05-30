@@ -15,5 +15,5 @@
 //
 
 vts_config {
-    name: "VtsHalAudioEffectV4_0TargetProfiling",
+    name: "VtsHalAudioEffectV5_0Target",
 }
