@@ -23,6 +23,7 @@
         <option name="enable-radio-log" value="true"/>
         <option name="restore-radio-log" value="true"/>
     </target_preparer>
+    <target_preparer class="com.android.tradefed.targetprep.VtsMultiSimPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalRadioV1_1Target"/>
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalRadioV1_1TargetTest/VtsHalRadioV1_1TargetTest"/>
