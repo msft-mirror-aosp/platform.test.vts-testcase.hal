@@ -15,5 +15,5 @@
 //
 
 vts_config {
-    name: "VtsHalRenderscriptV1_0TargetProfiling",
+    name: "VtsHalAtraceV1_0Target",
 }
