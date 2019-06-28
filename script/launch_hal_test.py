@@ -160,12 +160,5 @@ def main():
               args.hal_package_name)
         sys.exit(1)
 
-    if args.test_type == "host":
-        build_rule_gen = BuildRuleGen(
-            Constant.BP_WARNING_HEADER, args.package_root, args.path_root)
-        name_version = args.hal_package_name[len(args.package_root) + 1:]
-        build_rule_gen.UpdateHalDirBuildRule(
-            [name_version.split('@')], args.test_config_dir)
-
 if __name__ == '__main__':
     main()
