@@ -24,7 +24,7 @@
     </target_preparer>
     <test class="com.android.tradefed.testtype.AndroidJUnitTest">
         <option name="package" value="com.android.devicehealth.tests"/>
-        <option name="runner" value="android.support.test.runner.AndroidJUnitRunner"/>
+        <option name="runner" value="androidx.test.runner.AndroidJUnitRunner"/>
     </test>
     <include name="CtsTelephonyTestCases.config"/>
 </configuration>
