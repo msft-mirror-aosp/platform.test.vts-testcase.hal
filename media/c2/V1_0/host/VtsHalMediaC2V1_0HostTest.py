@@ -18,6 +18,7 @@
 import copy
 import logging
 import time
+import argparse
 
 from vts.runners.host import asserts
 from vts.runners.host import keys
@@ -91,9 +92,19 @@ class VtsHalMediaC2V1_0Host(hal_hidl_gtest.HidlHalGTest):
                                                                         tag)
         test_cases = []
 
+        instance_parser = argparse.ArgumentParser()
+        instance_parser.add_argument('--hal_service_instance', type=str)
+
         for gtest_case in gtest_cases:
             test_suite = gtest_case.full_name
+            args = instance_parser.parse_args(gtest_case.args.split())
+            if args.hal_service_instance:
+                instance_name = args.hal_service_instance[args.hal_service_instance.rfind('/')+1:]
+            else:
+                continue
             for component in self.components:
+                if instance_name != component['owner']:
+                    continue
                 if self.AUDIO_ENC_TEST in test_suite and \
                     (component['domain'] != 2 or component['kind'] != 2):
                     continue
