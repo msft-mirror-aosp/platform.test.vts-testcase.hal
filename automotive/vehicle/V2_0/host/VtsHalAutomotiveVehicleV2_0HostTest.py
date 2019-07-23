@@ -20,7 +20,6 @@ import time
 
 from vts.runners.host import asserts
 from vts.runners.host import const
-from vts.runners.host import keys
 from vts.runners.host import test_runner
 from vts.testcases.template.hal_hidl_host_test import hal_hidl_host_test
 
@@ -33,14 +32,15 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
     Attributes:
         _arrived: boolean, the flag of onPropertyEvent received.
         onPropertyEventCalled: integer, the number of onPropertyEvent received.
-        onPropertySetCalled: integer, the number of onPropertySet received.
         onPropertySetErrorCalled: integer, the number of onPropertySetError
         received.
+        DEVICE_TMP_DIR: string, target device's tmp directory path.
     """
 
     TEST_HAL_SERVICES = {
         VEHICLE_V2_0_HAL,
     }
+    DEVICE_TMP_DIR = "/data/local/tmp"
 
     def setUpClass(self):
         """Creates a mirror and init vehicle hal."""
@@ -66,12 +66,18 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         asserts.assertEqual(0x00ff0000, self.vtypes.VehiclePropertyType.MASK)
         asserts.assertEqual(0x0f000000, self.vtypes.VehicleArea.MASK)
 
-    def setUp(self):
-        super(VtsHalAutomotiveVehicleV2_0HostTest, self).setUp()
         self.propToConfig = {}
         for config in self.vehicle.getAllPropConfigs():
             self.propToConfig[config['prop']] = config
         self.configList = self.propToConfig.values()
+
+    def tearDownClass(self):
+        """Performs clean-up pushed file"""
+
+        cmd_results = self.shell.Execute("rm -rf %s" % self.DEVICE_TMP_DIR)
+        if not cmd_results or any(cmd_results[const.EXIT_CODE]):
+            logging.info("Failed to remove: %s", cmd_results)
+        super(VtsHalAutomotiveVehicleV2_0HostTest, self).tearDownClass()
 
     def testListProperties(self):
         """Checks whether some PropConfigs are returned.
@@ -314,6 +320,12 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
                                  vehiclePropValues)
                     self._arrived = True
 
+        def onPropertySetError(errorCode, propId, areaId):
+            logging.info(
+                "onPropertySetError, error: %d, prop: 0x%x, area: 0x%x",
+                errorCode, propId, areaId)
+            self._arrived = True
+
         for c in self.configList:
             if (c["access"] != self.vtypes.VehiclePropertyAccess.READ_WRITE or
             c["changeMode"] != self.vtypes.VehiclePropertyChangeMode.ON_CHANGE or
@@ -328,6 +340,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             callback = self.vehicle.GetHidlCallbackInterface(
                 "IVehicleCallback",
                 onPropertyEvent=onPropertyEvent,
+                onPropertySetError=onPropertySetError
             )
             subscribeOption = {
                 "propId": prop,
@@ -336,7 +349,9 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             }
             pbSubscribeOption = self.vtypes.Py2Pb("SubscribeOptions",
                                                   subscribeOption)
-            self.vehicle.subscribe(callback, [pbSubscribeOption])
+            statusCode = self.vehicle.subscribe(callback, [pbSubscribeOption])
+            asserts.assertEqual(statusCode, 0,
+                "Must successfully subscribe to property 0x%x" % prop)
 
             # Change value of properties
             for area in c["areaConfigs"]:
@@ -355,20 +370,20 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
                     logging.warning("Set value failed for Property 0x%x" % prop)
                     continue
 
-                # Check PropertyEvent is received in 250ms
-                waitingTime = 0.25
+                # Check callback is received in 5 second
+                waitingTime = 5
                 checkTimes = 5
                 for _ in xrange(checkTimes):
                     if self._arrived:
                         logging.info(
-                            "PropertyEvent for Property: 0x%x is received" %
+                            "callback for Property: 0x%x is received" %
                             prop)
                         break
                     time.sleep(waitingTime/checkTimes)
 
                 if not self._arrived:
                     asserts.fail(
-                        "PropertyEvent is not received in 250ms for Property: 0x%x"
+                        "callback is not received in 5 seconds for Property: 0x%x"
                         % prop)
                 self.vehicle.unsubscribe(callback, prop)
 
@@ -441,9 +456,9 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         for c in self.configList:
             # Continuous properties need to have a sampling frequency.
             if c["changeMode"] == self.vtypes.VehiclePropertyChangeMode.CONTINUOUS:
-                asserts.assertLess(
-                    0.0, c["minSampleRate"],
-                    "minSampleRate should be > 0. Config list: %s" % c)
+                asserts.assertTrue(
+                     c["minSampleRate"] >= 0.0 ,
+                    "minSampleRate should be >= 0. Config list: %s" % c)
                 asserts.assertLess(
                     0.0, c["maxSampleRate"],
                     "maxSampleRate should be > 0. Config list: %s" % c)
@@ -453,6 +468,11 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
 
             if c["prop"] & self.vtypes.VehiclePropertyType.BOOLEAN != 0:
                 # Boolean types don't have ranges
+                continue
+
+            if (c["access"] != self.vtypes.VehiclePropertyAccess.READ_WRITE and
+                c["access"] != self.vtypes.VehiclePropertyAccess.READ):
+                # Skip the test if properties are not readable.
                 continue
 
             if c["prop"] in enumProperties:
@@ -530,7 +550,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             supported, val = self.getValueIfPropSupported(prop)
             if supported:
                 asserts.assertEqual(str, type(val), "prop: 0x%x" % prop)
-                asserts.assertLess(0, (len(val)), "prop: 0x%x" % prop)
+                asserts.assertTrue(0 <= (len(val)), "prop: 0x%x" % prop)
 
     def testGlobalFloatProperties(self):
         """Verifies that values of global float properties are in the correct range"""
@@ -544,7 +564,6 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             self.vtypes.VehicleProperty.PERF_STEERING_ANGLE : (-180, 180),  # degrees
             self.vtypes.VehicleProperty.PERF_ODOMETER : (0, 1000000),  # km
             self.vtypes.VehicleProperty.INFO_FUEL_CAPACITY : (0, 1000000),  # milliliter
-            self.vtypes.VehicleProperty.INFO_MODEL_YEAR : (1901, 2101),  # year
         }
 
         for prop, validRange in floatProperties.iteritems():
@@ -653,7 +672,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         self.assertLessOrEqual(value, rangeEnd, msg)
 
     def getPropConfig(self, propertyId):
-        return self.propToConfig[propertyId]
+        return self.propToConfig.get(propertyId)
+
 
     def isPropSupported(self, propertyId):
         return self.getPropConfig(propertyId) is not None
@@ -664,17 +684,11 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         This also tests an HIDL async callback.
         """
         self.onPropertyEventCalled = 0
-        self.onPropertySetCalled = 0
         self.onPropertySetErrorCalled = 0
 
         def onPropertyEvent(vehiclePropValues):
             logging.info("onPropertyEvent received: %s", vehiclePropValues)
             self.onPropertyEventCalled += 1
-
-        def onPropertySet(vehiclePropValue):
-            logging.info("onPropertySet notification received: %s",
-                         vehiclePropValue)
-            self.onPropertySetCalled += 1
 
         def onPropertySetError(erroCode, propId, areaId):
             logging.info(
@@ -703,28 +717,27 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             callback = self.vehicle.GetHidlCallbackInterface(
                 "IVehicleCallback",
                 onPropertyEvent=onPropertyEvent,
-                onPropertySet=onPropertySet,
                 onPropertySetError=onPropertySetError)
 
             subscribeOptions = {
                 "propId": self.vtypes.VehicleProperty.ENGINE_OIL_TEMP,
-                "sampleRate": 10.0,  # Hz
+                "sampleRate": 1.0,  # Hz
                 "flags": self.vtypes.SubscribeFlags.EVENTS_FROM_CAR,
             }
             pbSubscribeOptions = self.vtypes.Py2Pb("SubscribeOptions",
                                                    subscribeOptions)
 
-            self.vehicle.subscribe(callback, [pbSubscribeOptions])
+            statusCode = self.vehicle.subscribe(callback, [pbSubscribeOptions])
+            if statusCode != 0:
+                asserts.fail("Can not register ENGINE_OIL_TEMP")
+
             for _ in range(5):
                 if (self.onPropertyEventCalled > 0
-                        or self.onPropertySetCalled > 0
                         or self.onPropertySetErrorCalled > 0):
                     self.vehicle.unsubscribe(
                         callback, self.vtypes.VehicleProperty.ENGINE_OIL_TEMP)
                     return
                 time.sleep(1)
-            self.vehicle.unsubscribe(
-                callback, self.vtypes.VehicleProperty.ENGINE_OIL_TEMP)
             asserts.fail("Callback not called in 5 seconds.")
 
     def getDiagnosticSupportInfo(self):
