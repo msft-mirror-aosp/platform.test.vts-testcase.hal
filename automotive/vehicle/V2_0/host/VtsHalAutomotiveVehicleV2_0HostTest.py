@@ -24,7 +24,7 @@ from vts.runners.host import test_runner
 from vts.testcases.template.hal_hidl_host_test import hal_hidl_host_test
 
 VEHICLE_V2_0_HAL = "android.hardware.automotive.vehicle@2.0::IVehicle"
-
+DBG = False
 
 class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
     """A simple testcase for the VEHICLE HIDL HAL.
@@ -48,7 +48,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
 
         results = self.shell.Execute("id -u system")
         system_uid = results[const.STDOUT][0].strip()
-        logging.info("system_uid: %s", system_uid)
+        if DBG:
+            logging.info("system_uid: %s", system_uid)
 
         self.dut.hal.InitHidlHal(
             target_type="vehicle",
@@ -62,7 +63,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         self.vehicle = self.dut.hal.vehicle  # shortcut
         self.vehicle.SetCallerUid(system_uid)
         self.vtypes = self.dut.hal.vehicle.GetHidlTypeInterface("types")
-        logging.info("vehicle types: %s", self.vtypes)
+        if DBG:
+            logging.info("vehicle types: %s", self.vtypes)
         asserts.assertEqual(0x00ff0000, self.vtypes.VehiclePropertyType.MASK)
         asserts.assertEqual(0x0f000000, self.vtypes.VehicleArea.MASK)
 
@@ -75,7 +77,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         """Performs clean-up pushed file"""
 
         cmd_results = self.shell.Execute("rm -rf %s" % self.DEVICE_TMP_DIR)
-        if not cmd_results or any(cmd_results[const.EXIT_CODE]):
+        if not cmd_results or any(cmd_results[const.EXIT_CODE]) and DBG:
             logging.info("Failed to remove: %s", cmd_results)
         super(VtsHalAutomotiveVehicleV2_0HostTest, self).tearDownClass()
 
@@ -85,7 +87,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         Verifies that call to getAllPropConfigs is not failing and
         it returns at least 1 vehicle property config.
         """
-        logging.info("all supported properties: %s", self.configList)
+        if DBG:
+            logging.info("all supported properties: %s", self.configList)
         asserts.assertLess(0, len(self.configList))
 
     def emptyValueProperty(self, propertyId, areaId=0):
@@ -127,12 +130,14 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         """
         vp = self.vtypes.Py2Pb("VehiclePropValue",
                                self.emptyValueProperty(propertyId, areaId))
-        logging.info("0x%x get request: %s", propertyId, vp)
+        if DBG:
+            logging.info("0x%x get request: %s", propertyId, vp)
         status, value = self.vehicle.get(vp)
-        logging.info("0x%x get response: %s, %s", propertyId, status, value)
+        if DBG:
+            logging.info("0x%x get response: %s, %s", propertyId, status, value)
         if self.vtypes.StatusCode.OK == status:
             return value
-        else:
+        if DBG:
             logging.warning("attempt to read property 0x%x returned error %d",
                             propertyId, status)
 
@@ -156,9 +161,11 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
                 else:
                     propValue["value"][k].extend(value[k])
         vp = self.vtypes.Py2Pb("VehiclePropValue", propValue)
-        logging.info("0x%x set request: %s", propertyId, vp)
+        if DBG:
+            logging.info("0x%x set request: %s", propertyId, vp)
         status = self.vehicle.set(vp)
-        logging.info("0x%x set response: %s", propertyId, status)
+        if DBG:
+            logging.info("0x%x set response: %s", propertyId, status)
         if 0 == expectedStatus:
             expectedStatus = self.vtypes.StatusCode.OK
         asserts.assertEqual(expectedStatus, status, "Prop 0x%x" % propertyId)
@@ -221,7 +228,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         hvacPowerOnConfig = self.propToConfig[
             self.vtypes.VehicleProperty.HVAC_POWER_ON]
         if hvacPowerOnConfig is None:
-            logging.info("HVAC_POWER_ON not supported")
+            if DBG:
+                logging.info("HVAC_POWER_ON not supported")
             return
 
         zones = self.extractZonesAsList(hvacPowerOnConfig['supportedAreas'])
@@ -246,9 +254,11 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             self.vtypes.Py2Pb("VehicleProperty",
                               self.vtypes.VehicleProperty.HVAC_POWER_ON)
         ]
-        logging.info("HVAC power on config request: %s", requestConfig)
+        if DGB:
+            logging.info("HVAC power on config request: %s", requestConfig)
         responseConfig = self.vehicle.getPropConfigs(requestConfig)
-        logging.info("HVAC power on config response: %s", responseConfig)
+        if DBG:
+            logging.info("HVAC power on config response: %s", responseConfig)
         hvacTypes = set([
             self.vtypes.VehicleProperty.HVAC_FAN_SPEED,
             self.vtypes.VehicleProperty.HVAC_FAN_DIRECTION,
@@ -316,14 +326,16 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         def onPropertyEvent(vehiclePropValues):
             for vp in vehiclePropValues:
                 if vp["prop"] & self.vtypes.VehiclePropertyType.BOOLEAN != 0:
-                    logging.info("onPropertyEvent received: %s",
-                                 vehiclePropValues)
+                    if DBG:
+                        logging.info("onPropertyEvent received: %s",
+                                     vehiclePropValues)
                     self._arrived = True
 
         def onPropertySetError(errorCode, propId, areaId):
-            logging.info(
-                "onPropertySetError, error: %d, prop: 0x%x, area: 0x%x",
-                errorCode, propId, areaId)
+            if DBG:
+                logging.info(
+                    "onPropertySetError, error: %d, prop: 0x%x, area: 0x%x",
+                    errorCode, propId, areaId)
             self._arrived = True
 
         for c in self.configList:
@@ -367,7 +379,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
                 vp = self.vtypes.Py2Pb("VehiclePropValue", propValue)
                 status = self.vehicle.set(vp)
                 if status != 0:
-                    logging.warning("Set value failed for Property 0x%x" % prop)
+                    if DBG:
+                        logging.warning("Set value failed for Property 0x%x" % prop)
                     continue
 
                 # Check callback is received in 5 second
@@ -375,9 +388,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
                 checkTimes = 5
                 for _ in xrange(checkTimes):
                     if self._arrived:
-                        logging.info(
-                            "callback for Property: 0x%x is received" %
-                            prop)
+                        if DBG:
+                            logging.info("callback for Property: 0x%x is received" % prop)
                         break
                     time.sleep(waitingTime/checkTimes)
 
@@ -687,18 +699,20 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
         self.onPropertySetErrorCalled = 0
 
         def onPropertyEvent(vehiclePropValues):
-            logging.info("onPropertyEvent received: %s", vehiclePropValues)
+            if DBG:
+                logging.info("onPropertyEvent received: %s", vehiclePropValues)
             self.onPropertyEventCalled += 1
 
         def onPropertySetError(erroCode, propId, areaId):
-            logging.info(
-                "onPropertySetError, error: %d, prop: 0x%x, area: 0x%x",
-                erroCode, prop, area)
+            if DBG:
+                logging.info(
+                    "onPropertySetError, error: %d, prop: 0x%x, area: 0x%x",
+                    erroCode, prop, area)
             self.onPropertySetErrorCalled += 1
 
         config = self.getPropConfig(
             self.vtypes.VehicleProperty.ENGINE_OIL_TEMP)
-        if (config is None):
+        if (config is None) and DBG:
             logging.info("ENGINE_OIL_TEMP property is not supported")
             return  # Property not supported, we are done here.
 
@@ -706,14 +720,16 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             self.vtypes.VehicleProperty.ENGINE_OIL_TEMP)
         asserts.assertEqual(1, len(propValue['value']['floatValues']))
         oilTemp = propValue['value']['floatValues'][0]
-        logging.info("Current oil temperature: %f C", oilTemp)
+        if DBG:
+            logging.info("Current oil temperature: %f C", oilTemp)
         asserts.assertLess(oilTemp, 200)  # Check it is in reasinable range
         asserts.assertLess(-50, oilTemp)
 
         if (config["changeMode"] ==
                 self.vtypes.VehiclePropertyChangeMode.CONTINUOUS):
-            logging.info(
-                "ENGINE_OIL_TEMP is continuous property, subscribing...")
+            if DBG:
+                logging.info(
+                    "ENGINE_OIL_TEMP is continuous property, subscribing...")
             callback = self.vehicle.GetHidlCallbackInterface(
                 "IVehicleCallback",
                 onPropertyEvent=onPropertyEvent,
@@ -876,7 +892,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             checkRead()
         else:
             # live frame not supported by this HAL implementation. done
-            logging.info("OBD2_LIVE_FRAME not supported.")
+            if DBG:
+                logging.info("OBD2_LIVE_FRAME not supported.")
 
     def testReadObd2FreezeFrameInfo(self):
         """Test that one can read the list of OBD2 freeze timestamps."""
@@ -887,7 +904,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             checkRead()
         else:
             # freeze frame info not supported by this HAL implementation. done
-            logging.info("OBD2_FREEZE_FRAME_INFO not supported.")
+            if DBG:
+                logging.info("OBD2_FREEZE_FRAME_INFO not supported.")
 
     def testReadValidObd2FreezeFrame(self):
         """Test that one can read the OBD2 freeze frame data."""
@@ -924,7 +942,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
                 freezeCheckRead()
         else:
             # freeze frame not supported by this HAL implementation. done
-            logging.info("OBD2_FREEZE_FRAME and _INFO not supported.")
+            if DBG:
+                logging.info("OBD2_FREEZE_FRAME and _INFO not supported.")
 
     def testReadInvalidObd2FreezeFrame(self):
         """Test that trying to read freeze frame at invalid timestamps
@@ -953,7 +972,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
                 freezeCheckRead()
         else:
             # freeze frame not supported by this HAL implementation. done
-            logging.info("OBD2_FREEZE_FRAME not supported.")
+            if DBG:
+                logging.info("OBD2_FREEZE_FRAME not supported.")
 
     def testClearValidObd2FreezeFrame(self):
         """Test that deleting a diagnostic freeze frame works.
@@ -1010,7 +1030,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
                 checkRead()
         else:
             # freeze frame not supported by this HAL implementation. done
-            logging.info("OBD2_FREEZE_FRAME, _CLEAR and _INFO not supported.")
+            if DBG:
+                logging.info("OBD2_FREEZE_FRAME, _CLEAR and _INFO not supported.")
 
     def testClearInvalidObd2FreezeFrame(self):
         """Test that deleting an invalid freeze frame behaves correctly."""
@@ -1041,7 +1062,8 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
                 checkWrite()
         else:
             # freeze frame not supported by this HAL implementation. done
-            logging.info("OBD2_FREEZE_FRAME_CLEAR not supported.")
+            if DBG:
+                logging.info("OBD2_FREEZE_FRAME_CLEAR not supported.")
 
 
 if __name__ == "__main__":
