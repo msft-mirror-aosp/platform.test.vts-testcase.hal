@@ -26,8 +26,6 @@
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalPowerV1_2TargetTest/VtsHalPowerV1_2TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="binary-test-disable-framework" value="true"/>
-        <option name="binary-test-stop-native-servers" value="true"/>
-        <option name="precondition-lshal" value="android.hardware.power@1.2"/>
         <option name="test-timeout" value="1m"/>
     </test>
 </configuration>
