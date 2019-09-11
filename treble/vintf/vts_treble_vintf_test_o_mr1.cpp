@@ -90,7 +90,7 @@ class VtsTrebleVintfTest : public ::testing::Test {
   }
 
   // Applies given function to each HAL instance in VINTF.
-  void ForEachHalInstance(HalVerifyFn);
+  void ForEachHidlHalInstance(HalVerifyFn);
   // Retrieves an existing HAL service.
   sp<android::hidl::base::V1_0::IBase> GetHalService(
       const FQName &fq_name, const string &instance_name);
@@ -103,8 +103,11 @@ class VtsTrebleVintfTest : public ::testing::Test {
   std::shared_ptr<const HalManifest> vendor_manifest_;
 };
 
-void VtsTrebleVintfTest::ForEachHalInstance(HalVerifyFn fn) {
+void VtsTrebleVintfTest::ForEachHidlHalInstance(HalVerifyFn fn) {
   vendor_manifest_->forEachInstance([fn](const auto &manifest_instance) {
+    if (manifest_instance.format() != HalFormat::HIDL) {
+      return true;  // continue to next instance
+    }
     const FQName fq_name{manifest_instance.package(),
                          to_string(manifest_instance.version()),
                          manifest_instance.interface()};
@@ -130,7 +133,7 @@ sp<android::hidl::base::V1_0::IBase> VtsTrebleVintfTest::GetHalService(
   string fq_iface_name = fq_name.string();
   cout << "Getting service of: " << fq_iface_name << endl;
 
-  Transport transport = vendor_manifest_->getTransport(
+  Transport transport = vendor_manifest_->getHidlTransport(
       hal_name, version, iface_name, instance_name);
 
   return VtsTrebleVintfTestBase::GetHalService(fq_name, instance_name,
@@ -149,7 +152,7 @@ TEST_F(VtsTrebleVintfTest, HalsAreBinderized) {
                     fq_name.getPackageMinorVersion()};
     string iface_name = fq_name.name();
 
-    Transport transport = vendor_manifest_->getTransport(
+    Transport transport = vendor_manifest_->getHidlTransport(
         hal_name, version, iface_name, instance_name);
 
     EXPECT_NE(transport, Transport::EMPTY)
@@ -161,7 +164,7 @@ TEST_F(VtsTrebleVintfTest, HalsAreBinderized) {
     }
   };
 
-  ForEachHalInstance(is_binderized);
+  ForEachHidlHalInstance(is_binderized);
 }
 
 // Tests that all HALs specified in the VINTF are available through service
@@ -181,7 +184,7 @@ TEST_F(VtsTrebleVintfTest, VintfHalsAreServed) {
                                     << " not available." << endl;
   };
 
-  ForEachHalInstance(is_available);
+  ForEachHidlHalInstance(is_available);
 }
 
 // Tests that HAL interfaces are officially released.
@@ -241,7 +244,7 @@ TEST_F(VtsTrebleVintfTest, InterfacesAreReleased) {
     }
   };
 
-  ForEachHalInstance(is_released);
+  ForEachHidlHalInstance(is_released);
 }
 
 }  // namespace legacy
