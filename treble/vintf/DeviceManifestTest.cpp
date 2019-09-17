@@ -87,9 +87,9 @@ TEST_F(DeviceManifestTest, GnssHalVersionCompatibility) {
   ASSERT_EQ(shipping_fcm_version, q_fcm_version)
       << "Unsupported Shipping FCM Verson " << shipping_fcm_version;
 
-  bool has_default_gnss_1_0 = vendor_manifest_->hasInstance(
+  bool has_default_gnss_1_0 = vendor_manifest_->hasHidlInstance(
       "android.hardware.gnss", {1, 0}, "IGnss", "default");
-  bool has_default_gnss_2_0 = vendor_manifest_->hasInstance(
+  bool has_default_gnss_2_0 = vendor_manifest_->hasHidlInstance(
       "android.hardware.gnss", {2, 0}, "IGnss", "default");
   ASSERT_EQ(has_default_gnss_1_0, has_default_gnss_2_0)
       << "Devices launched with Android Q must support both gnss@2.0"
@@ -109,9 +109,9 @@ TEST_F(DeviceManifestTest, ThermalHalVersionCompatibility) {
     GTEST_SKIP();
   }
 
-  bool has_default_thermal_1_0 = vendor_manifest_->hasInstance(
+  bool has_default_thermal_1_0 = vendor_manifest_->hasHidlInstance(
       "android.hardware.thermal", {1, 0}, "IThermal", "default");
-  bool has_default_thermal_2_0 = vendor_manifest_->hasInstance(
+  bool has_default_thermal_2_0 = vendor_manifest_->hasHidlInstance(
       "android.hardware.thermal", {2, 0}, "IThermal", "default");
   ASSERT_EQ(has_default_thermal_1_0, has_default_thermal_2_0)
       << "Devices launched with Android R must support both thermal@2.0"
