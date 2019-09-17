@@ -159,9 +159,9 @@ static sp<IBase> GetPassthroughService(const FqInstance &fq_instance) {
 // VINTF.
 TEST_P(SingleManifestTest, HalsAreBinderized) {
   multimap<Transport, FqInstance> instances;
-  ForEachHalInstance(GetParam(), [&instances](const FQName &fq_name,
-                                              const string &instance_name,
-                                              Transport transport) {
+  ForEachHidlHalInstance(GetParam(), [&instances](const FQName &fq_name,
+                                                  const string &instance_name,
+                                                  Transport transport) {
     FqInstance fqInstance;
     ASSERT_TRUE(fqInstance.setTo(
         fq_name.package(), fq_name.getPackageMajorVersion(),
@@ -309,8 +309,8 @@ TEST_P(SingleManifestTest, HalsAreServed) {
   };
 
   auto manifest = GetParam();
-  ForEachHalInstance(manifest,
-                     is_available_from(PartitionOfType(manifest->type())));
+  ForEachHidlHalInstance(manifest,
+                         is_available_from(PartitionOfType(manifest->type())));
 }
 
 // Tests that all HALs which are served are specified in the VINTF
@@ -390,7 +390,7 @@ TEST_P(SingleManifestTest, ServedPassthroughHalsAreInManifest) {
         });
     EXPECT_TRUE(ret.isOk());
   };
-  ForEachHalInstance(manifest, passthrough_interfaces_declared);
+  ForEachHidlHalInstance(manifest, passthrough_interfaces_declared);
 }
 
 // Tests that HAL interfaces are officially released.
@@ -452,7 +452,7 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
     }
   };
 
-  ForEachHalInstance(GetParam(), is_released);
+  ForEachHidlHalInstance(GetParam(), is_released);
 }
 
 }  // namespace testing
