@@ -84,9 +84,12 @@ void VtsTrebleVintfTestBase::SetUp() {
       << "Failed to get default service manager." << endl;
 }
 
-void VtsTrebleVintfTestBase::ForEachHalInstance(const HalManifestPtr &manifest,
-                                                HalVerifyFn fn) {
+void VtsTrebleVintfTestBase::ForEachHidlHalInstance(
+    const HalManifestPtr &manifest, HalVerifyFn fn) {
   manifest->forEachInstance([manifest, fn](const auto &manifest_instance) {
+    if (manifest_instance.format() != HalFormat::HIDL) {
+      return true;  // continue to next instance
+    }
     const FQName fq_name{manifest_instance.package(),
                          to_string(manifest_instance.version()),
                          manifest_instance.interface()};
@@ -205,7 +208,7 @@ set<string> VtsTrebleVintfTestBase::GetPassthroughHals(
       ADD_FAILURE() << "Unrecognized transport: " << transport;
     }
   };
-  ForEachHalInstance(manifest, add_manifest_hals);
+  ForEachHidlHalInstance(manifest, add_manifest_hals);
   return manifest_passthrough_hals_;
 }
 
@@ -230,7 +233,7 @@ set<string> VtsTrebleVintfTestBase::GetHwbinderHals(HalManifestPtr manifest) {
       ADD_FAILURE() << "Unrecognized transport: " << transport;
     }
   };
-  ForEachHalInstance(manifest, add_manifest_hals);
+  ForEachHidlHalInstance(manifest, add_manifest_hals);
   return manifest_hwbinder_hals_;
 }
 
