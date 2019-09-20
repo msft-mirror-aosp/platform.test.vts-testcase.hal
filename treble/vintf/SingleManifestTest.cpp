@@ -17,6 +17,7 @@
 #include "SingleManifestTest.h"
 
 #include <android-base/strings.h>
+#include <binder/IServiceManager.h>
 #include <gmock/gmock.h>
 #include <hidl-util/FqInstance.h>
 #include <hidl/HidlTransportUtils.h>
@@ -248,7 +249,8 @@ TEST_P(SingleManifestTest, HalsAreBinderized) {
 TEST_P(SingleManifestTest, HalsAreServed) {
   // Returns a function that verifies that HAL is available through service
   // manager and is served from a specific set of partitions.
-  auto is_available_from = [this](Partition expected_partition) -> HalVerifyFn {
+  auto is_available_from =
+      [this](Partition expected_partition) -> HidlVerifyFn {
     return [this, expected_partition](const FQName &fq_name,
                                       const string &instance_name,
                                       Transport transport) {
@@ -397,9 +399,9 @@ TEST_P(SingleManifestTest, ServedPassthroughHalsAreInManifest) {
 TEST_P(SingleManifestTest, InterfacesAreReleased) {
   // Verifies that HAL are released by fetching the hash of the interface and
   // comparing it to the set of known hashes of released interfaces.
-  HalVerifyFn is_released = [](const FQName &fq_name,
-                               const string &instance_name,
-                               Transport transport) {
+  HidlVerifyFn is_released = [](const FQName &fq_name,
+                                const string &instance_name,
+                                Transport transport) {
     // See HalsAreServed. These are always retrieved through the base interface
     // and if it is not a google defined interface, it must be an extension of
     // one.
@@ -453,6 +455,22 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
   };
 
   ForEachHidlHalInstance(GetParam(), is_released);
+}
+
+// An AIDL HAL with VINTF stability can only be registered if it is in the
+// manifest. However, we still must manually check that every declared HAL is
+// actually present on the device.
+TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
+  AidlVerifyFn expect_available = [](const string &package,
+                                     const string &interface,
+                                     const string &instance) {
+    const std::string name = package + "." + interface + "/" + instance;
+    sp<IBinder> binder =
+        defaultServiceManager()->waitForService(String16(name.c_str()));
+    EXPECT_NE(binder, nullptr) << "Failed to get " << name;
+  };
+
+  ForEachAidlHalInstance(GetParam(), expect_available);
 }
 
 }  // namespace testing
