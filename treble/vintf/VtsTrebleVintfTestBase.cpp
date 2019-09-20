@@ -85,7 +85,7 @@ void VtsTrebleVintfTestBase::SetUp() {
 }
 
 void VtsTrebleVintfTestBase::ForEachHidlHalInstance(
-    const HalManifestPtr &manifest, HalVerifyFn fn) {
+    const HalManifestPtr &manifest, HidlVerifyFn fn) {
   manifest->forEachInstance([manifest, fn](const auto &manifest_instance) {
     if (manifest_instance.format() != HalFormat::HIDL) {
       return true;  // continue to next instance
@@ -102,6 +102,28 @@ void VtsTrebleVintfTestBase::ForEachHidlHalInstance(
     std::future_status status = future_result.wait_for(timeout);
     if (status != std::future_status::ready) {
       cout << "Timed out on: " << fq_name.string() << " " << instance_name
+           << endl;
+    }
+    return true;  // continue to next instance
+  });
+}
+
+void VtsTrebleVintfTestBase::ForEachAidlHalInstance(
+    const HalManifestPtr &manifest, AidlVerifyFn fn) {
+  manifest->forEachInstance([manifest, fn](const auto &manifest_instance) {
+    if (manifest_instance.format() != HalFormat::AIDL) {
+      return true;  // continue to next instance
+    }
+    const std::string &package = manifest_instance.package();
+    const std::string &interface = manifest_instance.interface();
+    const std::string &instance = manifest_instance.instance();
+
+    auto future_result =
+        std::async([&]() { fn(package, interface, instance); });
+    auto timeout = std::chrono::seconds(1);
+    std::future_status status = future_result.wait_for(timeout);
+    if (status != std::future_status::ready) {
+      cout << "Timed out on: " << package << "." << interface << "/" << instance
            << endl;
     }
     return true;  // continue to next instance

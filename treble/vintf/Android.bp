@@ -21,6 +21,7 @@ cc_defaults {
     ],
     shared_libs: [
         "libbase",
+        "libbinder",
         "libcutils",
         "libhidlbase",
         "libhidltransport",
