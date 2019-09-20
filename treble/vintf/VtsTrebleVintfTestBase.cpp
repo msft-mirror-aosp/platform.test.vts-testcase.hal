@@ -155,13 +155,7 @@ sp<IBase> VtsTrebleVintfTestBase::GetHalService(const string &fq_name,
     return getRawServiceInternal(fq_name, instance_name, true /* retry */,
                                  false /* getStub */);
   });
-  auto max_time = std::chrono::milliseconds(500);
-
-  // TODO(b/114157425): remove once android.hardware.renderscript@1.0-impl.so
-  // dlopen time reduced to normal level
-  if (fq_name == "android.hardware.renderscript@1.0::IDevice") {
-    max_time = std::chrono::seconds(1);
-  }
+  auto max_time = std::chrono::seconds(1);
 
   std::future<sp<IBase>> future = task.get_future();
   std::thread(std::move(task)).detach();

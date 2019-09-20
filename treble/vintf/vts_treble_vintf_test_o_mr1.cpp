@@ -114,7 +114,7 @@ void VtsTrebleVintfTest::ForEachHidlHalInstance(HidlVerifyFn fn) {
     const std::string instance_name = manifest_instance.instance();
 
     auto future_result = std::async([&]() { fn(fq_name, instance_name); });
-    auto timeout = std::chrono::milliseconds(500);
+    auto timeout = std::chrono::seconds(1);
     std::future_status status = future_result.wait_for(timeout);
     if (status != std::future_status::ready) {
       cout << "Timed out on: " << fq_name.string() << " " << instance_name
