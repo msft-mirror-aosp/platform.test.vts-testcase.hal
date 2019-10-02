@@ -14,6 +14,7 @@
      limitations under the License.
 -->
 <configuration description="Config for vts_treble_vintf_vendor_test">
+    <target_preparer class="com.android.tradefed.targetprep.RootTargetPreparer"/>
     <target_preparer class="com.android.tradefed.targetprep.PushFilePreparer">
         <option name="cleanup" value="true" />
         <option name="push" value="vts_treble_vintf_vendor_test->/data/local/tmp/vts_treble_vintf_vendor_test" />
