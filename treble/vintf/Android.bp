@@ -21,9 +21,9 @@ cc_defaults {
     ],
     shared_libs: [
         "libbase",
+        "libbinder",
         "libcutils",
         "libhidlbase",
-        "libhidltransport",
         "liblog",
         "libutils",
         "libz",
@@ -42,7 +42,13 @@ cc_defaults {
         "VtsTrebleVintfTestBase.cpp",
         "utils.cpp",
         "main.cpp",
-    ]
+    ],
+    data: [
+        ":android.hardware",
+        ":android.frameworks",
+        ":android.system",
+        ":android.hidl",
+    ],
 }
 
 // Do similar tests as vts_treble_vintf_test from O-MR1 vendor image branch. The
@@ -50,6 +56,9 @@ cc_defaults {
 // VendorFrameworkCompatibility is removed because it has framework dependency.
 cc_test {
     name: "vts_treble_vintf_test_o_mr1",
+    //Use test_config for vts-core suite.
+    test_config: "vts_treble_vintf_test_o_mr1.xml",
+    test_suites: ["vts-core"],
     defaults: ["vts_treble_vintf_test_defaults"],
     srcs: [
         "vts_treble_vintf_test_o_mr1.cpp",
@@ -60,6 +69,9 @@ cc_test {
 // has no system XML dependencies.
 cc_test {
     name: "vts_treble_vintf_vendor_test",
+    //Use test_config for vts-core suite.
+    test_config: "vts_treble_vintf_vendor_test.xml",
+    test_suites: ["vts-core", "device-tests"],
     defaults: ["vts_treble_vintf_test_defaults"],
     srcs: [
         "DeviceManifestTest.cpp",
@@ -72,6 +84,9 @@ cc_test {
 // test the current framework.
 cc_test {
     name: "vts_treble_vintf_framework_test",
+    //Use test_config for vts-core suite.
+    test_config: "vts_treble_vintf_framework_test.xml",
+    test_suites: ["vts-core", "device-tests"],
     defaults: ["vts_treble_vintf_test_defaults"],
     srcs: [
         "SingleManifestTest.cpp",
