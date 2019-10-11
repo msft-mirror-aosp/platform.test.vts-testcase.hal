@@ -60,7 +60,7 @@ using std::map;
 using std::set;
 using std::string;
 using std::vector;
-using HalVerifyFn =
+using HidlVerifyFn =
     std::function<void(const FQName &fq_name, const string &instance_name)>;
 
 // Returns true iff HAL interface is exempt from following rules:
@@ -90,7 +90,7 @@ class VtsTrebleVintfTest : public ::testing::Test {
   }
 
   // Applies given function to each HAL instance in VINTF.
-  void ForEachHalInstance(HalVerifyFn);
+  void ForEachHidlHalInstance(HidlVerifyFn);
   // Retrieves an existing HAL service.
   sp<android::hidl::base::V1_0::IBase> GetHalService(
       const FQName &fq_name, const string &instance_name);
@@ -103,15 +103,18 @@ class VtsTrebleVintfTest : public ::testing::Test {
   std::shared_ptr<const HalManifest> vendor_manifest_;
 };
 
-void VtsTrebleVintfTest::ForEachHalInstance(HalVerifyFn fn) {
+void VtsTrebleVintfTest::ForEachHidlHalInstance(HidlVerifyFn fn) {
   vendor_manifest_->forEachInstance([fn](const auto &manifest_instance) {
+    if (manifest_instance.format() != HalFormat::HIDL) {
+      return true;  // continue to next instance
+    }
     const FQName fq_name{manifest_instance.package(),
                          to_string(manifest_instance.version()),
                          manifest_instance.interface()};
     const std::string instance_name = manifest_instance.instance();
 
     auto future_result = std::async([&]() { fn(fq_name, instance_name); });
-    auto timeout = std::chrono::milliseconds(500);
+    auto timeout = std::chrono::seconds(1);
     std::future_status status = future_result.wait_for(timeout);
     if (status != std::future_status::ready) {
       cout << "Timed out on: " << fq_name.string() << " " << instance_name
@@ -130,7 +133,7 @@ sp<android::hidl::base::V1_0::IBase> VtsTrebleVintfTest::GetHalService(
   string fq_iface_name = fq_name.string();
   cout << "Getting service of: " << fq_iface_name << endl;
 
-  Transport transport = vendor_manifest_->getTransport(
+  Transport transport = vendor_manifest_->getHidlTransport(
       hal_name, version, iface_name, instance_name);
 
   return VtsTrebleVintfTestBase::GetHalService(fq_name, instance_name,
@@ -141,15 +144,15 @@ sp<android::hidl::base::V1_0::IBase> VtsTrebleVintfTest::GetHalService(
 // VINTF.
 TEST_F(VtsTrebleVintfTest, HalsAreBinderized) {
   // Verifies that HAL is binderized unless it's allowed to be passthrough.
-  HalVerifyFn is_binderized = [this](const FQName &fq_name,
-                                     const string &instance_name) {
+  HidlVerifyFn is_binderized = [this](const FQName &fq_name,
+                                      const string &instance_name) {
     cout << "Verifying transport method of: " << fq_name.string() << endl;
     string hal_name = fq_name.package();
     Version version{fq_name.getPackageMajorVersion(),
                     fq_name.getPackageMinorVersion()};
     string iface_name = fq_name.name();
 
-    Transport transport = vendor_manifest_->getTransport(
+    Transport transport = vendor_manifest_->getHidlTransport(
         hal_name, version, iface_name, instance_name);
 
     EXPECT_NE(transport, Transport::EMPTY)
@@ -161,15 +164,15 @@ TEST_F(VtsTrebleVintfTest, HalsAreBinderized) {
     }
   };
 
-  ForEachHalInstance(is_binderized);
+  ForEachHidlHalInstance(is_binderized);
 }
 
 // Tests that all HALs specified in the VINTF are available through service
 // manager.
 TEST_F(VtsTrebleVintfTest, VintfHalsAreServed) {
   // Verifies that HAL is available through service manager.
-  HalVerifyFn is_available = [this](const FQName &fq_name,
-                                    const string &instance_name) {
+  HidlVerifyFn is_available = [this](const FQName &fq_name,
+                                     const string &instance_name) {
     if (IsExempt(fq_name)) {
       cout << fq_name.string() << " is exempt for O-MR1 vendor." << endl;
       return;
@@ -181,15 +184,15 @@ TEST_F(VtsTrebleVintfTest, VintfHalsAreServed) {
                                     << " not available." << endl;
   };
 
-  ForEachHalInstance(is_available);
+  ForEachHidlHalInstance(is_available);
 }
 
 // Tests that HAL interfaces are officially released.
 TEST_F(VtsTrebleVintfTest, InterfacesAreReleased) {
   // Verifies that HAL are released by fetching the hash of the interface and
   // comparing it to the set of known hashes of released interfaces.
-  HalVerifyFn is_released = [this](const FQName &fq_name,
-                                   const string &instance_name) {
+  HidlVerifyFn is_released = [this](const FQName &fq_name,
+                                    const string &instance_name) {
     sp<android::hidl::base::V1_0::IBase> hal_service =
         GetHalService(fq_name, instance_name);
 
@@ -241,7 +244,7 @@ TEST_F(VtsTrebleVintfTest, InterfacesAreReleased) {
     }
   };
 
-  ForEachHalInstance(is_released);
+  ForEachHidlHalInstance(is_released);
 }
 
 }  // namespace legacy
