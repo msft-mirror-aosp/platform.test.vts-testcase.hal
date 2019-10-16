@@ -51,20 +51,6 @@ cc_defaults {
     ],
 }
 
-// Do similar tests as vts_treble_vintf_test from O-MR1 vendor image branch. The
-// test is modified to compile against latest libvintf.
-// VendorFrameworkCompatibility is removed because it has framework dependency.
-cc_test {
-    name: "vts_treble_vintf_test_o_mr1",
-    //Use test_config for vts-core suite.
-    test_config: "vts_treble_vintf_test_o_mr1.xml",
-    test_suites: ["vts-core"],
-    defaults: ["vts_treble_vintf_test_defaults"],
-    srcs: [
-        "vts_treble_vintf_test_o_mr1.cpp",
-    ],
-}
-
 // Test vendor image that has the highest target FCM version. This test binary
 // has no system XML dependencies.
 cc_test {
