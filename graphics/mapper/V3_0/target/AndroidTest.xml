@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2017 The Android Open Source Project
+<!-- Copyright (C) 2019 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -13,20 +13,20 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<configuration description="Config for VTS VtsHalGnssV1_1Target test cases">
+<configuration description="Config for VTS VtsHalGraphicsMapperV3_0Target test cases">
     <option name="config-descriptor:metadata" key="plan" value="vts-hal" />
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
         <option name="abort-on-push-failure" value="false"/>
         <option name="push-group" value="HalHidlTargetTest.push"/>
     </target_preparer>
-    <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer" />
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
-        <option name="test-module-name" value="VtsHalGnssV1_1Target"/>
-        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalGnssV1_1TargetTest/VtsHalGnssV1_1TargetTest"/>
-        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalGnssV1_1TargetTest/VtsHalGnssV1_1TargetTest"/>
+        <option name="test-module-name" value="VtsHalGraphicsMapperV3_0Target"/>
+        <option name="binary-test-working-directory" value="_32bit::/data/nativetest/" />
+        <option name="binary-test-working-directory" value="_64bit::/data/nativetest64/" />
+        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalGraphicsMapperV3_0TargetTest/VtsHalGraphicsMapperV3_0TargetTest"/>
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalGraphicsMapperV3_0TargetTest/VtsHalGraphicsMapperV3_0TargetTest"/>
         <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="binary-test-disable-framework" value="true"/>
-        <option name="binary-test-stop-native-servers" value="true"/>
-        <option name="test-timeout" value="15m"/>
+        <option name="test-timeout" value="5m"/>
     </test>
 </configuration>
