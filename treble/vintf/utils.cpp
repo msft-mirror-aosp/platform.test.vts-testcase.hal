@@ -35,6 +35,12 @@ const string kDataDir = "/data/local/tmp/";
 // Name of file containing HAL hashes.
 const string kHashFileName = "current.txt";
 
+// Name of automotive device flag.
+const string kAutomotive = "automotive";
+
+// Name of Vehicl HAL interface.
+const string kVehicleHAL = "android.hardware.automotive.vehicle@2.0::IVehicle";
+
 // Map from package name to package root.
 const map<string, string> kPackageRoot = {
     {"android.frameworks", "frameworks/hardware/interfaces/"},
@@ -103,6 +109,13 @@ const string PackageRoot(const FQName &fq_iface_name) {
 bool IsAndroidPlatformInterface(const FQName &fq_iface_name) {
   // Package roots are only known for Android platform packages.
   return !PackageRoot(fq_iface_name).empty();
+}
+
+// Returns true iff HAL interface is Vehicle HAL and the device is
+// a automotive device.
+bool IsVehiclHalInterfaceInAutomotiveDevice(const FQName &fq_iface_name) {
+  return fq_iface_name.string() == kVehicleHAL &&
+         android::base::GetProperty("ro.hardware.type", "") == kAutomotive;
 }
 
 // Returns the set of released hashes for a given HAL interface.
