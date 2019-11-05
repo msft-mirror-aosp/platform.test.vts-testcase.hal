@@ -254,7 +254,7 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             self.vtypes.Py2Pb("VehicleProperty",
                               self.vtypes.VehicleProperty.HVAC_POWER_ON)
         ]
-        if DGB:
+        if DBG:
             logging.info("HVAC power on config request: %s", requestConfig)
         responseConfig = self.vehicle.getPropConfigs(requestConfig)
         if DBG:
@@ -1065,6 +1065,75 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             if DBG:
                 logging.info("OBD2_FREEZE_FRAME_CLEAR not supported.")
 
+    def testVendorPermission(self):
+        """Verfies SUPPORT_CUSTOMIZE_VENDOR_PERMISSION property"""
+        config = self.getPropConfig(
+            self.vtypes.VehicleProperty.SUPPORT_CUSTOMIZE_VENDOR_PERMISSION)
+        if (config is None) and DBG:
+            logging.info("SUPPORT_CUSTOMIZE_VENDOR_PERMISSION is not supported")
+            return
+        configArray = config["configArray"]
+
+        asserts.assertEqual(0, len(configArray) % 3)
+        index = 0;
+        while index < len(configArray):
+            propId = configArray[index]
+            index += 1
+            # only vendor properties can have vendor permissions
+            asserts.assertTrue(self.isVendorProperty(propId), "0x%X not a vendor property" % propId)
+
+            readPermission = configArray[index]
+            index += 1
+            writePermission = configArray[index]
+            index += 1
+            asserts.assertTrue(self.checkVendorPermissonConfig(readPermission, writePermission),
+                                "permissions for 0x%X are not valid vendor permissions" % propId)
+
+    def checkVendorPermissonConfig(self, readPermission, writePermission):
+        permissions = set([
+          self.vtypes.VehicleVendorPermission.PERMISSION_DEFAULT,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_WINDOW,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_WINDOW,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_DOOR,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_DOOR,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_SEAT,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_SEAT,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_MIRROR,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_MIRROR,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_INFO,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_INFO,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_ENGINE,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_ENGINE,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_HVAC,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_HVAC,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_LIGHT,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_LIGHT,
+
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_1,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_1,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_2,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_2,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_3,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_3,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_4,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_4,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_5,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_5,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_6,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_6,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_7,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_7,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_8,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_8,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_9,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_9,
+          self.vtypes.VehicleVendorPermission.PERMISSION_SET_VENDOR_CATEGORY_10,
+          self.vtypes.VehicleVendorPermission.PERMISSION_GET_VENDOR_CATEGORY_10,
+          self.vtypes.VehicleVendorPermission.PERMISSION_NOT_ACCESSIBLE])
+        return (readPermission in permissions) and (writePermission in permissions)
+
+    def isVendorProperty(self, propId):
+        return (propId & self.vtypes.VehiclePropertyGroup.MASK) == self.vtypes.VehiclePropertyGroup.VENDOR
 
 if __name__ == "__main__":
     test_runner.main()
