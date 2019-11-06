@@ -95,6 +95,10 @@ const string PackageRoot(const FQName& fq_iface_name);
 // Returns true iff HAL interface is Android platform.
 bool IsAndroidPlatformInterface(const FQName& fq_iface_name);
 
+// Returns true iff HAL interface is Vehicle HAL and the device is
+// a automotive device.
+bool IsVehiclHalInterfaceInAutomotiveDevice(const FQName& fq_iface_name);
+
 // Returns the set of released hashes for a given HAL interface.
 set<string> ReleasedHashes(const FQName& fq_iface_name);
 
