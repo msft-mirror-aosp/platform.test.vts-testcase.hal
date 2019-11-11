@@ -444,7 +444,8 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
         FailureHashMissing(fq_iface_name);
       }
 
-      if (IsAndroidPlatformInterface(fq_iface_name)) {
+      if (IsAndroidPlatformInterface(fq_iface_name) &&
+          !IsVehiclHalInterfaceInAutomotiveDevice(fq_iface_name)) {
         set<string> released_hashes = ReleasedHashes(fq_iface_name);
         EXPECT_NE(released_hashes.find(hash), released_hashes.end())
             << "Hash not found. This interface was not released." << endl
