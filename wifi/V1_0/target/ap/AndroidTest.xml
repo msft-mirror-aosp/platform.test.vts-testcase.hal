@@ -23,7 +23,7 @@
         <option name="test-module-name" value="VtsHalWifiApV1_0Target"/>
         <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalWifiApV1_0TargetTest/VtsHalWifiApV1_0TargetTest" />
         <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalWifiApV1_0TargetTest/VtsHalWifiApV1_0TargetTest" />
-        <option name="binary-test-type" value="hal_hidl_gtest"/>
+        <option name="binary-test-type" value="gtest"/>
         <option name="binary-test-disable-framework" value="true"/>
         <option name="precondition-lshal" value="android.hardware.wifi.hostapd@1.0"/>
         <option name="test-timeout" value="10m"/>
