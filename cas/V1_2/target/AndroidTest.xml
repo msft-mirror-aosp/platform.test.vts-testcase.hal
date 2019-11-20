@@ -13,18 +13,19 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<configuration description="Config for VTS VtsHalStatsV1_0Target test cases">
-    <option key="plan" name="config-descriptor:metadata" value="vts-hal"/>
+<configuration description="Config for VTS VtsHalCasV1_2Target test cases">
+    <option name="config-descriptor:metadata" key="plan" value="vts-hal" />
     <target_preparer class="com.android.compatibility.common.tradefed.targetprep.VtsFilePusher">
         <option name="abort-on-push-failure" value="false"/>
         <option name="push-group" value="HalHidlTargetTest.push"/>
     </target_preparer>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
-        <option name="test-module-name" value="VtsHalStatsV1_0Target"/>
-        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalStatsV1_0TargetTest/VtsHalStatsV1_0TargetTest"/>
-        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalStatsV1_0TargetTest/VtsHalStatsV1_0TargetTest"/>
-        <option name="binary-test-type" value="gtest"/>
+        <option name="test-module-name" value="VtsHalCasV1_2Target"/>
+        <option name="binary-test-source" value="_32bit::DATA/nativetest/VtsHalCasV1_2TargetTest/VtsHalCasV1_2TargetTest"/>
+        <option name="binary-test-source" value="_64bit::DATA/nativetest64/VtsHalCasV1_2TargetTest/VtsHalCasV1_2TargetTest"/>
+        <option name="binary-test-type" value="hal_hidl_gtest"/>
         <option name="binary-test-disable-framework" value="true"/>
+        <option name="exclude-coverage-path" value="frameworks/av/media" />
         <option name="test-timeout" value="1m"/>
     </test>
-  </configuration>
+</configuration>
