@@ -105,6 +105,24 @@ bool IsAndroidPlatformInterface(const FQName &fq_iface_name) {
   return !PackageRoot(fq_iface_name).empty();
 }
 
+// Returns true iff the device has the specified feature.
+bool DeviceSupportsFeature(const char *feature) {
+  bool device_supports_feature = false;
+  FILE *p = popen("pm list features", "re");
+  if (p) {
+    char *line = NULL;
+    size_t len = 0;
+    while (getline(&line, &len, p) > 0) {
+      if (strstr(line, feature)) {
+        device_supports_feature = true;
+        break;
+      }
+    }
+    pclose(p);
+  }
+  return device_supports_feature;
+}
+
 // Returns the set of released hashes for a given HAL interface.
 set<string> ReleasedHashes(const FQName &fq_iface_name) {
   set<string> released_hashes{};
