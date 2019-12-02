@@ -46,12 +46,18 @@ void FailureHalMissing(const FQName &fq_name) {
   }
 }
 
-void FailureHashMissing(const FQName &fq_name) {
+void FailureHashMissing(const FQName &fq_name,
+                        bool vehicle_hal_in_automotive_device) {
   if (LegacyAndExempt(fq_name)) {
     cout << "[  WARNING ] " << fq_name.string()
          << " has an empty hash but is exempted because it is legacy. It is "
             "still recommended to fix this. This is because it was compiled "
             "without being frozen in a corresponding current.txt file."
+         << endl;
+  } else if (vehicle_hal_in_automotive_device) {
+    cout << "[  WARNING ] " << fq_name.string()
+         << " has an empty hash but is exempted because it is IVehicle in an"
+            "automotive device."
          << endl;
   } else {
     ADD_FAILURE()
@@ -239,6 +245,9 @@ TEST_P(SingleManifestTest, ServedPassthroughHalsAreInManifest) {
 
 // Tests that HAL interfaces are officially released.
 TEST_P(SingleManifestTest, InterfacesAreReleased) {
+  // Device support automotive features.
+  const static bool automotive_device =
+      DeviceSupportsFeature("android.hardware.type.automotive");
   // Verifies that HAL are released by fetching the hash of the interface and
   // comparing it to the set of known hashes of released interfaces.
   HalVerifyFn is_released = [](const FQName &fq_name,
@@ -282,11 +291,16 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
       }
       string hash = hash_chain[i];
 
+      bool vehicle_hal_in_automotive_device =
+          automotive_device &&
+          fq_iface_name.string() ==
+              "android.hardware.automotive.vehicle@2.0::IVehicle";
       if (hash == Hash::hexString(Hash::kEmptyHash)) {
-        FailureHashMissing(fq_iface_name);
+        FailureHashMissing(fq_iface_name, vehicle_hal_in_automotive_device);
       }
 
-      if (IsGoogleDefinedIface(fq_iface_name)) {
+      if (IsGoogleDefinedIface(fq_iface_name) &&
+          !vehicle_hal_in_automotive_device) {
         set<string> released_hashes = ReleasedHashes(fq_iface_name);
         EXPECT_NE(released_hashes.find(hash), released_hashes.end())
             << "Hash not found. This interface was not released." << endl
