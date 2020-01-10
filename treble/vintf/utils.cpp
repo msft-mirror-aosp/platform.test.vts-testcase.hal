@@ -66,17 +66,21 @@ const set<string> kPassthroughHals = {
 //    Y = 11,
 //    Z = 11
 const map<size_t /* Shipping API Level */, Level /* FCM Version */>
-    kFcm2ApiLevelMap{{// N. The test runs on devices that launch with N and
-                      // become a Treble device when upgrading to O.
-                      {25, static_cast<Level>(1)},
-                      // O
-                      {26, static_cast<Level>(1)},
-                      // O MR-1
-                      {27, static_cast<Level>(2)},
-                      // P
-                      {28, static_cast<Level>(3)},
-                      // Q
-                      {29, static_cast<Level>(4)}}};
+    kFcm2ApiLevelMap{{
+        // N. The test runs on devices that launch with N and
+        // become a Treble device when upgrading to O.
+        {25, static_cast<Level>(1)},
+        // O
+        {26, static_cast<Level>(1)},
+        // O MR-1
+        {27, static_cast<Level>(2)},
+        // P
+        {28, static_cast<Level>(3)},
+        // Q
+        {29, static_cast<Level>(4)},
+        // R
+        {30, static_cast<Level>(5)},
+    }};
 
 // Returns ro.product.first_api_level if it is defined and not 0. Returns
 // ro.build.version.sdk otherwise.
