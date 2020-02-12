@@ -47,17 +47,17 @@ void FailureHalMissing(const FQName &fq_name) {
 }
 
 void FailureHashMissing(const FQName &fq_name,
-                        bool vehicle_hal_in_automotive_device) {
+                        bool is_exempted_hal) {
   if (LegacyAndExempt(fq_name)) {
     cout << "[  WARNING ] " << fq_name.string()
          << " has an empty hash but is exempted because it is legacy. It is "
             "still recommended to fix this. This is because it was compiled "
             "without being frozen in a corresponding current.txt file."
          << endl;
-  } else if (vehicle_hal_in_automotive_device) {
+  } else if (is_exempted_hal) {
     cout << "[  WARNING ] " << fq_name.string()
-         << " has an empty hash but is exempted because it is IVehicle in an"
-            "automotive device."
+         << " has an empty hash but is exempted because its testing is exempted "
+            "in automotive device."
          << endl;
   } else {
     ADD_FAILURE()
@@ -291,16 +291,19 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
       }
       string hash = hash_chain[i];
 
-      bool vehicle_hal_in_automotive_device =
+      bool exempted_hal_in_automotive_device =
           automotive_device &&
-          fq_iface_name.string() ==
-              "android.hardware.automotive.vehicle@2.0::IVehicle";
+          (fq_iface_name.string() ==
+              "android.hardware.automotive.vehicle@2.0::IVehicle" ||
+           fq_iface_name.string() ==
+              "android.hardware.automotive.evs@1.0::IEvsEnumerator");
       if (hash == Hash::hexString(Hash::kEmptyHash)) {
-        FailureHashMissing(fq_iface_name, vehicle_hal_in_automotive_device);
+        FailureHashMissing(fq_iface_name,
+                           exempted_hal_in_automotive_device);
       }
 
       if (IsGoogleDefinedIface(fq_iface_name) &&
-          !vehicle_hal_in_automotive_device) {
+          !exempted_hal_in_automotive_device) {
         set<string> released_hashes = ReleasedHashes(fq_iface_name);
         EXPECT_NE(released_hashes.find(hash), released_hashes.end())
             << "Hash not found. This interface was not released." << endl
