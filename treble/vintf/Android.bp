@@ -29,6 +29,7 @@ cc_defaults {
         "libz",
     ],
     static_libs: [
+        "libaidlmetadata",
         "libgmock",
         "libhidl-gen-hash",
         "libhidl-gen-utils",
@@ -57,7 +58,10 @@ cc_test {
     name: "vts_treble_vintf_vendor_test",
     //Use test_config for vts-core suite.
     test_config: "vts_treble_vintf_vendor_test.xml",
-    test_suites: ["vts-core", "device-tests"],
+    test_suites: [
+        "vts-core",
+        "device-tests",
+    ],
     defaults: ["vts_treble_vintf_test_defaults"],
     srcs: [
         "DeviceManifestTest.cpp",
@@ -72,7 +76,10 @@ cc_test {
     name: "vts_treble_vintf_framework_test",
     //Use test_config for vts-core suite.
     test_config: "vts_treble_vintf_framework_test.xml",
-    test_suites: ["vts-core", "device-tests"],
+    test_suites: [
+        "vts-core",
+        "device-tests",
+    ],
     defaults: ["vts_treble_vintf_test_defaults"],
     srcs: [
         "SingleManifestTest.cpp",
