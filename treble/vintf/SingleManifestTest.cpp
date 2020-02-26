@@ -16,8 +16,11 @@
 
 #include "SingleManifestTest.h"
 
+#include <aidl/metadata.h>
 #include <android-base/strings.h>
 #include <binder/IServiceManager.h>
+#include <binder/Parcel.h>
+#include <binder/Status.h>
 #include <gmock/gmock.h>
 #include <hidl-util/FqInstance.h>
 #include <hidl/HidlTransportUtils.h>
@@ -471,6 +474,35 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
   ForEachHidlHalInstance(GetParam(), is_released);
 }
 
+static std::vector<std::string> hashesForInterface(const std::string &name) {
+  for (const auto &module : AidlInterfaceMetadata::all()) {
+    if (std::find(module.types.begin(), module.types.end(), name) !=
+        module.types.end()) {
+      return module.hashes;
+    }
+  }
+  return {};
+}
+
+// TODO(b/150155678): using standard code to do this
+static std::string getInterfaceHash(const sp<IBinder> &binder) {
+  Parcel data;
+  Parcel reply;
+  data.writeInterfaceToken(binder->getInterfaceDescriptor());
+  status_t err =
+      binder->transact(IBinder::LAST_CALL_TRANSACTION - 1, data, &reply, 0);
+  if (err == UNKNOWN_TRANSACTION) {
+    // TODO(149952131): make sure all interfaces have hashes
+    return "<unknown transaction>";
+  }
+  binder::Status status;
+  EXPECT_EQ(OK, status.readFromParcel(reply));
+  EXPECT_TRUE(status.isOk()) << status.toString8().c_str();
+  std::string str;
+  EXPECT_EQ(OK, reply.readUtf8FromUtf16(&str));
+  return str;
+}
+
 // An AIDL HAL with VINTF stability can only be registered if it is in the
 // manifest. However, we still must manually check that every declared HAL is
 // actually present on the device.
@@ -478,10 +510,23 @@ TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
   AidlVerifyFn expect_available = [](const string &package,
                                      const string &interface,
                                      const string &instance) {
-    const std::string name = package + "." + interface + "/" + instance;
+    const std::string type = package + "." + interface;
+    const std::string name = type + "/" + instance;
     sp<IBinder> binder =
         defaultServiceManager()->waitForService(String16(name.c_str()));
     EXPECT_NE(binder, nullptr) << "Failed to get " << name;
+
+    const std::string hash = getInterfaceHash(binder);
+    const std::vector<std::string> hashes = hashesForInterface(type);
+
+    if (hashes.empty()) {
+      std::cout << "[  WARNING ] NO HASHES FOUND FOR " << type << std::endl;
+      return;
+    }
+
+    EXPECT_TRUE(std::find(hashes.begin(), hashes.end(), hash) != hashes.end())
+        << "Interface " << name << " has an unrecognized hash: " << hash
+        << ". It must not be modified from source.";
   };
 
   ForEachAidlHalInstance(GetParam(), expect_available);
