@@ -16,6 +16,7 @@
 
 #include "DeviceManifestTest.h"
 
+#include <android-base/properties.h>
 #include <vintf/VintfObject.h>
 #include "SingleManifestTest.h"
 
@@ -90,6 +91,29 @@ TEST_F(DeviceManifestTest, GnssHalVersionCompatibility) {
   ASSERT_EQ(has_default_gnss_1_0, has_default_gnss_2_0)
       << "Devices launched with Android Q must support both gnss@2.0"
       << " and gnss@1.1 versions if gnss HAL package is present.";
+}
+
+// Tests that devices launching R support mapper@4.0.  Go devices are exempt
+// from this requirement, so we use this test to enforce instead of the
+// compatibility matrix.
+TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
+  const Level r_fcm_version = kFcm2ApiLevelMap.at(30 /* R API level */);
+  Level shipping_fcm_version = vendor_manifest_->level();
+  bool is_go_device =
+      android::base::GetBoolProperty("ro.config.low_ram", false);
+  if (shipping_fcm_version == Level::UNSPECIFIED ||
+      shipping_fcm_version < r_fcm_version || is_go_device) {
+    GTEST_SKIP() << "Gralloc4 is only required on launching R devices";
+  }
+
+  ASSERT_TRUE(vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.mapper", {4, 0}, "IMapper", "default"));
+  ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.mapper", {2, 0}, "IMapper", "default"));
+  ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.mapper", {2, 1}, "IMapper", "default"));
+  ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.mapper", {3, 0}, "IMapper", "default"));
 }
 
 // Tests that devices launching with R support thermal@2.0 or none.
