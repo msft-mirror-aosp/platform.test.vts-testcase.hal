@@ -72,20 +72,6 @@ TEST_F(DeviceManifestTest, NoDeprecatedHalsOnManifest) {
       << error;
 }
 
-TEST_F(DeviceManifestTest, NoUnusedHalsOnManifest) {
-  auto vintf_object = VintfObject::GetInstance();
-  auto device_manifest = vintf_object->getDeviceHalManifest();
-  ASSERT_NE(nullptr, device_manifest);
-  auto target_fcm = device_manifest->level();
-  if (target_fcm == Level::UNSPECIFIED ||
-      target_fcm < kFcm2ApiLevelMap.at(30 /* R API Level */)) {
-    GTEST_SKIP() << "Skip NoUnusedHals on Target FCM " << to_string(target_fcm);
-  }
-  auto hidl_metadata = HidlInterfaceMetadata::all();
-  auto result = VintfObject::GetInstance()->checkUnusedHals(hidl_metadata);
-  EXPECT_TRUE(result.ok()) << result.error();
-}
-
 static std::vector<HalManifestPtr> GetTestManifests() {
   return {
       VintfObject::GetDeviceHalManifest(),
