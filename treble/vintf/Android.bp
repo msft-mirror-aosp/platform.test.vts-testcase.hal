@@ -33,7 +33,6 @@ cc_defaults {
         "libgmock",
         "libhidl-gen-hash",
         "libhidl-gen-utils",
-        "libhidlmetadata",
         "libprocpartition",
         "libselinux",
         "libtinyxml2",
