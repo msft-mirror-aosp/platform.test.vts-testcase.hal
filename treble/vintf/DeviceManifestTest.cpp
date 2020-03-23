@@ -67,8 +67,7 @@ TEST_F(DeviceManifestTest, ShippingFcmVersion) {
 TEST_F(DeviceManifestTest, NoDeprecatedHalsOnManifest) {
   string error;
   EXPECT_EQ(android::vintf::NO_DEPRECATED_HALS,
-            VintfObject::GetInstance()->checkDeprecation(
-                HidlInterfaceMetadata::all(), &error))
+            VintfObject::CheckDeprecation(&error))
       << error;
 }
 
