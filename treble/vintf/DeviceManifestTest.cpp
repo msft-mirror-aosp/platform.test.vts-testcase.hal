@@ -67,51 +67,23 @@ TEST_F(DeviceManifestTest, ShippingFcmVersion) {
 TEST_F(DeviceManifestTest, NoDeprecatedHalsOnManifest) {
   string error;
   EXPECT_EQ(android::vintf::NO_DEPRECATED_HALS,
-            VintfObject::CheckDeprecation(&error))
+            VintfObject::GetInstance()->checkDeprecation(
+                HidlInterfaceMetadata::all(), &error))
       << error;
 }
 
-// Tests that devices launching with Q support both gnss@2.0 and gnss@1.1 HALs
-// or none. Since gnss@2.0 extends gnss@1.1, and there is no way in the VINTF
-// manifest to encode that if we have gnss@1.1, we must have gnss@2.0, we have
-// this test instead.
-TEST_F(DeviceManifestTest, GnssHalVersionCompatibility) {
-  const Level q_fcm_version = kFcm2ApiLevelMap.at(29 /* Q API level */);
-  Level shipping_fcm_version = vendor_manifest_->level();
-  if (shipping_fcm_version == Level::UNSPECIFIED ||
-      shipping_fcm_version < q_fcm_version) {
-    GTEST_SKIP();
+TEST_F(DeviceManifestTest, NoUnusedHalsOnManifest) {
+  auto vintf_object = VintfObject::GetInstance();
+  auto device_manifest = vintf_object->getDeviceHalManifest();
+  ASSERT_NE(nullptr, device_manifest);
+  auto target_fcm = device_manifest->level();
+  if (target_fcm == Level::UNSPECIFIED ||
+      target_fcm < kFcm2ApiLevelMap.at(30 /* R API Level */)) {
+    GTEST_SKIP() << "Skip NoUnusedHals on Target FCM " << to_string(target_fcm);
   }
-
-  bool has_default_gnss_1_0 = vendor_manifest_->hasHidlInstance(
-      "android.hardware.gnss", {1, 0}, "IGnss", "default");
-  bool has_default_gnss_2_0 = vendor_manifest_->hasHidlInstance(
-      "android.hardware.gnss", {2, 0}, "IGnss", "default");
-  ASSERT_EQ(has_default_gnss_1_0, has_default_gnss_2_0)
-      << "Devices launched with Android Q must support both gnss@2.0"
-      << " and gnss@1.1 versions if gnss HAL package is present.";
-}
-
-// Tests that devices launching with R support thermal@2.0 or none.
-// Since thermal@2.0 extends 1.0, this test is needed to workaround
-// VINTF_ENFORCE_NO_UNUSED_HALS.
-// TODO(b/121287858): Remove this test in R when this requirement is properly
-// supported. Otherwise, it needs to be updated to reflect R version changes.
-TEST_F(DeviceManifestTest, ThermalHalVersionCompatibility) {
-  const Level q_fcm_version = kFcm2ApiLevelMap.at(29 /* Q API level */);
-  Level shipping_fcm_version = vendor_manifest_->level();
-  if (shipping_fcm_version == Level::UNSPECIFIED ||
-      shipping_fcm_version <= q_fcm_version) {
-    GTEST_SKIP();
-  }
-
-  bool has_default_thermal_1_0 = vendor_manifest_->hasHidlInstance(
-      "android.hardware.thermal", {1, 0}, "IThermal", "default");
-  bool has_default_thermal_2_0 = vendor_manifest_->hasHidlInstance(
-      "android.hardware.thermal", {2, 0}, "IThermal", "default");
-  ASSERT_EQ(has_default_thermal_1_0, has_default_thermal_2_0)
-      << "Devices launched with Android R must support both thermal@2.0"
-      << " and thermal@1.0 versions if thermal HAL package is present.";
+  auto hidl_metadata = HidlInterfaceMetadata::all();
+  auto result = VintfObject::GetInstance()->checkUnusedHals(hidl_metadata);
+  EXPECT_TRUE(result.ok()) << result.error();
 }
 
 static std::vector<HalManifestPtr> GetTestManifests() {
