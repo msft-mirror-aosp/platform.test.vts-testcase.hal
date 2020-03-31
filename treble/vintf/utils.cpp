@@ -80,6 +80,8 @@ const map<size_t /* Shipping API Level */, Level /* FCM Version */>
         {29, static_cast<Level>(4)},
         // R
         {30, static_cast<Level>(5)},
+        // S
+        {31, static_cast<Level>(6)},
     }};
 
 // Returns ro.product.first_api_level if it is defined and not 0. Returns
