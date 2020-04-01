@@ -28,7 +28,7 @@ LOCAL_MULTILIB := both
 
 # TODO: This is from the CTS app. Figure out the proper way to do this in VTS.
 # Tag this module as a cts test artifact
-LOCAL_COMPATIBILITY_SUITE := cts vts vts10
+LOCAL_COMPATIBILITY_SUITE := cts vts10
 
 LOCAL_STATIC_JAVA_LIBRARIES := androidx.test.rules \
     compatibility-device-util-axt ctstestrunner-axt junit NeuralNetworksApiBenchmark_Lib
