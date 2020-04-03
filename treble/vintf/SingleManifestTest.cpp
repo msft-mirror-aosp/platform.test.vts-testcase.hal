@@ -17,6 +17,7 @@
 #include "SingleManifestTest.h"
 
 #include <aidl/metadata.h>
+#include <android-base/properties.h>
 #include <android-base/strings.h>
 #include <binder/IServiceManager.h>
 #include <binder/Parcel.h>
@@ -519,14 +520,23 @@ TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
     const std::string hash = getInterfaceHash(binder);
     const std::vector<std::string> hashes = hashesForInterface(type);
 
-    if (hashes.empty()) {
-      std::cout << "[  WARNING ] NO HASHES FOUND FOR " << type << std::endl;
-      return;
-    }
+    const bool is_release =
+        base::GetProperty("ro.build.version.codename", "") == "REL";
+    const bool found_hash =
+        std::find(hashes.begin(), hashes.end(), hash) != hashes.end();
 
-    EXPECT_TRUE(std::find(hashes.begin(), hashes.end(), hash) != hashes.end())
-        << "Interface " << name << " has an unrecognized hash: " << hash
-        << ". It must not be modified from source.";
+    if (!found_hash) {
+      if (is_release) {
+        ADD_FAILURE() << "Interface " << name
+                      << " has an unrecognized hash: " << hash
+                      << ". The following hashes are known:\n"
+                      << base::Join(hashes, '\n')
+                      << "\nHAL interfaces must be released and unchanged.";
+      } else {
+        std::cout << "INFO: using unfrozen hash " << hash << " for " << type
+                  << std::endl;
+      }
+    }
   };
 
   ForEachAidlHalInstance(GetParam(), expect_available);
