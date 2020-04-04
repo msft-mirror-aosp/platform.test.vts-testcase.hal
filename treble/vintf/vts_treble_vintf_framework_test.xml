@@ -25,7 +25,6 @@
         <option name="push" value="android.system.txt->/data/local/tmp/system/hardware/interfaces/current.txt"/>
         <option name="push" value="android.hidl.txt->/data/local/tmp/system/libhidl/transport/current.txt"/>
     </target_preparer>
-    <option name="test-suite-tag" value="vts-core" />
     <test class="com.android.tradefed.testtype.GTest" >
         <option name="native-test-device-path" value="/data/local/tmp" />
         <option name="module-name" value="vts_treble_vintf_framework_test" />
