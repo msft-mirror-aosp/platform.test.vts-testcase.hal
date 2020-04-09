@@ -29,6 +29,5 @@ java_test_host {
         "general-tests",
         "vts",
         "vts10",
-        "vts-core",
     ],
 }
