@@ -70,6 +70,11 @@ void FailureHashMissing(const FQName &fq_name,
          << " has an empty hash but is exempted because it is IVehicle in an"
             "automotive device."
          << endl;
+  } else if (base::GetProperty("ro.build.version.codename", "") != "REL") {
+    cout << "[  WARNING ] " << fq_name.string()
+         << " has an empty hash but is exempted because it is not a release "
+            "build"
+         << endl;
   } else {
     ADD_FAILURE()
         << fq_name.string()
@@ -459,10 +464,8 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
               "android.hardware.automotive.vehicle@2.0::IVehicle";
       if (hash == Hash::hexString(Hash::kEmptyHash)) {
         FailureHashMissing(fq_iface_name, vehicle_hal_in_automotive_device);
-      }
-
-      if (IsAndroidPlatformInterface(fq_iface_name) &&
-          !vehicle_hal_in_automotive_device) {
+      } else if (IsAndroidPlatformInterface(fq_iface_name) &&
+                 !vehicle_hal_in_automotive_device) {
         set<string> released_hashes = ReleasedHashes(fq_iface_name);
         EXPECT_NE(released_hashes.find(hash), released_hashes.end())
             << "Hash not found. This interface was not released." << endl
