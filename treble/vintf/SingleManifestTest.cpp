@@ -493,9 +493,9 @@ static std::string getInterfaceHash(const sp<IBinder> &binder) {
   status_t err =
       binder->transact(IBinder::LAST_CALL_TRANSACTION - 1, data, &reply, 0);
   if (err == UNKNOWN_TRANSACTION) {
-    // TODO(149952131): make sure all interfaces have hashes
-    return "<unknown transaction>";
+    return "";
   }
+  EXPECT_EQ(OK, err);
   binder::Status status;
   EXPECT_EQ(OK, status.readFromParcel(reply));
   EXPECT_TRUE(status.isOk()) << status.toString8().c_str();
@@ -520,23 +520,41 @@ TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
     const std::string hash = getInterfaceHash(binder);
     const std::vector<std::string> hashes = hashesForInterface(type);
 
+    const bool is_aosp = base::StartsWith(package, "android.");
     const bool is_release =
         base::GetProperty("ro.build.version.codename", "") == "REL";
     const bool found_hash =
         std::find(hashes.begin(), hashes.end(), hash) != hashes.end();
 
-    if (!found_hash) {
-      if (is_release) {
-        ADD_FAILURE() << "Interface " << name
-                      << " has an unrecognized hash: " << hash
-                      << ". The following hashes are known:\n"
-                      << base::Join(hashes, '\n')
-                      << "\nHAL interfaces must be released and unchanged.";
-      } else {
-        std::cout << "INFO: using unfrozen hash " << hash << " for " << type
-                  << std::endl;
+    if (is_aosp) {
+      if (!found_hash) {
+        if (is_release) {
+          ADD_FAILURE() << "Interface " << name
+                        << " has an unrecognized hash: '" << hash
+                        << "'. The following hashes are known:\n"
+                        << base::Join(hashes, '\n')
+                        << "\nHAL interfaces must be released and unchanged.";
+        } else {
+          std::cout << "INFO: using unfrozen hash '" << hash << "' for " << type
+                    << ". This will become an error upon release." << std::endl;
+        }
+      }
+    } else {
+      // is extension
+      //
+      // we only require that these are frozen, but we cannot check them for
+      // accuracy
+      if (hash.empty()) {
+        if (is_release) {
+          ADD_FAILURE() << "Interface " << name
+                        << " is used but not frozen (cannot find hash for it).";
+        } else {
+          std::cout << "INFO: missing hash for " << type
+                    << ". This will become an error upon release." << std::endl;
+        }
       }
     }
+
   };
 
   ForEachAidlHalInstance(GetParam(), expect_available);
