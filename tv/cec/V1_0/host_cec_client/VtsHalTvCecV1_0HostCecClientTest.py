@@ -118,6 +118,14 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
                 self.rebootDutAndRestartServices()
                 asserts.fail("addLogicalAddress() API failed")
 
+    def setSystemCecControl(self, value_to_be_set):
+        '''Set the SYSYEM_CEC_CONTROL flag.
+
+        Args:
+            value_to_be_set: Boolean value to which the flag is to be set.
+        '''
+        self.dut.hal.tv_cec.setOption(self.vtypes.OptionKey.SYSTEM_CEC_CONTROL, value_to_be_set)
+
     def testSendRandomMessage(self):
         """A test case which sends a random message and verifies that it has been sent on the
         CEC channel.
