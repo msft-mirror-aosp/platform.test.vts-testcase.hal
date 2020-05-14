@@ -62,6 +62,24 @@ TEST_F(DeviceManifestTest, ShippingFcmVersion) {
       << " (but is " << shipping_fcm_version << ")";
 }
 
+TEST_F(DeviceManifestTest, KernelFcmVersion) {
+  Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
+  Level kernel_fcm_version = VintfObject::GetRuntimeInfo()->kernelLevel();
+
+  if (shipping_fcm_version == Level::UNSPECIFIED ||
+      shipping_fcm_version < Level::R) {
+    GTEST_SKIP() << "Kernel FCM version not enforced on target FCM version "
+                 << shipping_fcm_version;
+  }
+  ASSERT_NE(Level::UNSPECIFIED, kernel_fcm_version)
+      << "Kernel FCM version must be specified for target FCM version "
+      << shipping_fcm_version;
+  ASSERT_GE(kernel_fcm_version, shipping_fcm_version)
+      << "Kernel FCM version " << kernel_fcm_version
+      << " must be greater or equal to target FCM version "
+      << shipping_fcm_version;
+}
+
 // Tests that deprecated HALs are not in the manifest, unless a higher,
 // non-deprecated minor version is in the manifest.
 TEST_F(DeviceManifestTest, NoDeprecatedHalsOnManifest) {
