@@ -81,9 +81,6 @@ extern const map<string, string> kPackageRoot;
 // HALs that are allowed to be passthrough under Treble rules.
 extern const set<string> kPassthroughHals;
 
-extern const map<size_t /* Shipping API Level */, Level /* FCM Version */>
-    kFcm2ApiLevelMap;
-
 // Returns ro.product.first_api_level if it is defined and not 0. Returns
 // ro.build.version.sdk otherwise.
 uint64_t GetShippingApiLevel();
