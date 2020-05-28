@@ -50,40 +50,6 @@ const set<string> kPassthroughHals = {
     "android.hidl.memory",
 };
 
-// kFcm2ApiLevelMap is associated with API level. There can be multiple
-// Framework Compatibility Matrix Version (FCM Version) per API level, or
-// multiple API levels per FCM version.
-// kFcm2ApiLevelMap is defined apart from android::vintf::Level. Level is an
-// integer designed to be irrelevant with API level; the O / O_MR1 values are
-// historic values for convenience, and should be removed (b/70628538). Hence
-// these values are not used here.
-// For example:
-//    ...
-//    // Assume devices launch with Android X must implement FCM version >= 9
-//    X = 9,
-//    // Assume devices launch with Android Y and Android Z must implement
-//    // FCM version >= 11
-//    Y = 11,
-//    Z = 11
-const map<size_t /* Shipping API Level */, Level /* FCM Version */>
-    kFcm2ApiLevelMap{{
-        // N. The test runs on devices that launch with N and
-        // become a Treble device when upgrading to O.
-        {25, static_cast<Level>(1)},
-        // O
-        {26, static_cast<Level>(1)},
-        // O MR-1
-        {27, static_cast<Level>(2)},
-        // P
-        {28, static_cast<Level>(3)},
-        // Q
-        {29, static_cast<Level>(4)},
-        // R
-        {30, static_cast<Level>(5)},
-        // S
-        {31, static_cast<Level>(6)},
-    }};
-
 // Returns ro.product.first_api_level if it is defined and not 0. Returns
 // ro.build.version.sdk otherwise.
 uint64_t GetShippingApiLevel() {

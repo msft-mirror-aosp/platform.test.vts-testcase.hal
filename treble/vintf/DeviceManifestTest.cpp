@@ -16,7 +16,10 @@
 
 #include "DeviceManifestTest.h"
 
+#include <android-base/result.h>
+#include <libvts_vintf_test_common/common.h>
 #include <vintf/VintfObject.h>
+
 #include "SingleManifestTest.h"
 
 namespace android {
@@ -35,31 +38,9 @@ void DeviceManifestTest::SetUp() {
 // minimum Shipping FCM Version as required by Shipping API level.
 TEST_F(DeviceManifestTest, ShippingFcmVersion) {
   uint64_t shipping_api_level = GetShippingApiLevel();
-  ASSERT_NE(shipping_api_level, 0u)
-      << "Device's shipping API level cannot be determined.";
-
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
-  if (shipping_fcm_version == Level::UNSPECIFIED) {
-    // O / O-MR1 vendor image doesn't have shipping FCM version declared and
-    // shipping FCM version is inferred from Shipping API level, hence it always
-    // meets the requirement.
-    return;
-  }
-
-  ASSERT_GE(shipping_api_level, kFcm2ApiLevelMap.begin()->first /* 25 */)
-      << "Pre-N devices should not run this test.";
-
-  auto it = kFcm2ApiLevelMap.find(shipping_api_level);
-  ASSERT_TRUE(it != kFcm2ApiLevelMap.end())
-      << "No launch requirement is set yet for Shipping API level "
-      << shipping_api_level << ". Please update the test.";
-
-  Level required_fcm_version = it->second;
-
-  ASSERT_GE(shipping_fcm_version, required_fcm_version)
-      << "Shipping API level == " << shipping_api_level
-      << " requires Shipping FCM Version >= " << required_fcm_version
-      << " (but is " << shipping_fcm_version << ")";
+  auto res = TestTargetFcmVersion(shipping_fcm_version, shipping_api_level);
+  ASSERT_RESULT_OK(res);
 }
 
 TEST_F(DeviceManifestTest, KernelFcmVersion) {
