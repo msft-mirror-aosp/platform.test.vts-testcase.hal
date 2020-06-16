@@ -194,5 +194,28 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         '''Add back the initial addresses'''
         self.clearAndAddLogicalAddress()
 
+    def testPowerQueryResponse(self):
+        """Test case which checks for HAL response to power query."""
+        logical_addresses = self.initial_addresses
+        src = hex(self.vtypes.CecLogicalAddress.RECORDER_1)[2:]
+        dst = logical_addresses[0]
+        power_status_on = 0x0
+        GIVE_DEVICE_POWER_STATUS = hex(self.vtypes.CecMessageType.GIVE_DEVICE_POWER_STATUS)[2:]
+        REPORT_POWER_STATUS = hex(self.vtypes.CecMessageType.REPORT_POWER_STATUS )[2:]
+
+        '''Set SYSTEM_CEC_CONTROL flag to false.'''
+        self.setSystemCecControl(False)
+        self.cec_utils.sendCecMessage(src, dst, GIVE_DEVICE_POWER_STATUS)
+        message = self.cec_utils.checkExpectedOutput(dst, src, REPORT_POWER_STATUS)
+        try:
+            asserts.assertNotEqual(message, None,
+                                   ", DUT did not respond to GIVE_DEVICE_POWER_STATUS CEC message")
+            status = self.cec_utils.getParamsFromMessage(message, 0, 2)
+            asserts.assertEqual(status, power_status_on,
+                                ", DUT responded to GIVE_DEVICE_POWER_STATUS with status as " +
+                                str(status) + ", expected 0")
+        finally:
+            self.setSystemCecControl(True)
+
 if __name__ == "__main__":
     test_runner.main()
