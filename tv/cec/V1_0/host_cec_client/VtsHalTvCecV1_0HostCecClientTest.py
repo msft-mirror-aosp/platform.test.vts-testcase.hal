@@ -96,7 +96,7 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
             List of logical addresses DUT has taken.
         '''
         address_list = []
-        for i in range(1,15):
+        for i in range(0,15):
             address = hex(i)[2:]
             '''Sending the poll message via Cec-client'''
             self.cec_utils.sendConsoleMessage("poll " + address)
@@ -123,7 +123,7 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         CEC channel.
         """
         src = self.vtypes.CecLogicalAddress.PLAYBACK_1
-        dst = self.vtypes.CecLogicalAddress.TV
+        dst = self.vtypes.CecLogicalAddress.RECORDER_1
         cec_message = {
             "initiator": src,
             "destination": dst,
