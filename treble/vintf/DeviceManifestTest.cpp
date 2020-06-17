@@ -18,6 +18,7 @@
 
 #include <android-base/result.h>
 #include <libvts_vintf_test_common/common.h>
+#include <android-base/properties.h>
 #include <vintf/VintfObject.h>
 
 #include "SingleManifestTest.h"
@@ -69,6 +70,26 @@ TEST_F(DeviceManifestTest, NoDeprecatedHalsOnManifest) {
             VintfObject::GetInstance()->checkDeprecation(
                 HidlInterfaceMetadata::all(), &error))
       << error;
+}
+
+// Tests that devices launching R support mapper@4.0.  Go devices are exempt
+// from this requirement, so we use this test to enforce instead of the
+// compatibility matrix.
+TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
+  Level shipping_fcm_version = vendor_manifest_->level();
+  bool is_go_device =
+      android::base::GetBoolProperty("ro.config.low_ram", false);
+  if (shipping_fcm_version == Level::UNSPECIFIED ||
+      shipping_fcm_version < Level::R || is_go_device) {
+    GTEST_SKIP() << "Gralloc4 is only required on launching R devices";
+  }
+
+  ASSERT_TRUE(vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.mapper", {4, 0}, "IMapper", "default"));
+  ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.mapper", {2, 0}, "IMapper", "default"));
+  ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.mapper", {2, 1}, "IMapper", "default"));
 }
 
 static std::vector<HalManifestPtr> GetTestManifests() {
