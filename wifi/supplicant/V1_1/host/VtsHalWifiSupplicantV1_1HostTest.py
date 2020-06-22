@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2017 The Android Open Source Project
+# Copyright (C) 2018 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,39 +22,33 @@ from vts.runners.host import test_runner
 from vts.testcases.template.hal_hidl_gtest import hal_hidl_gtest
 
 
-class VtsHalWifiV1_0Host(hal_hidl_gtest.HidlHalGTest):
-    """Host test class to run the WiFi V1.0 HAL's VTS tests."""
+class VtsHalWifiSupplicantV1_1Host(hal_hidl_gtest.HidlHalGTest):
+    """Host test class to run the WiFi Supplicant V1.0 HAL's VTS tests."""
 
-    WIFI_AWARE_FEATURE_NAME = "android.hardware.wifi.aware"
-    WIFI_SOFTAP_FEATURE_NAME = "android.hardware.wifi.hostapd"
+    WIFI_DIRECT_FEATURE_NAME = "android.hardware.wifi.direct"
 
     def CreateTestCases(self):
         """Get all registered test components and create test case objects."""
         pm_list = self.shell.Execute("pm list features")
-        self._nan_on = self.WIFI_AWARE_FEATURE_NAME in pm_list[const.STDOUT][0]
-        logging.info("Wifi NaN Feature Supported: %s", self._nan_on)
-        vintf_list = self.shell.Execute("grep android\\.hardware\\.wifi\\.hostapd /vendor/etc/vintf/manifest.xml")
-        self._softap_on = self.WIFI_SOFTAP_FEATURE_NAME in vintf_list[const.STDOUT][0]
-        logging.info("Wifi SoftAP Feature Supported: %s", self._softap_on)
-        super(VtsHalWifiV1_0Host, self).CreateTestCases()
+        self._p2p_on = self.WIFI_DIRECT_FEATURE_NAME in pm_list[const.STDOUT][0]
+        logging.info("Wifi P2P Feature Supported: %s", self._p2p_on)
+        super(VtsHalWifiSupplicantV1_1Host, self).CreateTestCases()
 
     # @Override
     def CreateTestCase(self, path, tag=''):
-        """Create a list of VtsHalWifiV1_0TestCase objects.
+        """Create a list of VtsHalWifiSupplicantV1_1TestCase objects.
 
         Args:
             path: string, absolute path of a gtest binary on device
             tag: string, a tag that will be appended to the end of test name
 
         Returns:
-            A list of VtsHalWifiV1_0TestCase objects
+            A list of VtsHalWifiSupplicantV1_1TestCase objects
         """
-        gtest_cases = super(VtsHalWifiV1_0Host, self).CreateTestCase(path, tag)
+        gtest_cases = super(VtsHalWifiSupplicantV1_1Host, self).CreateTestCase(path, tag)
         for gtest_case in gtest_cases:
-            if self._nan_on:
-                gtest_case.args += " --nan_on"
-            if self._softap_on:
-                gtest_case.args += " --softap_on"
+            if not self._p2p_on:
+                gtest_case.args += " --p2p_off"
         return gtest_cases
 
 
