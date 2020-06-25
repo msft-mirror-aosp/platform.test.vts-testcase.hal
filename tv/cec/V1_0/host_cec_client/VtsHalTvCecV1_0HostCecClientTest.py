@@ -173,6 +173,14 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         def on_hotplug_event(self, HotplugEvent):
             logging.info("Got a hotplug event")
 
+    def pollDutLogicalAddressAndCheckResponse(self):
+        """Send Poll messages to DUT logical addresses and check for the response."""
+        logical_addresses = self.initial_addresses
+        for address in logical_addresses:
+            self.cec_utils.sendConsoleMessage("poll " + address)
+            asserts.assertEqual(self.cec_utils.checkConsoleOutput("POLL sent"), True,
+                                ", DUT did not respond to POLL")
+
     def testSendRandomMessage(self):
         """A test case which sends a random message and verifies that it has been sent on the
         CEC channel.
@@ -248,6 +256,19 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
                 asserts.fail("clearLogicalAddress() API failed to clear the address")
         '''Add back the initial addresses'''
         self.clearAndAddLogicalAddress()
+
+    def testPollResponse_cecControlOff(self):
+        """Test that sends a POLL to the DUT's logical addresses and checks for acknowledgement.
+        """
+        # TODO: Remove skip after b/162912390 is resolved.
+        asserts.skip("Skip test (refer b/162912390).")
+        '''Set SYSTEM_CEC_CONTROL flag to false.'''
+        self.setSystemCecControl(False)
+        try:
+            self.pollDutLogicalAddressAndCheckResponse()
+        finally:
+            '''Set SYSTEM_CEC_CONTROL flag to true.'''
+            self.setSystemCecControl(True)
 
     def testPowerQueryResponse(self):
         """Test case which checks for HAL response to power query."""
