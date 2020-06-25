@@ -81,5 +81,32 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         operand = hex(131)[2:]
         asserts.assertNotEqual(self.cec_utils.checkExpectedOutput(src, dst, operand), None)
 
+    def testAddLogicalAddress(self):
+        """A test case that adds a logical address and validates it on cec-client console.
+        """
+        '''Clears the logical address'''
+        self.dut.hal.tv_cec.clearLogicalAddress()
+        '''Assumes that clearLogicalAddress is not faulty and has cleared the logical address'''
+        device_types = self.getDeviceTypes()
+        asserts.assertNotEqual(device_types, None, "Device types could not be determined")
+        for device_type in device_types:
+            '''The first logical address a DUT can take will be the same as the integer value
+            of device_type'''
+            result = self.dut.hal.tv_cec.addLogicalAddress(int(device_type))
+            try:
+                asserts.assertEqual(self.vtypes.Result.SUCCESS, result)
+            except:
+                self.rebootDutAndRestartServices()
+                asserts.fail("addLogicalAddress() API failed")
+            '''Sending the poll message via Cec-client'''
+            self.cec_utils.sendConsoleMessage("poll " + device_type)
+            '''POLL sent is proof of acknowledgement of the POLL message.'''
+            try:
+                asserts.assertEqual(self.cec_utils.checkConsoleOutput("POLL sent"),
+                                    True)
+            except:
+                self.rebootDutAndRestartServices()
+                asserts.fail("addLogicalAddress() API does not add the requested address")
+
 if __name__ == "__main__":
     test_runner.main()
