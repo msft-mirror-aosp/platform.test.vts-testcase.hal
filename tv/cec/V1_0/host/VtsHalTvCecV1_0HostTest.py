@@ -73,15 +73,18 @@ class TvCecHidlTest(hal_hidl_host_test.HalHidlHostTest):
         logging.info("sendMessage result: %s", result)
 
     def testGetCecVersion1(self):
-        """A simple test case which queries the cec version."""
+        """A simple test case which queries the cec version and validates its response."""
         version = self.dut.hal.tv_cec.getCecVersion()
         logging.info("getCecVersion version: %s", version)
+        '''The value 5 represents CEC version 1.4'''
+        asserts.assertEqual(version, 5)
 
     def testGetVendorId(self):
-        """A simple test case which queries vendor id."""
+        """A simple test case which queries vendor id and validates that it is not 0."""
         vendor_id = self.dut.hal.tv_cec.getVendorId()
         asserts.assertEqual(0, 0xff000000 & vendor_id)
         logging.info("getVendorId vendor_id: %s", vendor_id)
+        asserts.assertNotEqual(vendor_id, 0)
 
     def testGetPortInfo(self):
         """A simple test case which queries port information."""
