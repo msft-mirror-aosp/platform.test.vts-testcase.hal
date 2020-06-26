@@ -167,5 +167,32 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         '''Restore the logical addresses'''
         self.clearAndAddLogicalAddress()
 
+    def testClearLogicalAddress(self):
+        """Test case which clears logical address and validates it on cec-client console.
+        """
+        logical_addresses = self.initial_addresses
+        if len(logical_addresses) is 0:
+            '''If DUT has no logical address(es) allocated, add logical address and test.'''
+            device_types = self.getDeviceTypes()
+            asserts.assertNotEqual(device_types, None, "Device types could not be determined")
+            for device_type in device_types:
+                '''The first logical address a DUT can take will be the same as the integer value
+                of device_type'''
+                self.dut.hal.tv_cec.addLogicalAddress(int(device_type))
+                logical_addresses.append(device_type)
+        '''Clears the logical address'''
+        self.dut.hal.tv_cec.clearLogicalAddress()
+        for address in logical_addresses:
+            '''Sending the poll message via Cec-client'''
+            self.cec_utils.sendConsoleMessage("poll " + address)
+            try:
+                asserts.assertEqual(self.cec_utils.checkConsoleOutput("POLL sent"),
+                                    False)
+            except:
+                self.rebootDutAndRestartServices()
+                asserts.fail("clearLogicalAddress() API failed to clear the address")
+        '''Add back the initial addresses'''
+        self.clearAndAddLogicalAddress()
+
 if __name__ == "__main__":
     test_runner.main()
