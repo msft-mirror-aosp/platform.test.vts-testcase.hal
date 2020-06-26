@@ -61,6 +61,48 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         if self.cec_utils.mCecClientInitialised is not False:
             self.cec_utils.killCecClient()
 
+    def rebootDutAndRestartServices(self):
+        '''Reboot the device and wait till the reboot completes.'''
+        self.dut.reboot()
+        '''Restart services and initHdmiCecHal() to restore the TCP connection to device.'''
+        self.cec_utils.killCecClient()
+        self.dut.stopServices()
+        self.dut.startServices()
+        self.initHdmiCecHal()
+        self.initCecClient()
+        '''Check for Cec-client'''
+        self.skipAllTestsIf(self.cec_utils.mCecClientInitialised is False,
+                "Cec-client not initialised")
+
+    def getDeviceTypes(self):
+        '''Gets the device types of DUT
+
+        Returns:
+            List of device types of the DUT. None in case of no device_type.
+        '''
+        types = self.dut.getProp("ro.hdmi.device_type")
+        if str(types) is not "":
+            device_types = str(types).split(",")
+        else:
+            device_types = None
+        return device_types
+
+    def getInitialLogicalAddresses(self):
+        '''Gets the initial logical addresses that the DUT holds
+
+        Returns:
+            List of logical addresses DUT has taken.
+        '''
+        address_list = []
+        for i in range(1,15):
+            address = hex(i)[2:]
+            '''Sending the poll message via Cec-client'''
+            self.cec_utils.sendConsoleMessage("poll " + address)
+            '''Wait only 1s for POLL response'''
+            if self.cec_utils.checkConsoleOutput("POLL sent"):
+                address_list.append(address)
+        return address_list
+
     def testSendRandomMessage(self):
         """A test case which sends a random message and verifies that it has been sent on the
         CEC channel.
