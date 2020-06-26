@@ -26,7 +26,7 @@ import subprocess
 import time
 
 TIMEOUT_SEC = 20
-SECONDS_TO_READY = 10
+SECONDS_TO_READY = 1
 CLIENT_CONSOLE_READY = "waiting for input"
 QUIT_CLIENT = "q"
 
@@ -49,7 +49,7 @@ class CecUtils(object):
                                         stdout=subprocess.PIPE,
                                         stdin=subprocess.PIPE)
         ''' Wait for the client to become ready '''
-        if not self.checkConsoleOutput(CLIENT_CONSOLE_READY):
+        if not self.checkConsoleOutput(CLIENT_CONSOLE_READY, 10):
             self.mCecClientInitialised = False
             return
         stdoutFlags = fcntl.fcntl(self.process.stdout, fcntl.F_GETFL)
@@ -82,18 +82,20 @@ class CecUtils(object):
         self.process.stdin.write("tx " + source + destination + ":" + message + '\n')
         self.process.stdin.flush()
 
-    def checkConsoleOutput(self, expectedMessage):
-        '''Check for an expectedMessage on the input console of the cec-client
+    def checkConsoleOutput(self, expectedMessage, waitingTime = SECONDS_TO_READY):
+        '''Check for an expectedMessage on the input console of cec-client within the waitingTime
 
         Args:
             expectedMessage: message to be search for in the console.
+            waitingTime: waiting time in seconds for the message to be captured on console.
+                         Default is 1s
 
         Returns:
             boolean: expectedMessage found or not found.
         '''
         startTime = int(round(time.time()))
         endTime = startTime
-        while (endTime - startTime <= SECONDS_TO_READY):
+        while (endTime - startTime <= waitingTime):
             if (self.process.poll() is None):
                 try:
                     line = self.process.stdout.readline()
@@ -118,7 +120,7 @@ class CecUtils(object):
             self.process.kill()
         return
 
-    def checkExpectedOutput(self, src, dst, operand):
+    def checkExpectedOutput(self, src, dst, operand, waitingTime = TIMEOUT_SEC):
         '''Looks for the CEC message with "operand" sent from logical address "src" to logical
         address "dst" on the cec-client communication channel and returns the first line that
         contains that message. If the CEC message is not found within 20s, it will return None.
@@ -127,10 +129,12 @@ class CecUtils(object):
             src: logical address of the source.
             dst: logical address of the destination.
             operand: opcode of the cec-message.
+            waitingTime: waiting time in seconds for the message to be captured on console.
+                         Default is 20s.
 
         Returns:
             line: The line of the cec-console which has the required pattern. If pattern does not
-            found it will return None.
+                  found it will return None.
         '''
         if self.mCecClientInitialised is False:
             return None
@@ -141,7 +145,7 @@ class CecUtils(object):
         else:
             pattern = re.compile(r"(.*>>)(.*?)" + "(" + src + dst + "):" + "(" +
                                  operand + ")(.*)")
-        while (endTime - startTime <= TIMEOUT_SEC):
+        while (endTime - startTime <= waitingTime):
             if (self.process.poll() is None):
                 try:
                     line = self.process.stdout.readline()
