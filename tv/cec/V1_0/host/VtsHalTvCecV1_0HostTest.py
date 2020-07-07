@@ -46,6 +46,19 @@ class TvCecHidlTest(hal_hidl_host_test.HalHidlHostTest):
         self.vtypes = self.dut.hal.tv_cec.GetHidlTypeInterface("types")
         logging.info("tv_cec types: %s", self.vtypes)
 
+    def getDeviceTypes(self):
+        '''Gets the device types of DUT
+
+        Returns:
+            List of device types of the DUT. None in case of no device_type.
+        '''
+        types = self.dut.getProp("ro.hdmi.device_type")
+        if str(types) is not "":
+            device_types = str(types).split(",")
+        else:
+            device_types = None
+        return device_types
+
     def testClearAndAddLogicalAddress(self):
         """A simple test case which sets logical address and clears it."""
         self.dut.hal.tv_cec.clearLogicalAddress()
@@ -55,10 +68,17 @@ class TvCecHidlTest(hal_hidl_host_test.HalHidlHostTest):
         logging.info("addLogicalAddress result: %s", result)
 
     def testGetPhysicalAddress(self):
-        """A simple test case which queries the physical address."""
+        """A simple test case which queries the physical address and validates it."""
         status, paddr = self.dut.hal.tv_cec.getPhysicalAddress()
         asserts.assertEqual(self.vtypes.Result.SUCCESS, status)
         logging.info("getPhysicalAddress status: %s, paddr: %s", status, paddr)
+        device_types = self.getDeviceTypes()
+        asserts.assertNotEqual(device_types, None, "Device types could not be determined")
+        if '0' not in device_types:
+            asserts.assertNotEqual(paddr, 0)
+            asserts.assertNotEqual(paddr, 65535)
+        else:
+            asserts.assertEqual(paddr, 0)
 
     def testSendRandomMessage(self):
         """A test case which sends a random message."""
