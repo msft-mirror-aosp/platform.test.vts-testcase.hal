@@ -107,9 +107,23 @@ class TvCecHidlTest(hal_hidl_host_test.HalHidlHostTest):
         asserts.assertNotEqual(vendor_id, 0)
 
     def testGetPortInfo(self):
-        """A simple test case which queries port information."""
+        """A simple test case which queries port information and validates the response fields."""
         port_infos = self.dut.hal.tv_cec.getPortInfo()
         logging.info("getPortInfo port_infos: %s", port_infos)
+        device_types = self.getDeviceTypes()
+        asserts.assertNotEqual(device_types, None, "Device types could not be determined")
+        cec_supported_on_device = False
+        for port_info in port_infos:
+            asserts.assertEqual(port_info.get("type") in
+                    [self.vtypes.HdmiPortType.INPUT, self.vtypes.HdmiPortType.OUTPUT], True)
+            asserts.assertLess(-1, port_info.get("portId"), ", PortId is less than 0")
+            cec_supported_on_device = cec_supported_on_device or port_info.get("cecSupported")
+            if '0' not in device_types:
+                '''Since test setup mandates the DUT is connected to a sink, address cannot be 0
+                for non-TV device.'''
+                asserts.assertNotEqual(port_info.get("physicalAddress"), 0)
+        asserts.assertNotEqual(cec_supported_on_device, False,
+                               ", at least one port should support CEC.")
 
     def testSetOption(self):
         """A simple test case which changes CEC options."""
