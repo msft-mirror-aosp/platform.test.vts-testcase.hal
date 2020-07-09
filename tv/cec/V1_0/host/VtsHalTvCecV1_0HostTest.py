@@ -46,6 +46,19 @@ class TvCecHidlTest(hal_hidl_host_test.HalHidlHostTest):
         self.vtypes = self.dut.hal.tv_cec.GetHidlTypeInterface("types")
         logging.info("tv_cec types: %s", self.vtypes)
 
+    def getDeviceTypes(self):
+        '''Gets the device types of DUT
+
+        Returns:
+            List of device types of the DUT. None in case of no device_type.
+        '''
+        types = self.dut.getProp("ro.hdmi.device_type")
+        if str(types) is not "":
+            device_types = str(types).split(",")
+        else:
+            device_types = None
+        return device_types
+
     def testClearAndAddLogicalAddress(self):
         """A simple test case which sets logical address and clears it."""
         self.dut.hal.tv_cec.clearLogicalAddress()
@@ -55,10 +68,17 @@ class TvCecHidlTest(hal_hidl_host_test.HalHidlHostTest):
         logging.info("addLogicalAddress result: %s", result)
 
     def testGetPhysicalAddress(self):
-        """A simple test case which queries the physical address."""
+        """A simple test case which queries the physical address and validates it."""
         status, paddr = self.dut.hal.tv_cec.getPhysicalAddress()
         asserts.assertEqual(self.vtypes.Result.SUCCESS, status)
         logging.info("getPhysicalAddress status: %s, paddr: %s", status, paddr)
+        device_types = self.getDeviceTypes()
+        asserts.assertNotEqual(device_types, None, "Device types could not be determined")
+        if '0' not in device_types:
+            asserts.assertNotEqual(paddr, 0)
+            asserts.assertNotEqual(paddr, 65535)
+        else:
+            asserts.assertEqual(paddr, 0)
 
     def testSendRandomMessage(self):
         """A test case which sends a random message."""
@@ -87,9 +107,23 @@ class TvCecHidlTest(hal_hidl_host_test.HalHidlHostTest):
         asserts.assertNotEqual(vendor_id, 0)
 
     def testGetPortInfo(self):
-        """A simple test case which queries port information."""
+        """A simple test case which queries port information and validates the response fields."""
         port_infos = self.dut.hal.tv_cec.getPortInfo()
         logging.info("getPortInfo port_infos: %s", port_infos)
+        device_types = self.getDeviceTypes()
+        asserts.assertNotEqual(device_types, None, "Device types could not be determined")
+        cec_supported_on_device = False
+        for port_info in port_infos:
+            asserts.assertEqual(port_info.get("type") in
+                    [self.vtypes.HdmiPortType.INPUT, self.vtypes.HdmiPortType.OUTPUT], True)
+            asserts.assertLess(-1, port_info.get("portId"), ", PortId is less than 0")
+            cec_supported_on_device = cec_supported_on_device or port_info.get("cecSupported")
+            if '0' not in device_types:
+                '''Since test setup mandates the DUT is connected to a sink, address cannot be 0
+                for non-TV device.'''
+                asserts.assertNotEqual(port_info.get("physicalAddress"), 0)
+        asserts.assertNotEqual(cec_supported_on_device, False,
+                               ", at least one port should support CEC.")
 
     def testSetOption(self):
         """A simple test case which changes CEC options."""
