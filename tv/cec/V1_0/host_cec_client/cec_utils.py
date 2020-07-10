@@ -36,14 +36,15 @@ class CecUtils(object):
     process = None
 
     def __init__(self):
-        '''Start the client as TV connected to port 2, so it takes the physical address 2.0.0.0
+        '''Start the client as Recorder connected to port 2, so it takes the
+        physical address 2.0.0.0
         '''
         list = []
         list.append("cec-client")
         list.append("-p")
         list.append("2")
         list.append("-t")
-        list.append("x")
+        list.append("r")
         self.process = subprocess.Popen(list,
                                         shell=False,
                                         stdout=subprocess.PIPE,
