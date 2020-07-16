@@ -76,14 +76,50 @@ class CecUtils(object):
         Args:
             source: logical address of the source.
             destination: logical address of the destination.
-            message: opcode of the cec-message.
+            message: opcode of the CEC message.
         '''
         if self.mCecClientInitialised is False:
             return None
         self.process.stdin.write("tx " + source + destination + ":" + message + '\n')
         self.process.stdin.flush()
 
-    def checkConsoleOutput(self, expectedMessage, waitingTime = SECONDS_TO_READY):
+    def getNibbles(self, message):
+        '''Extract raw bytes from a CEC message
+
+        Args:
+            message: The CEC message.
+
+        Returns:
+            The raw bytes as a string without any separators.
+        '''
+        nibbles = ''
+        pattern = re.compile(r"(.*[>>|<<].*?)" + "([0-9a-f]{2}:)" + "([0-9a-z]{2})(.*)")
+        matches = pattern.search(message)
+        if matches is not None:
+            groups = matches.groups()
+            nibbles = ''.join(groups[1:]).replace(':', '')
+        return nibbles
+
+    def getParamsFromMessage(self, message, start, end):
+        '''From the params of a CEC message, gets the nibbles from position start to position end.
+        The start and end are relative to the beginning of the params. For example, in the following
+        message - 4F:82:10:00:04, getParamsFromMessage(message, 0, 4) will return 0x1000 and
+        getParamsFromMessage(message, 4, 6) will return 0x04.
+
+        Args:
+            message: CEC message whose params has to be extracted.
+            start: Start index of the params required.
+            end: End index of the params required.
+
+        Returns:
+            Returns the params of the CEC message.
+        '''
+        if message is not None:
+            return int(self.getNibbles(message)[4+start:4+end], 16)
+        else:
+            return None
+
+     def checkConsoleOutput(self, expectedMessage, waitingTime = SECONDS_TO_READY):
         '''Check for an expectedMessage on the input console of cec-client within the waitingTime
 
         Args:
