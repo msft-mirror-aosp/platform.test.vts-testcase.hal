@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
+package com.android.tests.usbgadget;
+
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.device.ITestDevice;
+import com.android.tradefed.invoker.TestInformation;
 import com.android.tradefed.log.LogUtil.CLog;
 import com.android.tradefed.testtype.DeviceJUnit4ClassRunner;
 import com.android.tradefed.testtype.junit4.BaseHostJUnit4Test;
+import com.android.tradefed.testtype.junit4.BeforeClassWithInfo;
+import com.google.common.base.Strings;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -28,9 +33,11 @@ import org.junit.runner.RunWith;
 @RunWith(DeviceJUnit4ClassRunner.class)
 public final class VtsHalUsbGadgetV1_1HostTest extends BaseHostJUnit4Test {
     public static final String TAG = VtsHalUsbGadgetV1_1HostTest.class.getSimpleName();
+    private static final String HAL_SERVICE = "android.hardware.usb.gadget@1.1::IUsbGadget";
 
     private static final long CONN_TIMEOUT = 5000;
 
+    private static boolean mHasService;
     private ITestDevice mDevice;
     private boolean mReconnected = false;
 
@@ -41,8 +48,19 @@ public final class VtsHalUsbGadgetV1_1HostTest extends BaseHostJUnit4Test {
         mDevice = getDevice();
     }
 
+    @BeforeClassWithInfo
+    public static void beforeClassWithDevice(TestInformation testInfo) throws Exception {
+        String serviceFound =
+                testInfo.getDevice()
+                        .executeShellCommand(String.format("lshal | grep \"%s\"", HAL_SERVICE))
+                        .trim();
+        mHasService = !Strings.isNullOrEmpty(serviceFound);
+    }
+
     @Test
     public void testResetUsbGadget() throws Exception {
+        Assume.assumeTrue(
+                String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         Assert.assertNotNull("Target device does not exist", mDevice);
 
         String deviceSerialNumber = mDevice.getSerialNumber();
