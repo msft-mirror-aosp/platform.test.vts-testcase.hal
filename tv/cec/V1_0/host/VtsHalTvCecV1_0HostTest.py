@@ -145,9 +145,23 @@ class TvCecHidlTest(hal_hidl_host_test.HalHidlHostTest):
                         port_info["portId"], True)
 
     def testIsConnected(self):
-        """A simple test case which queries the connected status."""
-        status = self.dut.hal.tv_cec.isConnected()
+        """A simple test case which queries the connected status and validates it."""
+        device_types = self.getDeviceTypes()
+        asserts.assertNotEqual(device_types, None, "Device types could not be determined")
+        paddr_status, paddr = self.dut.hal.tv_cec.getPhysicalAddress()
+        status = False
+        port_infos = self.dut.hal.tv_cec.getPortInfo()
+        '''Connection status will be true if at least one of the DUT port is connected.'''
+        for port_info in port_infos:
+            status = status or self.dut.hal.tv_cec.isConnected(port_info.get("portId"))
+
         logging.info("isConnected status: %s", status)
+        if '0' in device_types:
+            asserts.assertEqual(status, True)
+        elif paddr is 0 or paddr is 65535:
+            asserts.assertEqual(status, False)
+        else:
+            asserts.assertEqual(status, True)
 
 if __name__ == "__main__":
     test_runner.main()
