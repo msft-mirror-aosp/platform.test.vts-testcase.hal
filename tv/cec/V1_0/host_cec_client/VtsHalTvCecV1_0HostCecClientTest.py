@@ -173,13 +173,17 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         def on_hotplug_event(self, HotplugEvent):
             logging.info("Got a hotplug event")
 
-    def pollDutLogicalAddressAndCheckResponse(self):
-        """Send Poll messages to DUT logical addresses and check for the response."""
+    def pollDutLogicalAddressAndCheckResponse(self, string_to_check = "POLL sent"):
+        '''Send Poll messages to DUT logical addresses and check for the response.
+
+        Args:
+            string_to_check: String to check for after poll message is sent.
+        '''
         logical_addresses = self.initial_addresses
         for address in logical_addresses:
             self.cec_utils.sendConsoleMessage("poll " + address)
-            asserts.assertEqual(self.cec_utils.checkConsoleOutput("POLL sent"), True,
-                                ", DUT did not respond to POLL")
+            asserts.assertEqual(self.cec_utils.checkConsoleOutput(string_to_check), True,
+                                ", Did not receive " + string_to_check + ".")
 
     def testSendRandomMessage(self):
         """A test case which sends a random message and verifies that it has been sent on the
