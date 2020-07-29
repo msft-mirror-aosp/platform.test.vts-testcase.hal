@@ -100,7 +100,7 @@ TEST_F(SystemVendorTest, NoMainlineKernel) {
 
 // Tests that vendor and framework are compatible.
 // If any of the other tests in SystemVendorTest fails, this test will fail as
-// well. This is a sanity check in case the sub-tests do not cover some
+// well. This is a double check in case the sub-tests do not cover some
 // checks.
 // AVB version is not a compliance requirement.
 TEST_F(SystemVendorTest, VendorFrameworkCompatibility) {
