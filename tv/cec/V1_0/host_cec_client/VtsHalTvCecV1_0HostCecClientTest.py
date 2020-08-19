@@ -61,6 +61,7 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
     def tearDownClass(self):
         if self.cec_utils.mCecClientInitialised is not False:
             self.cec_utils.killCecClient()
+            self.dut.reboot()
 
     def rebootDutAndRestartServices(self):
         '''Reboot the device and wait till the reboot completes.'''
@@ -125,6 +126,19 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
             value_to_be_set: Boolean value to which the flag is to be set.
         '''
         self.dut.hal.tv_cec.setOption(self.vtypes.OptionKey.SYSTEM_CEC_CONTROL, value_to_be_set)
+
+    class CallbackUtils(object):
+        """Callback utils class"""
+
+        def __init__(self):
+            self.gotMessageCallback = False
+
+        def on_cec_message(self, CecMessage):
+            logging.info("Received message: %s", CecMessage)
+            self.gotMessageCallback = True
+
+        def on_hotplug_event(self, HotplugEvent):
+            logging.info("Got a hotplug event")
 
     def testSendRandomMessage(self):
         """A test case which sends a random message and verifies that it has been sent on the
@@ -224,6 +238,16 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
                                 str(status) + ", expected 0")
         finally:
             self.setSystemCecControl(True)
+
+    def testCallbackRegistry(self):
+        """Check that a callback is registered successfully."""
+        self.callback_utils = self.CallbackUtils()
+        callback = self.dut.hal.tv_cec.GetHidlCallbackInterface(
+            "IHdmiCecCallback",
+            onCecMessage=self.callback_utils.on_cec_message,
+            onHotplugEvent=self.callback_utils.on_hotplug_event)
+
+        self.dut.hal.tv_cec.setCallback(callback)
 
 if __name__ == "__main__":
     test_runner.main()
