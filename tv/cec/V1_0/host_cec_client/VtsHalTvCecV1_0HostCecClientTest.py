@@ -16,6 +16,7 @@
 #
 
 import logging
+import mock
 import time
 
 from vts.runners.host import asserts
@@ -127,15 +128,47 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         '''
         self.dut.hal.tv_cec.setOption(self.vtypes.OptionKey.SYSTEM_CEC_CONTROL, value_to_be_set)
 
+    def checkForOnCecMessageCallback(self, callback, message):
+        '''Checks for on_cec_message callback from the HAL.
+
+        Args:
+            callback: Callback object.
+            message: CEC message, the callback function should receive.
+
+        Returns:
+            Returns boolean. True if the callback function received message from HAL.
+        '''
+        startTime = int(round(time.time()))
+        endTime = startTime
+        while (endTime - startTime <= 5):
+            try:
+                callback.on_cec_message.assert_called_with(message)
+                return True
+            except:
+                pass
+            endTime = int(round(time.time()))
+        return False
+
+    def registerCallback(self):
+        '''Initialises a callback object and registers this callback with the HDMI HAL.
+
+        Returns:
+            Returns the Callback object.
+        '''
+        callback_utils = mock.create_autospec(self.CallbackUtils())
+        callback = self.dut.hal.tv_cec.GetHidlCallbackInterface(
+            "IHdmiCecCallback",
+            onCecMessage=callback_utils.on_cec_message,
+            onHotplugEvent=callback_utils.on_hotplug_event)
+
+        self.dut.hal.tv_cec.setCallback(callback)
+        return callback_utils
+
     class CallbackUtils(object):
         """Callback utils class"""
 
-        def __init__(self):
-            self.gotMessageCallback = False
-
         def on_cec_message(self, CecMessage):
             logging.info("Received message: %s", CecMessage)
-            self.gotMessageCallback = True
 
         def on_hotplug_event(self, HotplugEvent):
             logging.info("Got a hotplug event")
@@ -241,13 +274,7 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
 
     def testCallbackRegistry(self):
         """Check that a callback is registered successfully."""
-        self.callback_utils = self.CallbackUtils()
-        callback = self.dut.hal.tv_cec.GetHidlCallbackInterface(
-            "IHdmiCecCallback",
-            onCecMessage=self.callback_utils.on_cec_message,
-            onHotplugEvent=self.callback_utils.on_hotplug_event)
-
-        self.dut.hal.tv_cec.setCallback(callback)
+        self.registerCallback()
 
 if __name__ == "__main__":
     test_runner.main()
