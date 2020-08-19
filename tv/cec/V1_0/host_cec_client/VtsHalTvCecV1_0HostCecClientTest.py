@@ -299,5 +299,36 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         """Check that a callback is registered successfully."""
         self.registerCallback()
 
+    def testRegisterSecondCallback(self):
+        """Test case which registers two callback functions and verifies that only the second
+        callback receives messages."""
+        GIVE_PHYSICAL_ADDRESS = self.vtypes.CecMessageType.GIVE_PHYSICAL_ADDRESS
+        RECORDER_1 = self.vtypes.CecLogicalAddress.RECORDER_1
+        logical_addresses = self.initial_addresses
+
+        hdmi_cec_first_callback = self.registerCallback()
+        hdmi_cec_second_callback = self.registerCallback()
+
+        src = hex(RECORDER_1)[2:]
+        dst = logical_addresses[0]
+        operand = hex(GIVE_PHYSICAL_ADDRESS)[2:]
+        cec_message = {
+            'body': [GIVE_PHYSICAL_ADDRESS],
+            'initiator': RECORDER_1,
+            'destination': int(dst, 16)
+        }
+
+        self.cec_utils.sendCecMessage(src, dst, operand)
+        '''First callback function should not receive the message from HAL'''
+        asserts.assertEqual(
+            self.checkForOnCecMessageCallback(hdmi_cec_first_callback,
+                                              cec_message), False,
+            ", first callback function received the message")
+        '''Second callback function should receive the message from HAL.'''
+        asserts.assertEqual(
+            self.checkForOnCecMessageCallback(hdmi_cec_second_callback,
+                                              cec_message), True,
+            ", second callback function did not receive the message")
+
 if __name__ == "__main__":
     test_runner.main()
