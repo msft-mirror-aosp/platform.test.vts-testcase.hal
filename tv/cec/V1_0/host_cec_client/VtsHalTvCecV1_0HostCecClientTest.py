@@ -272,6 +272,29 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         finally:
             self.setSystemCecControl(True)
 
+    def testReceiveCallback(self):
+        """Check that the onCecMessage callback is called correctly after callback registry."""
+        GIVE_PHYSICAL_ADDRESS = self.vtypes.CecMessageType.GIVE_PHYSICAL_ADDRESS
+        RECORDER_1 = self.vtypes.CecLogicalAddress.RECORDER_1
+        logical_addresses = self.initial_addresses
+
+        hdmi_cec_callback = self.registerCallback()
+
+        src = hex(RECORDER_1)[2:]
+        dst = logical_addresses[0]
+        operand = hex(GIVE_PHYSICAL_ADDRESS)[2:]
+        cec_message = {
+            'body': [GIVE_PHYSICAL_ADDRESS],
+            'initiator': RECORDER_1,
+            'destination': int(dst, 16)
+        }
+
+        self.cec_utils.sendCecMessage(src, dst, operand)
+        '''Callback function should receive the message from HAL.'''
+        asserts.assertEqual(
+            self.checkForOnCecMessageCallback(hdmi_cec_callback, cec_message),
+            True, ", callback function did not receive the message")
+
     def testCallbackRegistry(self):
         """Check that a callback is registered successfully."""
         self.registerCallback()
