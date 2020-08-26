@@ -46,7 +46,7 @@ class SensorsHidlTest(hal_hidl_host_test.HalHidlHostTest):
         """Test the basic operation of test framework and sensor HIDL HAL
 
         This test obtains predefined enum values via sensors HIDL HAL host test framework and
-        compares them to known values as a sanity check to make sure both sensors HAL
+        compares them to known values to make sure both sensors HAL
         and the test framework are working properly.
         """
         sensors_types = self.dut.hal.sensors.GetHidlTypeInterface("types")
