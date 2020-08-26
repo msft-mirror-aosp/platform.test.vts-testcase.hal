@@ -173,6 +173,14 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         def on_hotplug_event(self, HotplugEvent):
             logging.info("Got a hotplug event")
 
+    def setEnableCec(self, value_to_be_set):
+        '''Set the ENABLE_CEC flag.
+
+        Args:
+            value_to_be_set: Boolean value to which the flag is to be set.
+        '''
+        self.dut.hal.tv_cec.setOption(self.vtypes.OptionKey.ENABLE_CEC, value_to_be_set)
+
     def pollDutLogicalAddressAndCheckResponse(self, string_to_check = "POLL sent"):
         '''Send Poll messages to DUT logical addresses and check for the response.
 
@@ -354,6 +362,21 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
             self.checkForOnCecMessageCallback(hdmi_cec_second_callback,
                                               cec_message), True,
             ", second callback function did not receive the message")
+
+    def testSetOption_enableCecFlag(self):
+        """Test case which checks that no acknowledgement for POLL message when sets the
+        ENABLE_CEC flag to false and there is acknowledgement when sets the flag to true."""
+        # TODO: Remove skip after b/162912390 is resolved.
+        asserts.skip("Skip test (refer b/162912390).")
+        try:
+            '''Set ENABLE_CEC to false.'''
+            self.setEnableCec(False)
+            self.pollDutLogicalAddressAndCheckResponse("POLL not sent")
+            '''Set ENABLE_CEC to true.'''
+            self.setEnableCec(True)
+            self.pollDutLogicalAddressAndCheckResponse("POLL sent")
+        finally:
+            self.setEnableCec(True)
 
 if __name__ == "__main__":
     test_runner.main()
