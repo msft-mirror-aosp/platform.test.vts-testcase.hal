@@ -92,7 +92,8 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         return device_types
 
     def getInitialLogicalAddresses(self):
-        '''Gets the initial logical addresses that the DUT holds
+        '''Gets the initial logical addresses that the DUT holds. If DUT has no logical address(es)
+        allocated, add logical address based on the device type.
 
         Returns:
             List of logical addresses DUT has taken.
@@ -105,6 +106,17 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
             '''Wait only 1s for POLL response'''
             if self.cec_utils.checkConsoleOutput("POLL sent"):
                 address_list.append(address)
+
+        if len(address_list) is 0:
+            '''If DUT has no logical address(es) allocated, add logical address based on the device
+            type.'''
+            device_types = self.getDeviceTypes()
+            asserts.assertNotEqual(device_types, None, "Device types could not be determined")
+            for device_type in device_types:
+                '''The first logical address a DUT can take will be the same as the integer value
+                of device_type'''
+                self.dut.hal.tv_cec.addLogicalAddress(int(device_type))
+                address_list.append(device_type)
         return address_list
 
     def clearAndAddLogicalAddress(self):
@@ -173,6 +185,14 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         def on_hotplug_event(self, HotplugEvent):
             logging.info("Got a hotplug event")
 
+    def setEnableCec(self, value_to_be_set):
+        '''Set the ENABLE_CEC flag.
+
+        Args:
+            value_to_be_set: Boolean value to which the flag is to be set.
+        '''
+        self.dut.hal.tv_cec.setOption(self.vtypes.OptionKey.ENABLE_CEC, value_to_be_set)
+
     def pollDutLogicalAddressAndCheckResponse(self, string_to_check = "POLL sent"):
         '''Send Poll messages to DUT logical addresses and check for the response.
 
@@ -238,15 +258,6 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         """Test case which clears logical address and validates it on cec-client console.
         """
         logical_addresses = self.initial_addresses
-        if len(logical_addresses) is 0:
-            '''If DUT has no logical address(es) allocated, add logical address and test.'''
-            device_types = self.getDeviceTypes()
-            asserts.assertNotEqual(device_types, None, "Device types could not be determined")
-            for device_type in device_types:
-                '''The first logical address a DUT can take will be the same as the integer value
-                of device_type'''
-                self.dut.hal.tv_cec.addLogicalAddress(int(device_type))
-                logical_addresses.append(device_type)
         '''Clears the logical address'''
         self.dut.hal.tv_cec.clearLogicalAddress()
         for address in logical_addresses:
@@ -354,6 +365,21 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
             self.checkForOnCecMessageCallback(hdmi_cec_second_callback,
                                               cec_message), True,
             ", second callback function did not receive the message")
+
+    def testSetOption_enableCecFlag(self):
+        """Test case which checks that no acknowledgement for POLL message when sets the
+        ENABLE_CEC flag to false and there is acknowledgement when sets the flag to true."""
+        # TODO: Remove skip after b/162912390 is resolved.
+        asserts.skip("Skip test (refer b/162912390).")
+        try:
+            '''Set ENABLE_CEC to false.'''
+            self.setEnableCec(False)
+            self.pollDutLogicalAddressAndCheckResponse("POLL not sent")
+            '''Set ENABLE_CEC to true.'''
+            self.setEnableCec(True)
+            self.pollDutLogicalAddressAndCheckResponse("POLL sent")
+        finally:
+            self.setEnableCec(True)
 
 if __name__ == "__main__":
     test_runner.main()
