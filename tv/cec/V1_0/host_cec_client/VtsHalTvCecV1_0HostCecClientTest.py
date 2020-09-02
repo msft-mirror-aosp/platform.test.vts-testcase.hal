@@ -92,7 +92,8 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         return device_types
 
     def getInitialLogicalAddresses(self):
-        '''Gets the initial logical addresses that the DUT holds
+        '''Gets the initial logical addresses that the DUT holds. If DUT has no logical address(es)
+        allocated, add logical address based on the device type.
 
         Returns:
             List of logical addresses DUT has taken.
@@ -105,6 +106,17 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
             '''Wait only 1s for POLL response'''
             if self.cec_utils.checkConsoleOutput("POLL sent"):
                 address_list.append(address)
+
+        if len(address_list) is 0:
+            '''If DUT has no logical address(es) allocated, add logical address based on the device
+            type.'''
+            device_types = self.getDeviceTypes()
+            asserts.assertNotEqual(device_types, None, "Device types could not be determined")
+            for device_type in device_types:
+                '''The first logical address a DUT can take will be the same as the integer value
+                of device_type'''
+                self.dut.hal.tv_cec.addLogicalAddress(int(device_type))
+                address_list.append(device_type)
         return address_list
 
     def clearAndAddLogicalAddress(self):
@@ -246,15 +258,6 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
         """Test case which clears logical address and validates it on cec-client console.
         """
         logical_addresses = self.initial_addresses
-        if len(logical_addresses) is 0:
-            '''If DUT has no logical address(es) allocated, add logical address and test.'''
-            device_types = self.getDeviceTypes()
-            asserts.assertNotEqual(device_types, None, "Device types could not be determined")
-            for device_type in device_types:
-                '''The first logical address a DUT can take will be the same as the integer value
-                of device_type'''
-                self.dut.hal.tv_cec.addLogicalAddress(int(device_type))
-                logical_addresses.append(device_type)
         '''Clears the logical address'''
         self.dut.hal.tv_cec.clearLogicalAddress()
         for address in logical_addresses:
