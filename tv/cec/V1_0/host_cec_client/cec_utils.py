@@ -119,7 +119,7 @@ class CecUtils(object):
         else:
             return None
 
-     def checkConsoleOutput(self, expectedMessage, waitingTime = SECONDS_TO_READY):
+    def checkConsoleOutput(self, expectedMessage, waitingTime = SECONDS_TO_READY):
         '''Check for an expectedMessage on the input console of cec-client within the waitingTime
 
         Args:
