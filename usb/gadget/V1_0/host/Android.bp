@@ -30,5 +30,5 @@ java_test_host {
     test_suites: [
         "vts",
     ],
-    auto_gen_config: true,
+    test_config: "HalUsbGadgetV1_0HostTest.xml",
 }
