@@ -287,6 +287,8 @@ class TvCecHidlWithClientTest(hal_hidl_host_test.HalHidlHostTest):
 
     def testPowerQueryResponse(self):
         """Test case which checks for HAL response to power query."""
+        # TODO: Remove skip after b/162912390 is resolved.
+        asserts.skip("Skip test (refer b/162912390).")
         logical_addresses = self.initial_addresses
         src = hex(self.vtypes.CecLogicalAddress.RECORDER_1)[2:]
         dst = logical_addresses[0]
