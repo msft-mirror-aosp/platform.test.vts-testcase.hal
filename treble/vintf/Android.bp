@@ -102,7 +102,3 @@ cc_test {
         "SystemVendorTest.cpp",
     ],
 }
-
-vts_config {
-    name: "VtsTrebleVintfTestOMr1",
-}
