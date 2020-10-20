@@ -338,7 +338,7 @@ TEST_P(SingleManifestTest, ServedHwbinderHalsAreInManifest) {
                                        fqInstanceName.getVersion(),
                                        fqInstanceName.getInterface()),
                         fqInstanceName.getInstance(), Transport::HWBINDER);
-      ASSERT_NE(service, nullptr);
+      ASSERT_NE(service, nullptr) << name << " is not accessible.";
 
       Partition partition = GetPartition(service);
       if (partition == Partition::UNKNOWN) {
