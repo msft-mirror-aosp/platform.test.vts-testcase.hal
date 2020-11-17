@@ -27,5 +27,7 @@
         <option name="binary-test-disable-framework" value="true"/>
         <option name="binary-test-stop-native-servers" value="true"/>
         <option name="test-timeout" value="1m"/>
+        <!-- Disable due to b/138280732 -->
+        <option name="exclude-filter" value="GnssHalTest.GetLocationLowPower" />
     </test>
 </configuration>
