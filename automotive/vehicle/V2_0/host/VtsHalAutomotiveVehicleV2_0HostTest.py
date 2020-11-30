@@ -416,26 +416,39 @@ class VtsHalAutomotiveVehicleV2_0HostTest(hal_hidl_host_test.HalHidlHostTest):
             self.vtypes.VehicleProperty.INFO_EV_PORT_LOCATION,
             self.vtypes.VehicleProperty.INFO_DRIVER_SEAT,
         ])
+
+        def checkForStaticCondition(propConfig):
+            asserts.assertEqual(
+                self.vtypes.VehiclePropertyAccess.READ,
+                propConfig["access"],
+                "Prop 0x%x must be read access" % propConfig['prop'])
+            for area in propConfig["areaConfigs"]:
+                propValue = self.readVhalProperty(
+                    propConfig['prop'], area["areaId"])
+                asserts.assertEqual(propConfig['prop'], propValue["prop"])
+                self.setVhalProperty(
+                    propConfig['prop'], propValue["value"],
+                    expectedStatus=self.vtypes.StatusCode.ACCESS_DENIED)
+
         for c in self.configList:
-            prop = c['prop']
-            msg = "Prop 0x%x" % prop
+            # Static system property
             if (c["prop"] in staticProperties):
                 asserts.assertEqual(
                     self.vtypes.VehiclePropertyChangeMode.STATIC,
-                    c["changeMode"], msg)
-                asserts.assertEqual(self.vtypes.VehiclePropertyAccess.READ,
-                                    c["access"], msg)
-                for area in c["areaConfigs"]:
-                    propValue = self.readVhalProperty(prop, area["areaId"])
-                    asserts.assertEqual(prop, propValue["prop"])
-                    self.setVhalProperty(
-                        prop,
-                        propValue["value"],
-                        expectedStatus=self.vtypes.StatusCode.ACCESS_DENIED)
-            else:  # Non-static property
+                    c["changeMode"],
+                    "Prop 0x%x must be static change mode" % c['prop'])
+                checkForStaticCondition(c)
+            # Static vendor property
+            elif (c["prop"] & self.vtypes.VehiclePropertyGroup.MASK
+                == self.vtypes.VehiclePropertyGroup.VENDOR and
+                c["changeMode"] == self.vtypes.VehiclePropertyChangeMode.STATIC):
+                checkForStaticCondition(c)
+            # Non-static property
+            else:
                 asserts.assertNotEqual(
                     self.vtypes.VehiclePropertyChangeMode.STATIC,
-                    c["changeMode"], msg)
+                    c["changeMode"],
+                    "Prop 0x%x cannot be static change mode" % c['prop'])
 
     def testPropertyRanges(self):
         """Retrieve the property ranges for all areas.
