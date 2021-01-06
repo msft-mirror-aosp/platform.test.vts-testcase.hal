@@ -110,7 +110,7 @@ public class HalUsbGadgetV1_0HostTest extends BaseHostJUnit4Test {
         assumeTrue(String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         getDevice().executeShellCommand("svc usb setFunctions mtp true");
         Thread.sleep(WAIT_TIME);
-        assertTrue("MTP not present", checkProtocol(6, 1, 1));
+        assertTrue("MTP not present", checkProtocol(6, 1, 1) || checkProtocol(255, 255, 0));
     }
 
     /**
