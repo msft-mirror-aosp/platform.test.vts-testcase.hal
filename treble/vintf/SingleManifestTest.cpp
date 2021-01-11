@@ -25,6 +25,7 @@
 #include <gmock/gmock.h>
 #include <hidl-util/FqInstance.h>
 #include <hidl/HidlTransportUtils.h>
+#include <vintf/constants.h>
 #include <vintf/parse_string.h>
 
 #include <algorithm>
@@ -507,11 +508,34 @@ static std::string getInterfaceHash(const sp<IBinder> &binder) {
   return str;
 }
 
+// TODO(b/150155678): using standard code to do this
+static int32_t getInterfaceVersion(const sp<IBinder> &binder) {
+  Parcel data;
+  Parcel reply;
+  const auto &descriptor = binder->getInterfaceDescriptor();
+  data.writeInterfaceToken(descriptor);
+  status_t err = binder->transact(IBinder::LAST_CALL_TRANSACTION, data, &reply);
+  // On upgrading devices, the HAL may not implement this transaction. libvintf
+  // treats missing <version> as version 1, so we do the same here.
+  if (err == UNKNOWN_TRANSACTION) {
+    std::cout << "INFO: " << descriptor
+              << " does not have an interface version, using default value "
+              << android::vintf::kDefaultAidlMinorVersion << std::endl;
+    return android::vintf::kDefaultAidlMinorVersion;
+  }
+  EXPECT_EQ(OK, err);
+  binder::Status status;
+  EXPECT_EQ(OK, status.readFromParcel(reply));
+  EXPECT_TRUE(status.isOk()) << status.toString8().c_str();
+  auto version = reply.readInt32();
+  return version;
+}
+
 // An AIDL HAL with VINTF stability can only be registered if it is in the
 // manifest. However, we still must manually check that every declared HAL is
 // actually present on the device.
 TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
-  AidlVerifyFn expect_available = [](const string &package,
+  AidlVerifyFn expect_available = [](const string &package, uint64_t version,
                                      const string &interface,
                                      const string &instance) {
     const std::string type = package + "." + interface;
@@ -519,6 +543,18 @@ TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
     sp<IBinder> binder =
         defaultServiceManager()->waitForService(String16(name.c_str()));
     EXPECT_NE(binder, nullptr) << "Failed to get " << name;
+
+    const int32_t actual_version = getInterfaceVersion(binder);
+    EXPECT_GE(actual_version, 1)
+        << "For " << name << ", version should be >= 1 but it is not.";
+    if (version != actual_version) {
+      ADD_FAILURE() << "For " << name << ", manifest declares version "
+                    << version << ", but the actual version is "
+                    << actual_version;
+    } else {
+      std::cout << "For " << name << ", version " << version
+                << " matches declared value." << std::endl;
+    }
 
     const std::string hash = getInterfaceHash(binder);
     const std::vector<std::string> hashes = hashesForInterface(type);
@@ -557,7 +593,6 @@ TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
         }
       }
     }
-
   };
 
   ForEachAidlHalInstance(GetParam(), expect_available);

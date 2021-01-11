@@ -115,11 +115,12 @@ void VtsTrebleVintfTestBase::ForEachAidlHalInstance(
       return true;  // continue to next instance
     }
     const std::string &package = manifest_instance.package();
+    uint64_t version = manifest_instance.version().minorVer;
     const std::string &interface = manifest_instance.interface();
     const std::string &instance = manifest_instance.instance();
 
     auto future_result =
-        std::async([&]() { fn(package, interface, instance); });
+        std::async([&]() { fn(package, version, interface, instance); });
     auto timeout = std::chrono::seconds(1);
     std::future_status status = future_result.wait_for(timeout);
     if (status != std::future_status::ready) {
