@@ -531,6 +531,42 @@ static int32_t getInterfaceVersion(const sp<IBinder> &binder) {
   return version;
 }
 
+static void CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
+                                            const std::string &name,
+                                            uint64_t declared_version) {
+  const int32_t actual_version = getInterfaceVersion(binder);
+  if (actual_version < 1) {
+    ADD_FAILURE() << "For " << name << ", version should be >= 1 but it is "
+                  << actual_version << ".";
+    return;
+  }
+
+  if (declared_version == actual_version) {
+    std::cout << "For " << name << ", version " << actual_version
+              << " matches declared value." << std::endl;
+    return;
+  }
+
+  // b/178458001: Identity V2 is introduced in R but we don't have AIDL version
+  // support in VINTF in R. So devices launching <= R may not declare version
+  // for identity AIDL HAL correctly.
+  Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
+  if (shipping_fcm_version != Level::UNSPECIFIED &&
+      shipping_fcm_version <= Level::R &&
+      name == "android.hardware.identity.IIdentityCredentialStore/default" &&
+      declared_version == 1 && actual_version == 2) {
+    std::cout << "For " << name << ", manifest declares version "
+              << declared_version << ", but the actual version is "
+              << actual_version << ". Exempted for shipping FCM version "
+              << shipping_fcm_version << ". (b/178458001)";
+    return;
+  }
+
+  ADD_FAILURE() << "For " << name << ", manifest (" << shipping_fcm_version
+                << ") declares version " << declared_version
+                << ", but the actual version is " << actual_version;
+}
+
 // An AIDL HAL with VINTF stability can only be registered if it is in the
 // manifest. However, we still must manually check that every declared HAL is
 // actually present on the device.
@@ -544,17 +580,7 @@ TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
         defaultServiceManager()->waitForService(String16(name.c_str()));
     EXPECT_NE(binder, nullptr) << "Failed to get " << name;
 
-    const int32_t actual_version = getInterfaceVersion(binder);
-    EXPECT_GE(actual_version, 1)
-        << "For " << name << ", version should be >= 1 but it is not.";
-    if (version != actual_version) {
-      ADD_FAILURE() << "For " << name << ", manifest declares version "
-                    << version << ", but the actual version is "
-                    << actual_version;
-    } else {
-      std::cout << "For " << name << ", version " << version
-                << " matches declared value." << std::endl;
-    }
+    CheckAidlVersionMatchesDeclared(binder, name, version);
 
     const std::string hash = getInterfaceHash(binder);
     const std::vector<std::string> hashes = hashesForInterface(type);
