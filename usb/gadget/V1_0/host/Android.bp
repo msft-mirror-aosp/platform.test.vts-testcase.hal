@@ -13,15 +13,10 @@
 // limitations under the License.
 //
 
-vts_config {
-    name: "VtsHalUsbGadgetV1_0Host",
-}
-
 java_test_host {
     name: "HalUsbGadgetV1_0HostTest",
     libs: [
         "tradefed",
-        "tradefed-common-util",
     ],
     static_libs: [
         "jna-prebuilt",

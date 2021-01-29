@@ -46,16 +46,17 @@ TEST_F(DeviceManifestTest, ShippingFcmVersion) {
 
 TEST_F(DeviceManifestTest, KernelFcmVersion) {
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
-  Level kernel_fcm_version = VintfObject::GetRuntimeInfo()->kernelLevel();
 
   if (shipping_fcm_version == Level::UNSPECIFIED ||
       shipping_fcm_version < Level::R) {
     GTEST_SKIP() << "Kernel FCM version not enforced on target FCM version "
                  << shipping_fcm_version;
   }
+  std::string error;
+  Level kernel_fcm_version = VintfObject::GetInstance()->getKernelLevel(&error);
   ASSERT_NE(Level::UNSPECIFIED, kernel_fcm_version)
-      << "Kernel FCM version must be specified for target FCM version "
-      << shipping_fcm_version;
+      << "Kernel FCM version must be specified for target FCM version '"
+      << shipping_fcm_version << "': " << error;
   ASSERT_GE(kernel_fcm_version, shipping_fcm_version)
       << "Kernel FCM version " << kernel_fcm_version
       << " must be greater or equal to target FCM version "

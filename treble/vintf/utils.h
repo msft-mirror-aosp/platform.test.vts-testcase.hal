@@ -65,8 +65,8 @@ using std::vector;
 using HidlVerifyFn = std::function<void(
     const FQName& fq_name, const string& instance_name, Transport)>;
 using AidlVerifyFn =
-    std::function<void(const std::string& package, const std::string& name,
-                       const std::string& instance)>;
+    std::function<void(const std::string& package, uint64_t version,
+                       const std::string& name, const std::string& instance)>;
 using HashCharArray = hidl_array<unsigned char, 32>;
 using HalManifestPtr = std::shared_ptr<const HalManifest>;
 using MatrixPtr = std::shared_ptr<const CompatibilityMatrix>;
