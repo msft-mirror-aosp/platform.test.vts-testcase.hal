@@ -25,6 +25,7 @@
 #include <gmock/gmock.h>
 #include <hidl-util/FqInstance.h>
 #include <hidl/HidlTransportUtils.h>
+#include <vintf/constants.h>
 #include <vintf/parse_string.h>
 
 #include <algorithm>
@@ -507,11 +508,70 @@ static std::string getInterfaceHash(const sp<IBinder> &binder) {
   return str;
 }
 
+// TODO(b/150155678): using standard code to do this
+static int32_t getInterfaceVersion(const sp<IBinder> &binder) {
+  Parcel data;
+  Parcel reply;
+  const auto &descriptor = binder->getInterfaceDescriptor();
+  data.writeInterfaceToken(descriptor);
+  status_t err = binder->transact(IBinder::LAST_CALL_TRANSACTION, data, &reply);
+  // On upgrading devices, the HAL may not implement this transaction. libvintf
+  // treats missing <version> as version 1, so we do the same here.
+  if (err == UNKNOWN_TRANSACTION) {
+    std::cout << "INFO: " << descriptor
+              << " does not have an interface version, using default value "
+              << android::vintf::kDefaultAidlMinorVersion << std::endl;
+    return android::vintf::kDefaultAidlMinorVersion;
+  }
+  EXPECT_EQ(OK, err);
+  binder::Status status;
+  EXPECT_EQ(OK, status.readFromParcel(reply));
+  EXPECT_TRUE(status.isOk()) << status.toString8().c_str();
+  auto version = reply.readInt32();
+  return version;
+}
+
+static void CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
+                                            const std::string &name,
+                                            uint64_t declared_version) {
+  const int32_t actual_version = getInterfaceVersion(binder);
+  if (actual_version < 1) {
+    ADD_FAILURE() << "For " << name << ", version should be >= 1 but it is "
+                  << actual_version << ".";
+    return;
+  }
+
+  if (declared_version == actual_version) {
+    std::cout << "For " << name << ", version " << actual_version
+              << " matches declared value." << std::endl;
+    return;
+  }
+
+  // b/178458001: Identity V2 is introduced in R but we don't have AIDL version
+  // support in VINTF in R. So devices launching <= R may not declare version
+  // for identity AIDL HAL correctly.
+  Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
+  if (shipping_fcm_version != Level::UNSPECIFIED &&
+      shipping_fcm_version <= Level::R &&
+      name == "android.hardware.identity.IIdentityCredentialStore/default" &&
+      declared_version == 1 && actual_version == 2) {
+    std::cout << "For " << name << ", manifest declares version "
+              << declared_version << ", but the actual version is "
+              << actual_version << ". Exempted for shipping FCM version "
+              << shipping_fcm_version << ". (b/178458001)";
+    return;
+  }
+
+  ADD_FAILURE() << "For " << name << ", manifest (" << shipping_fcm_version
+                << ") declares version " << declared_version
+                << ", but the actual version is " << actual_version;
+}
+
 // An AIDL HAL with VINTF stability can only be registered if it is in the
 // manifest. However, we still must manually check that every declared HAL is
 // actually present on the device.
 TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
-  AidlVerifyFn expect_available = [](const string &package,
+  AidlVerifyFn expect_available = [](const string &package, uint64_t version,
                                      const string &interface,
                                      const string &instance) {
     const std::string type = package + "." + interface;
@@ -519,6 +579,8 @@ TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
     sp<IBinder> binder =
         defaultServiceManager()->waitForService(String16(name.c_str()));
     EXPECT_NE(binder, nullptr) << "Failed to get " << name;
+
+    CheckAidlVersionMatchesDeclared(binder, name, version);
 
     const std::string hash = getInterfaceHash(binder);
     const std::vector<std::string> hashes = hashesForInterface(type);
@@ -557,7 +619,6 @@ TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
         }
       }
     }
-
   };
 
   ForEachAidlHalInstance(GetParam(), expect_available);
