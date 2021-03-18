@@ -21,7 +21,6 @@ java_test_host {
     name: "HalUsbGadgetV1_0HostTest",
     libs: [
         "tradefed",
-        "tradefed-common-util",
     ],
     static_libs: [
         "jna-prebuilt",
