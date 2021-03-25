@@ -19,6 +19,8 @@
 #include <aidl/metadata.h>
 #include <android-base/properties.h>
 #include <android-base/strings.h>
+#include <android/apex/ApexInfo.h>
+#include <android/apex/IApexService.h>
 #include <binder/IServiceManager.h>
 #include <binder/Parcel.h>
 #include <binder/Status.h>
@@ -170,6 +172,26 @@ static sp<IBase> GetPassthroughService(const FqInstance &fq_instance) {
   }
   ADD_FAILURE() << "Should not reach here";
   return nullptr;
+}
+
+// returns true only if the specified apex is updated
+static bool IsApexUpdated(const std::string &apex_name) {
+  using namespace ::android::apex;
+  auto binder =
+      defaultServiceManager()->waitForService(String16("apexservice"));
+  if (binder != nullptr) {
+    auto apex_service = interface_cast<IApexService>(binder);
+    std::vector<ApexInfo> list;
+    auto status = apex_service->getActivePackages(&list);
+    EXPECT_TRUE(status.isOk())
+        << "Failed to getActivePackages():" << status.exceptionMessage();
+    for (const ApexInfo &apex_info : list) {
+      if (apex_info.moduleName == apex_name) {
+        return !apex_info.isFactory;
+      }
+    }
+  }
+  return false;
 }
 
 // Tests that no HAL outside of the allowed set is specified as passthrough in
@@ -533,7 +555,8 @@ static int32_t getInterfaceVersion(const sp<IBinder> &binder) {
 
 static void CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
                                             const std::string &name,
-                                            uint64_t declared_version) {
+                                            uint64_t declared_version,
+                                            bool allow_upgrade) {
   const int32_t actual_version = getInterfaceVersion(binder);
   if (actual_version < 1) {
     ADD_FAILURE() << "For " << name << ", version should be >= 1 but it is "
@@ -544,6 +567,12 @@ static void CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
   if (declared_version == actual_version) {
     std::cout << "For " << name << ", version " << actual_version
               << " matches declared value." << std::endl;
+    return;
+  }
+  if (allow_upgrade && actual_version > declared_version) {
+    std::cout << "For " << name << ", upgraded version " << actual_version
+              << " is okay. (declared value = " << declared_version << ".)"
+              << std::endl;
     return;
   }
 
@@ -571,16 +600,21 @@ static void CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
 // manifest. However, we still must manually check that every declared HAL is
 // actually present on the device.
 TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
-  AidlVerifyFn expect_available = [](const string &package, uint64_t version,
-                                     const string &interface,
-                                     const string &instance) {
+  AidlVerifyFn expect_available = [&](const string &package, uint64_t version,
+                                      const string &interface,
+                                      const string &instance,
+                                      const optional<string>
+                                          &updatable_via_apex) {
     const std::string type = package + "." + interface;
     const std::string name = type + "/" + instance;
     sp<IBinder> binder =
         defaultServiceManager()->waitForService(String16(name.c_str()));
-    EXPECT_NE(binder, nullptr) << "Failed to get " << name;
+    ASSERT_NE(binder, nullptr) << "Failed to get " << name;
 
-    CheckAidlVersionMatchesDeclared(binder, name, version);
+    // allow upgrade if updatable HAL's declared APEX is actually updated.
+    const bool allow_upgrade = updatable_via_apex.has_value() &&
+                               IsApexUpdated(updatable_via_apex.value());
+    CheckAidlVersionMatchesDeclared(binder, name, version, allow_upgrade);
 
     const std::string hash = getInterfaceHash(binder);
     const std::vector<std::string> hashes = hashesForInterface(type);
