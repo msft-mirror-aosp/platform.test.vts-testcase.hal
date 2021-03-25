@@ -17,6 +17,7 @@
 #ifndef VTS_TREBLE_VINTF_TEST_UTILS_H_
 #define VTS_TREBLE_VINTF_TEST_UTILS_H_
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -57,6 +58,7 @@ using std::cout;
 using std::endl;
 using std::map;
 using std::multimap;
+using std::optional;
 using std::set;
 using std::string;
 
@@ -66,7 +68,8 @@ using HidlVerifyFn = std::function<void(
     const FQName& fq_name, const string& instance_name, Transport)>;
 using AidlVerifyFn =
     std::function<void(const std::string& package, uint64_t version,
-                       const std::string& name, const std::string& instance)>;
+                       const std::string& name, const std::string& instance,
+                       const std::optional<std::string>& updatable_via_apex)>;
 using HashCharArray = hidl_array<unsigned char, 32>;
 using HalManifestPtr = std::shared_ptr<const HalManifest>;
 using MatrixPtr = std::shared_ptr<const CompatibilityMatrix>;
