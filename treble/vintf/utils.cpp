@@ -50,11 +50,16 @@ const set<string> kPassthroughHals = {
     "android.hidl.memory",
 };
 
-// Returns ro.product.first_api_level if it is defined and not 0. Returns
-// ro.build.version.sdk otherwise.
 uint64_t GetShippingApiLevel() {
-  uint64_t api_level =
-      GetUintProperty<uint64_t>("ro.product.first_api_level", 0);
+  uint64_t api_level = GetUintProperty<uint64_t>("ro.board.api_level", 0);
+  if (api_level != 0) {
+    return api_level;
+  }
+  api_level = GetUintProperty<uint64_t>("ro.board.first_api_level", 0);
+  if (api_level != 0) {
+    return api_level;
+  }
+  api_level = GetUintProperty<uint64_t>("ro.product.first_api_level", 0);
   if (api_level != 0) {
     return api_level;
   }
