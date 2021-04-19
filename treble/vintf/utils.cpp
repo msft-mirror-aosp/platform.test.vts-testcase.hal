@@ -50,7 +50,7 @@ const set<string> kPassthroughHals = {
     "android.hidl.memory",
 };
 
-uint64_t GetShippingApiLevel() {
+uint64_t GetBoardApiLevel() {
   uint64_t api_level = GetUintProperty<uint64_t>("ro.board.api_level", 0);
   if (api_level != 0) {
     return api_level;

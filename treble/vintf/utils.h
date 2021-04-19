@@ -87,7 +87,7 @@ extern const set<string> kPassthroughHals;
 // - ro.board.first_api_level
 // - ro.product.first_api_level
 // - ro.build.version.sdk
-uint64_t GetShippingApiLevel();
+uint64_t GetBoardApiLevel();
 
 // For a given interface returns package root if known. Returns empty string
 // otherwise.
