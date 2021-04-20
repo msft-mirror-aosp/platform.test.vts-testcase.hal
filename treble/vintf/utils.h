@@ -84,9 +84,13 @@ extern const map<string, string> kPackageRoot;
 // HALs that are allowed to be passthrough under Treble rules.
 extern const set<string> kPassthroughHals;
 
-// Returns ro.product.first_api_level if it is defined and not 0. Returns
-// ro.build.version.sdk otherwise.
-uint64_t GetShippingApiLevel();
+// Try the following properties in this order, returning the first non-zero
+// (non-empty) value:
+// - ro.board.api_level
+// - ro.board.first_api_level
+// - ro.product.first_api_level
+// - ro.build.version.sdk
+uint64_t GetBoardApiLevel();
 
 // For a given interface returns package root if known. Returns empty string
 // otherwise.
