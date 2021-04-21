@@ -46,7 +46,7 @@ using android::vintf::toFQNameString;
 // For devices that launched <= Android O-MR1, systems/hals/implementations
 // were delivered to companies which either don't start up on device boot.
 bool LegacyAndExempt(const FQName &fq_name) {
-  return GetShippingApiLevel() <= 27 && !IsAndroidPlatformInterface(fq_name);
+  return GetBoardApiLevel() <= 27 && !IsAndroidPlatformInterface(fq_name);
 }
 
 void FailureHalMissing(const FQName &fq_name, const std::string &instance) {
