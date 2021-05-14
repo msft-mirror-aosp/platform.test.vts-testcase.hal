@@ -71,9 +71,6 @@ public final class VtsHalUsbGadgetV1_2HostTest extends BaseHostJUnit4Test {
                         .trim();
         mHasService = !Strings.isNullOrEmpty(serviceFound);
 
-        Assume.assumeTrue(
-                String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
-
         if (mHasService) {
             mUsb = (IUsbNative) Native.loadLibrary("usb-1.0", IUsbNative.class);
             PointerByReference context = new PointerByReference();
@@ -120,6 +117,8 @@ public final class VtsHalUsbGadgetV1_2HostTest extends BaseHostJUnit4Test {
      */
     @Test
     public void testAndroidNcm() throws Exception {
+        Assume.assumeTrue(
+                String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         Assert.assertNotNull("Target device does not exist", mDevice);
 
         String deviceSerialNumber = mDevice.getSerialNumber();
@@ -139,6 +138,8 @@ public final class VtsHalUsbGadgetV1_2HostTest extends BaseHostJUnit4Test {
      */
     @Test
     public void testGetUsbSpeed() throws Exception {
+        Assume.assumeTrue(
+                String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         Assert.assertNotNull("Target device does not exist", mDevice);
 
         String deviceSerialNumber = mDevice.getSerialNumber();
