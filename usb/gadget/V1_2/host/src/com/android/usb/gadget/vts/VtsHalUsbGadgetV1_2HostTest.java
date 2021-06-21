@@ -16,16 +16,15 @@
 
 package com.android.tests.usbgadget;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
-
 import com.android.tests.usbgadget.libusb.ConfigDescriptor;
 import com.android.tests.usbgadget.libusb.DeviceDescriptor;
 import com.android.tests.usbgadget.libusb.IUsbNative;
 import com.android.tests.usbgadget.libusb.Interface;
 import com.android.tests.usbgadget.libusb.InterfaceDescriptor;
+import com.android.tradefed.device.DeviceNotAvailableException;
+import com.android.tradefed.device.ITestDevice;
 import com.android.tradefed.invoker.TestInformation;
+import com.android.tradefed.log.LogUtil.CLog;
 import com.android.tradefed.testtype.DeviceJUnit4ClassRunner;
 import com.android.tradefed.testtype.junit4.BaseHostJUnit4Test;
 import com.android.tradefed.testtype.junit4.BeforeClassWithInfo;
@@ -35,19 +34,34 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** A host-side test for USB Gadget HAL */
 @RunWith(DeviceJUnit4ClassRunner.class)
-public class HalUsbGadgetV1_0HostTest extends BaseHostJUnit4Test {
-    private static final int WAIT_TIME = 3000;
-    private static final String HAL_SERVICE = "android.hardware.usb.gadget@1.0::IUsbGadget";
-    private static final String FEATURE_AUTOMOTIVE = "android.hardware.type.automotive";
+public final class VtsHalUsbGadgetV1_2HostTest extends BaseHostJUnit4Test {
+    public static final String TAG = VtsHalUsbGadgetV1_2HostTest.class.getSimpleName();
+
+    private static final String HAL_SERVICE = "android.hardware.usb.gadget@1.2::IUsbGadget";
+    private static final long CONN_TIMEOUT = 5000;
+    private static final int UNKNOWN_SPEED = -1;
 
     private static boolean mHasService;
     private static IUsbNative mUsb;
     private static Pointer mContext;
+
+    private ITestDevice mDevice;
+    private boolean mReconnected = false;
+
+    @Before
+    public void setUp() {
+        CLog.i("setUp");
+
+        mDevice = getDevice();
+    }
 
     @BeforeClassWithInfo
     public static void beforeClassWithDevice(TestInformation testInfo) throws Exception {
@@ -94,70 +108,47 @@ public class HalUsbGadgetV1_0HostTest extends BaseHostJUnit4Test {
         return false;
     }
 
-    /** Check for ADB */
+    /**
+     * Check for NCM.
+     *
+     * <p>Enable ncm and check the host to see if ncm interface is present.
+     * For NCM interface definition, you can find more information on
+     * https://www.usb.org/.
+     */
     @Test
-    public void testAndroidUSB() throws Exception {
-        assumeTrue(String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
-        assertTrue("ADB not present", checkProtocol(255, 66, 1));
+    public void testAndroidNcm() throws Exception {
+        Assume.assumeTrue(
+                String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
+        Assert.assertNotNull("Target device does not exist", mDevice);
+
+        String deviceSerialNumber = mDevice.getSerialNumber();
+
+        CLog.i("testAndroidNcm on device [%s]", deviceSerialNumber);
+
+        mDevice.executeShellCommand("svc usb setFunctions ncm");
+        Thread.sleep(CONN_TIMEOUT);
+        Assert.assertTrue("NCM not present", checkProtocol(2, 13, 0));
     }
 
     /**
-     * Check for MTP.
+     * Check for USB connection speed.
      *
-     * <p>Enables mtp and checks the host to see if mtp interface is present. MTP:
-     * https://en.wikipedia.org/wiki/Media_Transfer_Protocol.
+     * <p>Gets the command result from USB Gadget Hal v1.2. If success,
+     * it will get the USB speed except unknown.
      */
     @Test
-    public void testMtp() throws Exception {
-        assumeTrue(String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
-        getDevice().executeShellCommand("svc usb setFunctions mtp true");
-        Thread.sleep(WAIT_TIME);
-        assertTrue("MTP not present", checkProtocol(6, 1, 1));
-    }
+    public void testGetUsbSpeed() throws Exception {
+        Assume.assumeTrue(
+                String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
+        Assert.assertNotNull("Target device does not exist", mDevice);
 
-    /**
-     * Check for PTP.
-     *
-     * <p>Enables ptp and checks the host to see if ptp interface is present. PTP:
-     * https://en.wikipedia.org/wiki/Picture_Transfer_Protocol.
-     */
-    @Test
-    public void testPtp() throws Exception {
-        assumeTrue(String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
-        getDevice().executeShellCommand("svc usb setFunctions ptp true");
-        Thread.sleep(WAIT_TIME);
-        assertTrue("PTP not present", checkProtocol(6, 1, 1));
-    }
+        String deviceSerialNumber = mDevice.getSerialNumber();
 
-    /**
-     * Check for MIDI.
-     *
-     * <p>Enables midi and checks the host to see if midi interface is present. MIDI:
-     * https://en.wikipedia.org/wiki/MIDI.
-     */
-    @Test
-    public void testMIDI() throws Exception {
-        assumeFalse("Skip test: MIDI support is not required for automotive",
-                getDevice().hasFeature(FEATURE_AUTOMOTIVE));
-        assumeTrue(String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
-        getDevice().executeShellCommand("svc usb setFunctions midi true");
-        Thread.sleep(WAIT_TIME);
-        assertTrue("MIDI not present", checkProtocol(1, 3, 0));
-    }
+        CLog.i("testGetUsbSpeed on device [%s]", deviceSerialNumber);
 
-    /**
-     * Check for RNDIS.
-     *
-     * <p>Enables rndis and checks the host to see if rndis interface is present. RNDIS:
-     * https://en.wikipedia.org/wiki/RNDIS.
-     */
-    @Test
-    public void testRndis() throws Exception {
-        assumeFalse("Skip test: RNDIS support is not required for automotive",
-                getDevice().hasFeature(FEATURE_AUTOMOTIVE));
-        assumeTrue(String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
-        getDevice().executeShellCommand("svc usb setFunctions rndis true");
-        Thread.sleep(WAIT_TIME);
-        assertTrue("RNDIS not present", checkProtocol(10, 0, 0));
+        String output = mDevice.executeShellCommand("svc usb getUsbSpeed");
+        int speed = Integer.parseInt(output.trim());
+
+        Assert.assertTrue("There is no USB enumeration", speed != UNKNOWN_SPEED);
     }
 }
