@@ -36,30 +36,33 @@ void DeviceManifestTest::SetUp() {
 }
 
 // Tests that Shipping FCM Version in the device manifest is at least the
-// minimum Shipping FCM Version as required by Shipping API level.
+// minimum Shipping FCM Version as required by Board API level.
 TEST_F(DeviceManifestTest, ShippingFcmVersion) {
-  uint64_t shipping_api_level = GetShippingApiLevel();
+  uint64_t board_api_level = GetBoardApiLevel();
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
-  auto res = TestTargetFcmVersion(shipping_fcm_version, shipping_api_level);
+  auto res = TestTargetFcmVersion(shipping_fcm_version, board_api_level);
   ASSERT_RESULT_OK(res);
 }
 
 TEST_F(DeviceManifestTest, KernelFcmVersion) {
+  const char* kHeader =
+      "Kernel FCM version (specified in VINTF manifests with <kernel "
+      "target-level=\"[0-9]+\"/> if not by /proc/version) ";
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
 
   if (shipping_fcm_version == Level::UNSPECIFIED ||
       shipping_fcm_version < Level::R) {
-    GTEST_SKIP() << "Kernel FCM version not enforced on target FCM version "
+    GTEST_SKIP() << kHeader << " not enforced on target FCM version "
                  << shipping_fcm_version;
   }
   std::string error;
   Level kernel_fcm_version = VintfObject::GetInstance()->getKernelLevel(&error);
   ASSERT_NE(Level::UNSPECIFIED, kernel_fcm_version)
-      << "Kernel FCM version must be specified for target FCM version '"
+      << kHeader << " must be specified for target FCM version '"
       << shipping_fcm_version << "': " << error;
   ASSERT_GE(kernel_fcm_version, shipping_fcm_version)
-      << "Kernel FCM version " << kernel_fcm_version
-      << " must be greater or equal to target FCM version "
+      << kHeader << " is " << kernel_fcm_version
+      << ", but it must be greater or equal to target FCM version "
       << shipping_fcm_version;
 }
 
