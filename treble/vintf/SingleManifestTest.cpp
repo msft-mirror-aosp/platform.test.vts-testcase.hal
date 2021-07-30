@@ -17,6 +17,7 @@
 #include "SingleManifestTest.h"
 
 #include <aidl/metadata.h>
+#include <android-base/hex.h>
 #include <android-base/properties.h>
 #include <android-base/strings.h>
 #include <android/apex/ApexInfo.h>
@@ -455,10 +456,9 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
     vector<string> hash_chain{};
     hal_service->getHashChain(
         [&hash_chain](const hidl_vec<HashCharArray> &chain) {
-          for (const HashCharArray &hash_array : chain) {
-            vector<uint8_t> hash{hash_array.data(),
-                                 hash_array.data() + hash_array.size()};
-            hash_chain.push_back(Hash::hexString(hash));
+          for (const HashCharArray &hash : chain) {
+            hash_chain.push_back(
+                android::base::HexString(hash.data(), hash.size()));
           }
         });
 
@@ -471,7 +471,8 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
         return;
       }
       string hash = hash_chain[i];
-      if (hash == Hash::hexString(Hash::kEmptyHash)) {
+      if (hash == android::base::HexString(Hash::kEmptyHash.data(),
+                                           Hash::kEmptyHash.size())) {
         FailureHashMissing(fq_iface_name);
       } else if (IsAndroidPlatformInterface(fq_iface_name)) {
         set<string> released_hashes = ReleasedHashes(fq_iface_name);
