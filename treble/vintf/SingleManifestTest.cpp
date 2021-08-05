@@ -17,6 +17,7 @@
 #include "SingleManifestTest.h"
 
 #include <aidl/metadata.h>
+#include <android-base/hex.h>
 #include <android-base/properties.h>
 #include <android-base/strings.h>
 #include <android/apex/ApexInfo.h>
@@ -60,18 +61,12 @@ void FailureHalMissing(const FQName &fq_name, const std::string &instance) {
   }
 }
 
-void FailureHashMissing(const FQName &fq_name,
-                        bool vehicle_hal_in_automotive_device) {
+void FailureHashMissing(const FQName &fq_name) {
   if (LegacyAndExempt(fq_name)) {
     cout << "[  WARNING ] " << fq_name.string()
          << " has an empty hash but is exempted because it is legacy. It is "
             "still recommended to fix this. This is because it was compiled "
             "without being frozen in a corresponding current.txt file."
-         << endl;
-  } else if (vehicle_hal_in_automotive_device) {
-    cout << "[  WARNING ] " << fq_name.string()
-         << " has an empty hash but is exempted because it is IVehicle in an"
-            "automotive device."
          << endl;
   } else if (base::GetProperty("ro.build.version.codename", "") != "REL") {
     cout << "[  WARNING ] " << fq_name.string()
@@ -435,9 +430,6 @@ TEST_P(SingleManifestTest, ServedPassthroughHalsAreInManifest) {
 
 // Tests that HAL interfaces are officially released.
 TEST_P(SingleManifestTest, InterfacesAreReleased) {
-  // Device support automotive features.
-  const static bool automotive_device =
-      DeviceSupportsFeature("android.hardware.type.automotive");
   // Verifies that HAL are released by fetching the hash of the interface and
   // comparing it to the set of known hashes of released interfaces.
   HidlVerifyFn is_released = [](const FQName &fq_name,
@@ -464,10 +456,9 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
     vector<string> hash_chain{};
     hal_service->getHashChain(
         [&hash_chain](const hidl_vec<HashCharArray> &chain) {
-          for (const HashCharArray &hash_array : chain) {
-            vector<uint8_t> hash{hash_array.data(),
-                                 hash_array.data() + hash_array.size()};
-            hash_chain.push_back(Hash::hexString(hash));
+          for (const HashCharArray &hash : chain) {
+            hash_chain.push_back(
+                android::base::HexString(hash.data(), hash.size()));
           }
         });
 
@@ -480,15 +471,10 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
         return;
       }
       string hash = hash_chain[i];
-
-      bool vehicle_hal_in_automotive_device =
-          automotive_device &&
-          fq_iface_name.string() ==
-              "android.hardware.automotive.vehicle@2.0::IVehicle";
-      if (hash == Hash::hexString(Hash::kEmptyHash)) {
-        FailureHashMissing(fq_iface_name, vehicle_hal_in_automotive_device);
-      } else if (IsAndroidPlatformInterface(fq_iface_name) &&
-                 !vehicle_hal_in_automotive_device) {
+      if (hash == android::base::HexString(Hash::kEmptyHash.data(),
+                                           Hash::kEmptyHash.size())) {
+        FailureHashMissing(fq_iface_name);
+      } else if (IsAndroidPlatformInterface(fq_iface_name)) {
         set<string> released_hashes = ReleasedHashes(fq_iface_name);
         EXPECT_NE(released_hashes.find(hash), released_hashes.end())
             << "Hash not found. This interface was not released." << endl
