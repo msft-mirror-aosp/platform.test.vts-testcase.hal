@@ -562,18 +562,15 @@ static void CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
     return;
   }
 
-  // b/178458001: Identity V2 is introduced in R but we don't have AIDL version
-  // support in VINTF in R. So devices launching <= R may not declare version
-  // for identity AIDL HAL correctly.
+  // Android R VINTF did not support AIDL version in the manifest.
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   if (shipping_fcm_version != Level::UNSPECIFIED &&
-      shipping_fcm_version <= Level::R &&
-      name == "android.hardware.identity.IIdentityCredentialStore/default" &&
-      declared_version == 1 && actual_version == 2) {
+      shipping_fcm_version <= Level::R) {
     std::cout << "For " << name << ", manifest declares version "
               << declared_version << ", but the actual version is "
               << actual_version << ". Exempted for shipping FCM version "
-              << shipping_fcm_version << ". (b/178458001)";
+              << shipping_fcm_version << ". (b/178458001, b/199190514)"
+              << std::endl;
     return;
   }
 
