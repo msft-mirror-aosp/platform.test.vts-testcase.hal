@@ -16,9 +16,9 @@
 
 #include "DeviceManifestTest.h"
 
+#include <android-base/properties.h>
 #include <android-base/result.h>
 #include <libvts_vintf_test_common/common.h>
-#include <android-base/properties.h>
 #include <vintf/VintfObject.h>
 
 #include "SingleManifestTest.h"
@@ -80,7 +80,7 @@ TEST_F(DeviceManifestTest, NoDeprecatedHalsOnManifest) {
 // from this requirement, so we use this test to enforce instead of the
 // compatibility matrix.
 TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
-  Level shipping_fcm_version = vendor_manifest_->level();
+  Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   bool is_go_device =
       android::base::GetBoolProperty("ro.config.low_ram", false);
   if (shipping_fcm_version == Level::UNSPECIFIED ||
