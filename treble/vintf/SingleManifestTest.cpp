@@ -574,9 +574,13 @@ static void CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
     return;
   }
 
-  ADD_FAILURE() << "For " << name << ", manifest (" << shipping_fcm_version
-                << ") declares version " << declared_version
-                << ", but the actual version is " << actual_version;
+  ADD_FAILURE()
+      << "For " << name << ", manifest (" << shipping_fcm_version
+      << ") declares version " << declared_version
+      << ", but the actual version is " << actual_version << std::endl
+      << "Either the VINTF manifest <hal> entry needs to be updated with a "
+         "version tag for the actual version, or the implementation should be "
+         "changed to use the declared version";
 }
 
 // An AIDL HAL with VINTF stability can only be registered if it is in the
