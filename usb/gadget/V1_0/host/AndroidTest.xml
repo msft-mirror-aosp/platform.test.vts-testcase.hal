@@ -21,7 +21,7 @@
         <option name="push-group" value="HostDrivenTest.push" />
     </target_preparer>
     <multi_target_preparer class="com.android.tradefed.targetprep.VtsPythonVirtualenvPreparer">
-        <option name="dep-module" value="libusb1" />
+        <option name="dep-module" value="libusb1==1.9" />
     </multi_target_preparer>
     <test class="com.android.tradefed.testtype.VtsMultiDeviceTest">
         <option name="test-module-name" value="VtsHalUsbGadgetV1_0Host"/>
