@@ -51,19 +51,7 @@ const set<string> kPassthroughHals = {
 };
 
 uint64_t GetBoardApiLevel() {
-  uint64_t api_level = GetUintProperty<uint64_t>("ro.board.api_level", 0);
-  if (api_level != 0) {
-    return api_level;
-  }
-  api_level = GetUintProperty<uint64_t>("ro.board.first_api_level", 0);
-  if (api_level != 0) {
-    return api_level;
-  }
-  api_level = GetUintProperty<uint64_t>("ro.product.first_api_level", 0);
-  if (api_level != 0) {
-    return api_level;
-  }
-  return GetUintProperty<uint64_t>("ro.build.version.sdk", 0);
+  return GetUintProperty<uint64_t>("ro.vendor.api_level", 0);
 }
 
 // For a given interface returns package root if known. Returns empty string
