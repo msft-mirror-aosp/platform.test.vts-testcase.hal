@@ -34,6 +34,7 @@ class UsbGadgetHidlTest(hal_hidl_host_test.HalHidlHostTest):
     """
 
     TEST_HAL_SERVICES = {"android.hardware.usb.gadget@1.0::IUsbGadget"}
+    FEATURE_AUTOMOTIVE = "android.hardware.type.automotive"
 
     def setUpClass(self):
         """Creates an adb session and reads sysprop values."""
@@ -46,6 +47,8 @@ class UsbGadgetHidlTest(hal_hidl_host_test.HalHidlHostTest):
         except adb.AdbError as e:
             logging.exception(e)
         self.serialno = self.adb.shell("getprop ro.serialno")
+        pm_list = self.dut.shell.Execute("pm list features")
+        self.is_automotive = self.FEATURE_AUTOMOTIVE in pm_list[const.STDOUT][0]
 
     def checkProtocol(self, usb_class, usb_sub_class, usb_protocol):
         """Queries the host USB bus to see if the interface is present.
@@ -111,6 +114,8 @@ class UsbGadgetHidlTest(hal_hidl_host_test.HalHidlHostTest):
         Enables midi and checks the host to see if midi interface is present.
         MIDI: https://en.wikipedia.org/wiki/MIDI.
         """
+        asserts.skipIf(self.is_automotive,
+            "Skip test: MIDI support is not required for automotive")
         self.adb.shell("svc usb setFunctions midi true")
         time.sleep(3)
         asserts.assertTrue(self.checkProtocol(1, 3, 0), "MIDI not present")
@@ -121,6 +126,8 @@ class UsbGadgetHidlTest(hal_hidl_host_test.HalHidlHostTest):
         Enables rndis and checks the host to see if rndis interface is present.
         RNDIS: https://en.wikipedia.org/wiki/RNDIS.
         """
+        asserts.skipIf(self.is_automotive,
+            "Skip test: RNDIS support is not required for automotive")
         self.adb.shell("svc usb setFunctions rndis true")
         time.sleep(3)
         asserts.assertTrue(self.checkProtocol(10, 0, 0), "RNDIS not present")
