@@ -96,6 +96,21 @@ TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
       "android.hardware.graphics.mapper", {2, 1}, "IMapper", "default"));
 }
 
+// Devices with Shipping FCM version 3~6 must have either the HIDL or the
+// AIDL health HAL. Because compatibility matrices cannot express OR condition
+// between <hal>'s, add a test here.
+//
+// There's no need to enforce minimum HAL versions because
+// NoDeprecatedHalsOnManifest already checks it.
+TEST_F(DeviceManifestTest, HealthHal) {
+  bool has_hidl = vendor_manifest_->hasHidlInstance(
+      "android.hardware.health", {2, 0}, "IHealth", "default");
+  bool has_aidl = vendor_manifest_->hasAidlInstance("android.hardware.health",
+                                                    1, "IHealth", "default");
+  ASSERT_TRUE(has_hidl || has_aidl)
+      << "Device must have either health HIDL HAL or AIDL HAL";
+}
+
 static std::vector<HalManifestPtr> GetTestManifests() {
   return {
       VintfObject::GetDeviceHalManifest(),
