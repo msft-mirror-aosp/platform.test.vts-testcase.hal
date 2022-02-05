@@ -111,6 +111,21 @@ TEST_F(DeviceManifestTest, HealthHal) {
       << "Device must have either health HIDL HAL or AIDL HAL";
 }
 
+// Devices with Shipping FCM version 7 must have either the HIDL or the
+// AIDL composer HAL. Because compatibility matrices cannot express OR condition
+// between <hal>'s, add a test here.
+//
+// There's no need to enforce minimum HAL versions because
+// NoDeprecatedHalsOnManifest already checks it.
+TEST_F(DeviceManifestTest, ComposerHal) {
+  bool has_hidl = vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.composer", {2, 1}, "IComposer", "default");
+  bool has_aidl = vendor_manifest_->hasAidlInstance(
+      "android.hardware.graphics.composer3", 1, "IComposer", "default");
+  ASSERT_TRUE(has_hidl || has_aidl)
+      << "Device must have either composer HIDL HAL or AIDL HAL";
+}
+
 static std::vector<HalManifestPtr> GetTestManifests() {
   return {
       VintfObject::GetDeviceHalManifest(),
