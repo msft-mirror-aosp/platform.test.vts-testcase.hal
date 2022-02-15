@@ -487,14 +487,15 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
   ForEachHidlHalInstance(GetParam(), is_released);
 }
 
-static std::vector<std::string> hashesForInterface(const std::string &name) {
+static std::optional<AidlInterfaceMetadata> metadataForInterface(
+    const std::string &name) {
   for (const auto &module : AidlInterfaceMetadata::all()) {
     if (std::find(module.types.begin(), module.types.end(), name) !=
         module.types.end()) {
-      return module.hashes;
+      return module;
     }
   }
-  return {};
+  return std::nullopt;
 }
 
 // TODO(b/150155678): using standard code to do this
@@ -605,17 +606,30 @@ TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
     CheckAidlVersionMatchesDeclared(binder, name, version, allow_upgrade);
 
     const std::string hash = getInterfaceHash(binder);
-    const std::vector<std::string> hashes = hashesForInterface(type);
+    const std::optional<AidlInterfaceMetadata> metadata =
+        metadataForInterface(type);
 
     const bool is_aosp = base::StartsWith(package, "android.");
+    ASSERT_TRUE(!is_aosp || metadata)
+        << "AOSP interface must have metadata: " << package;
+
     const bool is_release =
         base::GetProperty("ro.build.version.codename", "") == "REL";
+
+    const bool is_existing =
+        metadata
+            ? std::find(metadata->versions.begin(), metadata->versions.end(),
+                        version) != metadata->versions.end()
+            : false;
+
+    const std::vector<std::string> hashes =
+        metadata ? metadata->hashes : std::vector<std::string>();
     const bool found_hash =
         std::find(hashes.begin(), hashes.end(), hash) != hashes.end();
 
     if (is_aosp) {
       if (!found_hash) {
-        if (is_release) {
+        if (is_release || is_existing) {
           ADD_FAILURE() << "Interface " << name
                         << " has an unrecognized hash: '" << hash
                         << "'. The following hashes are known:\n"
