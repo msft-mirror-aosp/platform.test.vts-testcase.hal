@@ -17,7 +17,6 @@
 #include "SingleManifestTest.h"
 
 #include <aidl/metadata.h>
-#include <android-base/hex.h>
 #include <android-base/properties.h>
 #include <android-base/strings.h>
 #include <android/apex/ApexInfo.h>
@@ -134,7 +133,7 @@ static sp<IBase> GetPassthroughService(const FqInstance &fq_instance) {
       return nullptr;
     }
 
-    auto hal_service = VtsTrebleVintfTestBase::GetHidlService(
+    auto hal_service = VtsTrebleVintfTestBase::GetHalService(
         interface.string(), fq_instance.getInstance(), Transport::PASSTHROUGH);
 
     if (hal_service != nullptr) {
@@ -313,12 +312,12 @@ TEST_P(SingleManifestTest, HalsAreServed) {
 
         const FQName lowest_name =
             fq_name.withVersion(fq_name.getPackageMajorVersion(), 0);
-        hal_service = GetHidlService(lowest_name, instance_name, transport);
+        hal_service = GetHalService(lowest_name, instance_name, transport);
         EXPECT_TRUE(
             canCastInterface(hal_service.get(), fq_name.string().c_str()))
             << fq_name.string() << " is not on the device.";
       } else {
-        hal_service = GetHidlService(fq_name, instance_name, transport);
+        hal_service = GetHalService(fq_name, instance_name, transport);
       }
 
       if (hal_service == nullptr) {
@@ -363,10 +362,10 @@ TEST_P(SingleManifestTest, ServedHwbinderHalsAreInManifest) {
       EXPECT_TRUE(fqInstanceName.setTo(name));
 
       auto service =
-          GetHidlService(toFQNameString(fqInstanceName.getPackage(),
-                                        fqInstanceName.getVersion(),
-                                        fqInstanceName.getInterface()),
-                         fqInstanceName.getInstance(), Transport::HWBINDER);
+          GetHalService(toFQNameString(fqInstanceName.getPackage(),
+                                       fqInstanceName.getVersion(),
+                                       fqInstanceName.getInterface()),
+                        fqInstanceName.getInstance(), Transport::HWBINDER);
       ASSERT_NE(service, nullptr);
 
       Partition partition = GetPartition(service);
@@ -404,7 +403,7 @@ TEST_P(SingleManifestTest, ServedPassthroughHalsAreInManifest) {
     const FQName lowest_name =
         fq_name.withVersion(fq_name.getPackageMajorVersion(), 0);
     sp<IBase> hal_service =
-        GetHidlService(lowest_name, instance_name, transport);
+        GetHalService(lowest_name, instance_name, transport);
     if (hal_service == nullptr) {
       ADD_FAILURE() << "Could not get service " << fq_name.string() << "/"
                     << instance_name;
@@ -444,7 +443,7 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
       return;
     }
 
-    sp<IBase> hal_service = GetHidlService(fq_name, instance_name, transport);
+    sp<IBase> hal_service = GetHalService(fq_name, instance_name, transport);
 
     if (hal_service == nullptr) {
       FailureHalMissing(fq_name, instance_name);
@@ -456,9 +455,10 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
     vector<string> hash_chain{};
     hal_service->getHashChain(
         [&hash_chain](const hidl_vec<HashCharArray> &chain) {
-          for (const HashCharArray &hash : chain) {
-            hash_chain.push_back(
-                android::base::HexString(hash.data(), hash.size()));
+          for (const HashCharArray &hash_array : chain) {
+            vector<uint8_t> hash{hash_array.data(),
+                                 hash_array.data() + hash_array.size()};
+            hash_chain.push_back(Hash::hexString(hash));
           }
         });
 
@@ -471,8 +471,7 @@ TEST_P(SingleManifestTest, InterfacesAreReleased) {
         return;
       }
       string hash = hash_chain[i];
-      if (hash == android::base::HexString(Hash::kEmptyHash.data(),
-                                           Hash::kEmptyHash.size())) {
+      if (hash == Hash::hexString(Hash::kEmptyHash)) {
         FailureHashMissing(fq_iface_name);
       } else if (IsAndroidPlatformInterface(fq_iface_name)) {
         set<string> released_hashes = ReleasedHashes(fq_iface_name);
@@ -574,13 +573,9 @@ static void CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
     return;
   }
 
-  ADD_FAILURE()
-      << "For " << name << ", manifest (" << shipping_fcm_version
-      << ") declares version " << declared_version
-      << ", but the actual version is " << actual_version << std::endl
-      << "Either the VINTF manifest <hal> entry needs to be updated with a "
-         "version tag for the actual version, or the implementation should be "
-         "changed to use the declared version";
+  ADD_FAILURE() << "For " << name << ", manifest (" << shipping_fcm_version
+                << ") declares version " << declared_version
+                << ", but the actual version is " << actual_version;
 }
 
 // An AIDL HAL with VINTF stability can only be registered if it is in the
@@ -594,9 +589,8 @@ TEST_P(SingleManifestTest, ManifestAidlHalsServed) {
                                           &updatable_via_apex) {
     const std::string type = package + "." + interface;
     const std::string name = type + "/" + instance;
-
-    sp<IBinder> binder = GetAidlService(name);
-
+    sp<IBinder> binder =
+        defaultServiceManager()->waitForService(String16(name.c_str()));
     ASSERT_NE(binder, nullptr) << "Failed to get " << name;
 
     // allow upgrade if updatable HAL's declared APEX is actually updated.
