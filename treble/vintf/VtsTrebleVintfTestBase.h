@@ -17,13 +17,12 @@
 #ifndef VTS_TREBLE_VINTF_TEST_BASE_H_
 #define VTS_TREBLE_VINTF_TEST_BASE_H_
 
-#include <android/hidl/manager/1.0/IServiceManager.h>
-#include <binder/IBinder.h>
-#include <gtest/gtest.h>
-#include <vintf/VintfObject.h>
-
 #include <string>
 #include <vector>
+
+#include <android/hidl/manager/1.0/IServiceManager.h>
+#include <gtest/gtest.h>
+#include <vintf/VintfObject.h>
 
 #include "utils.h"
 
@@ -46,13 +45,12 @@ class VtsTrebleVintfTestBase : public ::testing::Test {
   static void ForEachHidlHalInstance(const HalManifestPtr &, HidlVerifyFn);
 
   // Retrieves an existing HAL service.
-  static sp<IBase> GetHidlService(const string &fq_name,
-                                  const string &instance_name, Transport,
-                                  bool log = true);
-  static sp<IBase> GetHidlService(const FQName &fq_name,
-                                  const string &instance_name, Transport,
-                                  bool log = true);
-  static sp<IBinder> GetAidlService(const std::string &name);
+  static sp<IBase> GetHalService(const string &fq_name,
+                                 const string &instance_name, Transport,
+                                 bool log = true);
+  static sp<IBase> GetHalService(const FQName &fq_name,
+                                 const string &instance_name, Transport,
+                                 bool log = true);
 
   static vector<string> GetInstanceNames(const sp<IServiceManager> &manager,
                                          const FQName &fq_name);
