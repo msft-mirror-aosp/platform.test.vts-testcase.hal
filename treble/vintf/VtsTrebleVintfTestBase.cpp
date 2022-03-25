@@ -16,6 +16,22 @@
 
 #include "VtsTrebleVintfTestBase.h"
 
+#include <android-base/logging.h>
+#include <android-base/properties.h>
+#include <android-base/strings.h>
+#include <android/hidl/manager/1.0/IServiceManager.h>
+#include <binder/IServiceManager.h>
+#include <gtest/gtest.h>
+#include <hidl-hash/Hash.h>
+#include <hidl-util/FQName.h>
+#include <hidl-util/FqInstance.h>
+#include <hidl/HidlTransportUtils.h>
+#include <hidl/ServiceManagement.h>
+#include <procpartition/procpartition.h>
+#include <vintf/HalManifest.h>
+#include <vintf/VintfObject.h>
+#include <vintf/parse_string.h>
+
 #include <chrono>
 #include <condition_variable>
 #include <functional>
@@ -28,20 +44,6 @@
 #include <string>
 #include <thread>
 #include <vector>
-
-#include <android-base/logging.h>
-#include <android-base/strings.h>
-#include <android/hidl/manager/1.0/IServiceManager.h>
-#include <gtest/gtest.h>
-#include <hidl-hash/Hash.h>
-#include <hidl-util/FQName.h>
-#include <hidl-util/FqInstance.h>
-#include <hidl/HidlTransportUtils.h>
-#include <hidl/ServiceManagement.h>
-#include <procpartition/procpartition.h>
-#include <vintf/HalManifest.h>
-#include <vintf/VintfObject.h>
-#include <vintf/parse_string.h>
 
 #include "SingleManifestTest.h"
 #include "utils.h"
@@ -98,7 +100,8 @@ void VtsTrebleVintfTestBase::ForEachHidlHalInstance(
 
     auto future_result =
         std::async([&]() { fn(fq_name, instance_name, transport); });
-    auto timeout = std::chrono::seconds(1);
+    int timeout_multiplier = base::GetIntProperty("ro.hw_timeout_multiplier", 1);
+    auto timeout = timeout_multiplier * std::chrono::seconds(1);
     std::future_status status = future_result.wait_for(timeout);
     if (status != std::future_status::ready) {
       cout << "Timed out on: " << fq_name.string() << " " << instance_name
@@ -124,7 +127,8 @@ void VtsTrebleVintfTestBase::ForEachAidlHalInstance(
     auto future_result = std::async([&]() {
       fn(package, version, interface, instance, updatable_via_apex);
     });
-    auto timeout = std::chrono::seconds(1);
+    int timeout_multiplier = base::GetIntProperty("ro.hw_timeout_multiplier", 1);
+    auto timeout = timeout_multiplier * std::chrono::seconds(1);
     std::future_status status = future_result.wait_for(timeout);
     if (status != std::future_status::ready) {
       cout << "Timed out on: " << package << "." << interface << "/" << instance
@@ -134,15 +138,17 @@ void VtsTrebleVintfTestBase::ForEachAidlHalInstance(
   });
 }
 
-sp<IBase> VtsTrebleVintfTestBase::GetHalService(const FQName &fq_name,
-                                                const string &instance_name,
-                                                Transport transport, bool log) {
-  return GetHalService(fq_name.string(), instance_name, transport, log);
+sp<IBase> VtsTrebleVintfTestBase::GetHidlService(const FQName &fq_name,
+                                                 const string &instance_name,
+                                                 Transport transport,
+                                                 bool log) {
+  return GetHidlService(fq_name.string(), instance_name, transport, log);
 }
 
-sp<IBase> VtsTrebleVintfTestBase::GetHalService(const string &fq_name,
-                                                const string &instance_name,
-                                                Transport transport, bool log) {
+sp<IBase> VtsTrebleVintfTestBase::GetHidlService(const string &fq_name,
+                                                 const string &instance_name,
+                                                 Transport transport,
+                                                 bool log) {
   using android::hardware::details::getRawServiceInternal;
 
   if (log) {
@@ -159,7 +165,8 @@ sp<IBase> VtsTrebleVintfTestBase::GetHalService(const string &fq_name,
     return getRawServiceInternal(fq_name, instance_name, true /* retry */,
                                  false /* getStub */);
   });
-  auto max_time = std::chrono::seconds(1);
+  int timeout_multiplier = base::GetIntProperty("ro.hw_timeout_multiplier", 1);
+  auto max_time = timeout_multiplier * std::chrono::seconds(1);
 
   std::future<sp<IBase>> future = task.get_future();
   std::thread(std::move(task)).detach();
@@ -174,6 +181,21 @@ sp<IBase> VtsTrebleVintfTestBase::GetHalService(const string &fq_name,
   if (base->isRemote() != wantRemote) return nullptr;
 
   return base;
+}
+
+sp<IBinder> VtsTrebleVintfTestBase::GetAidlService(const string &name) {
+  auto task = std::packaged_task<sp<IBinder>()>([name]() {
+    return defaultServiceManager()->waitForService(String16(name.c_str()));
+  });
+
+  int timeout_multiplier = base::GetIntProperty("ro.hw_timeout_multiplier", 1);
+  // TODO(b/205347235)
+  auto max_time = timeout_multiplier * std::chrono::seconds(2);
+  auto future = task.get_future();
+  std::thread(std::move(task)).detach();
+  auto status = future.wait_for(max_time);
+
+  return status == std::future_status::ready ? future.get() : nullptr;
 }
 
 vector<string> VtsTrebleVintfTestBase::GetInstanceNames(
