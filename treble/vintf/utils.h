@@ -17,7 +17,6 @@
 #ifndef VTS_TREBLE_VINTF_TEST_UTILS_H_
 #define VTS_TREBLE_VINTF_TEST_UTILS_H_
 #include <map>
-#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -58,7 +57,6 @@ using std::cout;
 using std::endl;
 using std::map;
 using std::multimap;
-using std::optional;
 using std::set;
 using std::string;
 
@@ -67,9 +65,8 @@ using std::vector;
 using HidlVerifyFn = std::function<void(
     const FQName& fq_name, const string& instance_name, Transport)>;
 using AidlVerifyFn =
-    std::function<void(const std::string& package, uint64_t version,
-                       const std::string& name, const std::string& instance,
-                       const std::optional<std::string>& updatable_via_apex)>;
+    std::function<void(const std::string& package, const std::string& name,
+                       const std::string& instance)>;
 using HashCharArray = hidl_array<unsigned char, 32>;
 using HalManifestPtr = std::shared_ptr<const HalManifest>;
 using MatrixPtr = std::shared_ptr<const CompatibilityMatrix>;
@@ -84,13 +81,12 @@ extern const map<string, string> kPackageRoot;
 // HALs that are allowed to be passthrough under Treble rules.
 extern const set<string> kPassthroughHals;
 
-// Try the following properties in this order, returning the first non-zero
-// (non-empty) value:
-// - ro.board.api_level
-// - ro.board.first_api_level
-// - ro.product.first_api_level
-// - ro.build.version.sdk
-uint64_t GetBoardApiLevel();
+extern const map<size_t /* Shipping API Level */, Level /* FCM Version */>
+    kFcm2ApiLevelMap;
+
+// Returns ro.product.first_api_level if it is defined and not 0. Returns
+// ro.build.version.sdk otherwise.
+uint64_t GetShippingApiLevel();
 
 // For a given interface returns package root if known. Returns empty string
 // otherwise.
@@ -98,6 +94,9 @@ const string PackageRoot(const FQName& fq_iface_name);
 
 // Returns true iff HAL interface is Android platform.
 bool IsAndroidPlatformInterface(const FQName& fq_iface_name);
+
+// Returns true iff the device has the specified feature.
+bool DeviceSupportsFeature(const char* feature);
 
 // Returns the set of released hashes for a given HAL interface.
 set<string> ReleasedHashes(const FQName& fq_iface_name);

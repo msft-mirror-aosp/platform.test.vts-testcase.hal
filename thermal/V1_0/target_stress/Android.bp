@@ -14,10 +14,6 @@
 // limitations under the License.
 //
 
-package {
-    default_applicable_licenses: ["Android-Apache-2.0"],
-}
-
 cc_test {
     name: "thermal_hidl_stress_test",
     gtest: true,
@@ -38,4 +34,8 @@ cc_test {
         "-Wall",
         "-Werror",
     ],
+}
+
+vts_config {
+    name: "ThermalHidlTargetStressTest",
 }

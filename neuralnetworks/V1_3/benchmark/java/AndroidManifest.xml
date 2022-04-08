@@ -21,8 +21,7 @@
     <uses-sdk android:minSdkVersion="30"/>
 
     <application android:name=".NNAccuracyApplication">
-        <activity android:name=".NNAccuracyActivity"
-            android:exported="true">
+        <activity android:name=".NNAccuracyActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>

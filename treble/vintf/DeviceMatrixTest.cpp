@@ -36,7 +36,7 @@ void DeviceMatrixTest::SetUp() {
 }
 
 TEST_F(DeviceMatrixTest, VndkVersion) {
-  if (GetBoardApiLevel() < 28) {
+  if (GetShippingApiLevel() < 28) {
     GTEST_SKIP()
         << "VNDK version doesn't need to be set on devices before Android P";
   }
