@@ -272,7 +272,8 @@ TEST_P(SingleManifestTest, HalsAreBinderized) {
       std::inserter(passthrough_not_allowed, passthrough_not_allowed.begin()));
 
   EXPECT_TRUE(passthrough_not_allowed.empty())
-      << "The following HALs can't be passthrough under Treble rules: ["
+      << "The following HALs can't be passthrough under Treble rules (or they "
+         "can't be retrieved): ["
       << InstancesToString(passthrough_not_allowed) << "].";
 }
 
