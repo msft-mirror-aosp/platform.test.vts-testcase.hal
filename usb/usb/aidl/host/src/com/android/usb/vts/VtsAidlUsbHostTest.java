@@ -75,7 +75,7 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         long startTime = System.currentTimeMillis();
         portResult = mDevice.executeShellCommand(cmd);
 
-        if (portResult == "No USB ports") {
+        if (portResult != null && "No USB ports".equals(portResult.trim())) {
             CLog.i("portResult: %s", portResult);
             return;
         }
