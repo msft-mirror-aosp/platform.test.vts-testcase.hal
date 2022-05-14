@@ -79,13 +79,13 @@ TEST_F(DeviceManifestTest, NoDeprecatedHalsOnManifest) {
 // Tests that devices launching R support mapper@4.0.  Go devices are exempt
 // from this requirement, so we use this test to enforce instead of the
 // compatibility matrix.
-TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
+TEST_F(DeviceManifestTest, GraphicsMapperHalVersionCompatibility) {
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   bool is_go_device =
       android::base::GetBoolProperty("ro.config.low_ram", false);
   if (shipping_fcm_version == Level::UNSPECIFIED ||
       shipping_fcm_version < Level::R || is_go_device) {
-    GTEST_SKIP() << "Gralloc4 is only required on launching R devices";
+    GTEST_SKIP() << "Graphics mapper 4 is only required on launching R devices";
   }
 
   ASSERT_TRUE(vendor_manifest_->hasHidlInstance(
@@ -124,6 +124,51 @@ TEST_F(DeviceManifestTest, ComposerHal) {
       "android.hardware.graphics.composer3", 1, "IComposer", "default");
   ASSERT_TRUE(has_hidl || has_aidl)
       << "Device must have either composer HIDL HAL or AIDL HAL";
+}
+
+// Devices with Shipping FCM version 7 must have either the HIDL or the
+// AIDL gralloc HAL. Because compatibility matrices cannot express OR condition
+// between <hal>'s, add a test here.
+//
+// There's no need to enforce minimum HAL versions because
+// NoDeprecatedHalsOnManifest already checks it.
+TEST_F(DeviceManifestTest, GrallocHal) {
+  bool has_hidl = false;
+  for (size_t hidl_major = 2; hidl_major <= 4; hidl_major++)
+    has_hidl = has_hidl || vendor_manifest_->hasHidlInstance(
+                               "android.hardware.graphics.allocator",
+                               {hidl_major, 0}, "IAllocator", "default");
+
+  bool has_aidl = vendor_manifest_->hasAidlInstance(
+      "android.hardware.graphics.allocator", 1, "IAllocator", "default");
+
+  ASSERT_TRUE(has_hidl || has_aidl)
+      << "Device must have either graphics allocator HIDL HAL or AIDL HAL";
+}
+
+// Tests that devices launching T support allocator@4.0 or AIDL.
+// Go devices are exempt
+// from this requirement, so we use this test to enforce instead of the
+// compatibility matrix.
+TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
+  Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
+  bool is_go_device =
+      android::base::GetBoolProperty("ro.config.low_ram", false);
+  if (shipping_fcm_version == Level::UNSPECIFIED ||
+      shipping_fcm_version < Level::T || is_go_device) {
+    GTEST_SKIP() << "Gralloc 4.0/AIDL is only required on launching T devices";
+  }
+
+  bool has_aidl = vendor_manifest_->hasAidlInstance(
+      "android.hardware.graphics.allocator", 1, "IAllocator", "default");
+  bool has_hidl_4_0 = vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.allocator", {4, 0}, "IAllocator", "default");
+  ASSERT_TRUE(has_aidl || has_hidl_4_0);
+
+  ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.allocator", {2, 0}, "IAllocator", "default"));
+  ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.allocator", {3, 0}, "IAllocator", "default"));
 }
 
 static std::vector<HalManifestPtr> GetTestManifests() {
