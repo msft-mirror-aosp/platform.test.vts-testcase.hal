@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+package com.android.tests.usbport;
+
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.device.ITestDevice;
 import com.android.tradefed.log.LogUtil.CLog;
@@ -46,6 +48,8 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
     public void testResetUsbPort() throws Exception {
         Assert.assertNotNull("Target device does not exist", mDevice);
 
+        String portResult;
+
         String deviceSerialNumber = mDevice.getSerialNumber();
 
         CLog.i("testResetUsbPort on device [%s]", deviceSerialNumber);
@@ -69,7 +73,13 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         String cmd = "svc usb resetUsbPort";
         CLog.i("Invoke shell command [" + cmd + "]");
         long startTime = System.currentTimeMillis();
-        mDevice.executeShellCommand(cmd);
+        portResult = mDevice.executeShellCommand(cmd);
+
+        if (portResult != null && "No USB ports".equals(portResult.trim())) {
+            CLog.i("portResult: %s", portResult);
+            return;
+        }
+
         Thread.sleep(100);
         while (!mReconnected.get() && System.currentTimeMillis() - startTime < CONN_TIMEOUT) {
             Thread.sleep(300);
