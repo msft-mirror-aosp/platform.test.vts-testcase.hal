@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
+package com.android.tests.usbport;
+
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.device.ITestDevice;
 import com.android.tradefed.log.LogUtil.CLog;
+import com.android.tradefed.invoker.TestInformation;
 import com.android.tradefed.testtype.DeviceJUnit4ClassRunner;
 import com.android.tradefed.testtype.junit4.BaseHostJUnit4Test;
+import com.android.tradefed.testtype.junit4.BeforeClassWithInfo;
+import com.google.common.base.Strings;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Assert;
@@ -32,7 +39,10 @@ import org.junit.runner.RunWith;
 public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
     public static final String TAG = VtsAidlUsbHostTest.class.getSimpleName();
 
+    private static final String HAL_SERVICE = "android.hardware.usb-service";
     private static final long CONN_TIMEOUT = 5000;
+
+    private static boolean mHasService;
 
     private ITestDevice mDevice;
     private AtomicBoolean mReconnected = new AtomicBoolean(false);
@@ -42,11 +52,26 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         mDevice = getDevice();
     }
 
+    @BeforeClassWithInfo
+    public static void beforeClassWithDevice(TestInformation testInfo) throws Exception {
+        String serviceFound =
+                testInfo.getDevice()
+                        .executeShellCommand(String.format("ps -A | grep \"%s\"", HAL_SERVICE))
+                        .trim();
+        mHasService = !Strings.isNullOrEmpty(serviceFound);
+    }
+
     @Test
     public void testResetUsbPort() throws Exception {
+        Assume.assumeTrue(
+                String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         Assert.assertNotNull("Target device does not exist", mDevice);
 
+        String portResult, content;
         String deviceSerialNumber = mDevice.getSerialNumber();
+        HashSet<String> noSupportCases =
+                    new HashSet<>(Arrays.asList("No USB ports",
+                        "There is no available reset USB port"));
 
         CLog.i("testResetUsbPort on device [%s]", deviceSerialNumber);
 
@@ -69,7 +94,14 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         String cmd = "svc usb resetUsbPort";
         CLog.i("Invoke shell command [" + cmd + "]");
         long startTime = System.currentTimeMillis();
-        mDevice.executeShellCommand(cmd);
+        portResult = mDevice.executeShellCommand(cmd);
+        content = portResult.trim();
+
+        if (portResult != null && (noSupportCases.contains(content))) {
+            CLog.i("portResult: %s", portResult);
+            return;
+        }
+
         Thread.sleep(100);
         while (!mReconnected.get() && System.currentTimeMillis() - startTime < CONN_TIMEOUT) {
             Thread.sleep(300);
