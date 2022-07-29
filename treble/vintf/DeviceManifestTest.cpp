@@ -23,6 +23,10 @@
 
 #include "SingleManifestTest.h"
 
+using testing::Combine;
+using testing::Values;
+using testing::ValuesIn;
+
 namespace android {
 namespace vintf {
 namespace testing {
@@ -171,14 +175,25 @@ TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
       "android.hardware.graphics.allocator", {3, 0}, "IAllocator", "default"));
 }
 
-static std::vector<HalManifestPtr> GetTestManifests() {
-  return {
-      VintfObject::GetDeviceHalManifest(),
-  };
-}
+INSTANTIATE_TEST_CASE_P(
+    DeviceManifest, SingleHidlTest,
+    Combine(ValuesIn(VtsTrebleVintfTestBase::GetHidlInstances(
+                VintfObject::GetDeviceHalManifest())),
+            Values(VintfObject::GetDeviceHalManifest())),
+    &GetTestCaseSuffix<SingleHidlTest>);
 
-INSTANTIATE_TEST_CASE_P(DeviceManifest, SingleManifestTest,
-                        ::testing::ValuesIn(GetTestManifests()));
+INSTANTIATE_TEST_CASE_P(
+    DeviceManifest, SingleHwbinderHalTest,
+    Combine(ValuesIn(SingleHwbinderHalTest::ListRegisteredHwbinderHals()),
+            Values(VintfObject::GetDeviceHalManifest())),
+    &SingleHwbinderHalTest::GetTestCaseSuffix);
+
+INSTANTIATE_TEST_CASE_P(
+    DeviceManifest, SingleAidlTest,
+    Combine(ValuesIn(VtsTrebleVintfTestBase::GetAidlInstances(
+                VintfObject::GetDeviceHalManifest())),
+            Values(VintfObject::GetDeviceHalManifest())),
+    &GetTestCaseSuffix<SingleAidlTest>);
 
 }  // namespace testing
 }  // namespace vintf
