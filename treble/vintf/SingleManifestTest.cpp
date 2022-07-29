@@ -386,6 +386,8 @@ TEST_P(SingleManifestTest, ServedHwbinderHalsAreInManifest) {
   EXPECT_TRUE(ret.isOk());
 }
 
+// Tests that all HALs which are served are specified in the VINTF
+// This tests (HAL is served) => (HAL in manifest) for passthrough HALs
 TEST_P(SingleManifestTest, ServedPassthroughHalsAreInManifest) {
   auto manifest = GetParam();
   std::set<std::string> manifest_passthrough_hals_ =
