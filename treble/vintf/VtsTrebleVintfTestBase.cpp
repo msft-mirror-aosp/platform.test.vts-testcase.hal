@@ -167,8 +167,7 @@ sp<IBinder> VtsTrebleVintfTestBase::GetAidlService(const string &name) {
   });
 
   int timeout_multiplier = base::GetIntProperty("ro.hw_timeout_multiplier", 1);
-  // TODO(b/205347235)
-  auto max_time = timeout_multiplier * std::chrono::seconds(2);
+  auto max_time = timeout_multiplier * std::chrono::seconds(1);
   auto future = task.get_future();
   std::thread(std::move(task)).detach();
   auto status = future.wait_for(max_time);
