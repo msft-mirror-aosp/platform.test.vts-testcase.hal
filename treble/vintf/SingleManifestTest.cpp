@@ -508,7 +508,7 @@ static int32_t getInterfaceVersion(const sp<IBinder> &binder) {
   return version;
 }
 
-static void CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
+static bool CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
                                             const std::string &name,
                                             uint64_t declared_version,
                                             bool allow_upgrade) {
@@ -516,19 +516,19 @@ static void CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
   if (actual_version < 1) {
     ADD_FAILURE() << "For " << name << ", version should be >= 1 but it is "
                   << actual_version << ".";
-    return;
+    return false;
   }
 
   if (declared_version == actual_version) {
     std::cout << "For " << name << ", version " << actual_version
               << " matches declared value." << std::endl;
-    return;
+    return true;
   }
   if (allow_upgrade && actual_version > declared_version) {
     std::cout << "For " << name << ", upgraded version " << actual_version
               << " is okay. (declared value = " << declared_version << ".)"
               << std::endl;
-    return;
+    return true;
   }
 
   // Android R VINTF did not support AIDL version in the manifest.
@@ -540,16 +540,17 @@ static void CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
               << actual_version << ". Exempted for shipping FCM version "
               << shipping_fcm_version << ". (b/178458001, b/199190514)"
               << std::endl;
-    return;
+    return true;
   }
 
   ADD_FAILURE()
-      << "For " << name << ", manifest (" << shipping_fcm_version
+      << "For " << name << ", manifest (targeting FCM:" << shipping_fcm_version
       << ") declares version " << declared_version
       << ", but the actual version is " << actual_version << std::endl
       << "Either the VINTF manifest <hal> entry needs to be updated with a "
          "version tag for the actual version, or the implementation should be "
          "changed to use the declared version";
+  return false;
 }
 
 // An AIDL HAL with VINTF stability can only be registered if it is in the
@@ -574,7 +575,8 @@ TEST_P(SingleAidlTest, HalIsServed) {
   // allow upgrade if updatable HAL's declared APEX is actually updated.
   const bool allow_upgrade = updatable_via_apex.has_value() &&
                              IsApexUpdated(updatable_via_apex.value());
-  CheckAidlVersionMatchesDeclared(binder, name, version, allow_upgrade);
+  const bool reliable_version =
+      CheckAidlVersionMatchesDeclared(binder, name, version, allow_upgrade);
 
   const std::string hash = getInterfaceHash(binder);
   const std::optional<AidlInterfaceMetadata> metadata =
@@ -599,7 +601,7 @@ TEST_P(SingleAidlTest, HalIsServed) {
 
   if (is_aosp) {
     if (!found_hash) {
-      if (is_release || is_existing) {
+      if (is_release || (reliable_version && is_existing)) {
         ADD_FAILURE() << "Interface " << name << " has an unrecognized hash: '"
                       << hash << "'. The following hashes are known:\n"
                       << base::Join(hashes, '\n')
