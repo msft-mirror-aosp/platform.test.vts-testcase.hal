@@ -195,6 +195,13 @@ INSTANTIATE_TEST_CASE_P(
             Values(VintfObject::GetDeviceHalManifest())),
     &GetTestCaseSuffix<SingleAidlTest>);
 
+INSTANTIATE_TEST_CASE_P(
+    DeviceManifest, SingleNativeTest,
+    Combine(ValuesIn(VtsTrebleVintfTestBase::GetNativeInstances(
+                VintfObject::GetDeviceHalManifest())),
+            Values(VintfObject::GetDeviceHalManifest())),
+    &SanitizeTestCaseSuffix<SingleNativeTest>);
+
 }  // namespace testing
 }  // namespace vintf
 }  // namespace android
