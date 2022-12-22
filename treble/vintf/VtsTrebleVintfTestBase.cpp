@@ -116,6 +116,18 @@ std::vector<AidlInstance> VtsTrebleVintfTestBase::GetAidlInstances(
   return ret;
 }
 
+std::vector<std::string> VtsTrebleVintfTestBase::GetNativeInstances(
+    const HalManifestPtr &manifest) {
+  std::vector<std::string> ret;
+  manifest->forEachInstance([manifest, &ret](const auto &manifest_instance) {
+    if (manifest_instance.format() == HalFormat::NATIVE) {
+      ret.emplace_back(manifest_instance.description());
+    }
+    return true;  // continue to next instance
+  });
+  return ret;
+}
+
 sp<IBase> VtsTrebleVintfTestBase::GetHidlService(const FQName &fq_name,
                                                  const string &instance_name,
                                                  Transport transport,
