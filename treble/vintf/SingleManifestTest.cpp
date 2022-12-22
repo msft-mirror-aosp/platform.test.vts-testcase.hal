@@ -628,6 +628,12 @@ TEST_P(SingleAidlTest, HalIsServed) {
   }
 }
 
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SingleNativeTest);
+TEST_P(SingleNativeTest, Check) {
+  const auto &[native_instance, manifest] = GetParam();
+  ADD_FAILURE() << "this shouldn't exist yet " << native_instance;
+}
+
 }  // namespace testing
 }  // namespace vintf
 }  // namespace android
