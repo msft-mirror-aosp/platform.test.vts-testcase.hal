@@ -114,6 +114,12 @@ std::string GetTestCaseSuffix(
   const auto& instance = std::get<0>(info.param);
   return instance.test_case_name() + "_" + std::to_string(info.index);
 }
+template <typename Test>
+std::string SanitizeTestCaseSuffix(
+    const ::testing::TestParamInfo<typename Test::ParamType>& info) {
+  const auto& instance = std::get<0>(info.param);
+  return SanitizeTestCaseName(instance) + "_" + std::to_string(info.index);
+}
 
 using HashCharArray = hidl_array<unsigned char, 32>;
 using HalManifestPtr = std::shared_ptr<const HalManifest>;
