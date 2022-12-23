@@ -57,7 +57,7 @@ class SingleAidlTest : public VtsTrebleVintfTestBase,
 // A parameterized test for a native HAL in one of the manifests.
 class SingleNativeTest : public VtsTrebleVintfTestBase,
                          public ::testing::WithParamInterface<
-                             std::tuple<std::string, HalManifestPtr>> {
+                             std::tuple<NativeInstance, HalManifestPtr>> {
  public:
   virtual ~SingleNativeTest() {}
 };
