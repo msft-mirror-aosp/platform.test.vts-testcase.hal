@@ -54,6 +54,14 @@ class SingleAidlTest : public VtsTrebleVintfTestBase,
   virtual ~SingleAidlTest() {}
 };
 
+// A parameterized test for a native HAL in one of the manifests.
+class SingleNativeTest : public VtsTrebleVintfTestBase,
+                         public ::testing::WithParamInterface<
+                             std::tuple<std::string, HalManifestPtr>> {
+ public:
+  virtual ~SingleNativeTest() {}
+};
+
 }  // namespace testing
 }  // namespace vintf
 }  // namespace android
