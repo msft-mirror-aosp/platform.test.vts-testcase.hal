@@ -200,7 +200,7 @@ INSTANTIATE_TEST_CASE_P(
     Combine(ValuesIn(VtsTrebleVintfTestBase::GetNativeInstances(
                 VintfObject::GetDeviceHalManifest())),
             Values(VintfObject::GetDeviceHalManifest())),
-    &SanitizeTestCaseSuffix<SingleNativeTest>);
+    &GetTestCaseSuffix<SingleNativeTest>);
 
 }  // namespace testing
 }  // namespace vintf
