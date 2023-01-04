@@ -25,9 +25,11 @@
 #include <binder/IServiceManager.h>
 #include <binder/Parcel.h>
 #include <binder/Status.h>
+#include <dirent.h>
 #include <gmock/gmock.h>
 #include <hidl-util/FqInstance.h>
 #include <hidl/HidlTransportUtils.h>
+#include <stdio.h>
 #include <vintf/constants.h>
 #include <vintf/parse_string.h>
 
@@ -628,10 +630,98 @@ TEST_P(SingleAidlTest, HalIsServed) {
   }
 }
 
+// We don't want to add more same process HALs in Android. We have some 3rd
+// party ones such as openGL and Vulkan. In the future, we should verify those
+// here as well. However we want to strictly limit other HALs because a
+// same-process HAL confuses the client and server SELinux permissions. In
+// Android, we prefer upstream Linux support, then secondary to that, we prefer
+// having hardware use in a process isolated from the Android framework.
+static const std::set<std::string> kKnownNativePackages = {"mapper"};
+static const std::vector<std::string> kNativeHalPaths = {
+    "/vendor/lib/hw/",
+    "/vendor/lib64/hw/",
+};
+
+// using device manifest test for access to GetNativeInstances
+TEST(NativeDeclaredTest, NativeDeclaredIfExists) {
+  std::set<std::string> names;  // e.g. 'mapper.instance_name'
+
+  // read all the native HALs installed on disk
+  bool found_a_dir = false;
+  for (const std::string &dir : kNativeHalPaths) {
+    DIR *dp = opendir(dir.c_str());
+    if (dp == nullptr) continue;
+    found_a_dir = true;
+
+    dirent *entry;
+    while ((entry = readdir(dp))) {
+      std::string name = entry->d_name;
+      size_t dot_one = name.find('.');
+      if (dot_one == std::string::npos) continue;
+      size_t dot_end = name.rfind('.');
+      if (dot_end == std::string::npos || dot_one == dot_end) continue;
+      ASSERT_LT(dot_one, dot_end);
+      if (name.substr(dot_end) != ".so") continue;
+
+      std::string package = name.substr(0, dot_one);
+      if (kKnownNativePackages.find(package) == kKnownNativePackages.end())
+        continue;
+
+      names.insert(name.substr(0, dot_end));
+    }
+    closedir(dp);
+  }
+  ASSERT_TRUE(found_a_dir);
+
+  // ignore HALs which are declared, because they'll be checked in
+  // SingleNativeTest ExistsIfDeclared
+  for (const auto &hal : VtsTrebleVintfTestBase::GetNativeInstances(
+           VintfObject::GetDeviceHalManifest())) {
+    std::string this_name = hal.package() + "." + hal.instance();
+    names.erase(this_name);
+  }
+
+  for (const std::string &name : names) {
+    ADD_FAILURE() << name
+                  << " is installed on the device, but it's not declared in "
+                     "the VINTF manifest";
+  }
+}
+
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SingleNativeTest);
-TEST_P(SingleNativeTest, Check) {
+TEST_P(SingleNativeTest, ExistsIfDeclared) {
   const auto &[native_instance, manifest] = GetParam();
-  ADD_FAILURE() << "this shouldn't exist yet " << native_instance;
+
+  // TODO - we need a generic way to test the version
+  EXPECT_EQ(native_instance.major_version(), 1);
+  EXPECT_EQ(native_instance.minor_version(), 0);
+  EXPECT_NE(kKnownNativePackages.end(),
+            kKnownNativePackages.find(native_instance.package()))
+      << "Unsupported package: " << native_instance.package()
+      << " must be one of: " << base::Join(kKnownNativePackages, ", ");
+  EXPECT_TRUE(native_instance.interface() == "I" ||
+              native_instance.interface() == "")
+      << "Interface must be 'I' or '' for native HAL: "
+      << native_instance.interface();
+
+  std::vector<std::string> paths;
+  std::vector<std::string> available_paths;
+  for (const std::string &dir : kNativeHalPaths) {
+    std::string path = dir + native_instance.package() + "." +
+                       native_instance.instance() + ".so";
+    paths.push_back(path);
+
+    if (0 == access(path.c_str(), F_OK)) {
+      available_paths.push_back(path);
+    }
+  }
+
+  if (available_paths.empty()) {
+    ADD_FAILURE() << native_instance
+                  << " is declared in the VINTF manifest, but it cannot be "
+                     "found at one of the supported paths: "
+                  << base::Join(paths, ", ");
+  }
 }
 
 }  // namespace testing
