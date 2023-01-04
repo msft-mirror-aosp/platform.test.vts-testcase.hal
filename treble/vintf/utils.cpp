@@ -79,6 +79,12 @@ AidlInstance::AidlInstance(const ManifestInstance &other)
   CHECK_EQ(format(), HalFormat::AIDL);
 }
 
+string AidlInstance::test_case_name() const {
+  return SanitizeTestCaseName(
+      toAidlFqnameString(package(), interface(), instance()) + "_V" +
+      to_string(version()));
+}
+
 ostream &operator<<(ostream &os, const AidlInstance& val) {
   os << toAidlFqnameString(val.package(), val.interface(), val.instance())
      << ", Version " << val.version();
@@ -88,10 +94,23 @@ ostream &operator<<(ostream &os, const AidlInstance& val) {
   return os;
 }
 
-string AidlInstance::test_case_name() const {
+NativeInstance::NativeInstance(const ManifestInstance &other)
+    : ManifestInstance(other) {
+  CHECK_EQ(format(), HalFormat::NATIVE);
+}
+
+string NativeInstance::test_case_name() const {
   return SanitizeTestCaseName(
       toAidlFqnameString(package(), interface(), instance()) + "_V" +
       to_string(version()));
+}
+
+ostream &operator<<(ostream &os, const NativeInstance &val) {
+  os << "Native HAL { package: " << val.package()
+     << " version: " << val.major_version() << "." << val.minor_version()
+     << " interface: " << val.interface() << " instance: " << val.instance()
+     << " }";
+  return os;
 }
 
 uint64_t GetBoardApiLevel() {
