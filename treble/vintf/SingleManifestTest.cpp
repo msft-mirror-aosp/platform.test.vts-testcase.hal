@@ -26,6 +26,7 @@
 #include <binder/Parcel.h>
 #include <binder/Status.h>
 #include <dirent.h>
+#include <dlfcn.h>
 #include <gmock/gmock.h>
 #include <hidl-util/FqInstance.h>
 #include <hidl/HidlTransportUtils.h>
@@ -636,11 +637,33 @@ TEST_P(SingleAidlTest, HalIsServed) {
 // same-process HAL confuses the client and server SELinux permissions. In
 // Android, we prefer upstream Linux support, then secondary to that, we prefer
 // having hardware use in a process isolated from the Android framework.
-static const std::set<std::string> kKnownNativePackages = {"mapper"};
+struct NativePackage {
+  std::string name;
+  int32_t majorVersion;
+};
+
+ostream &operator<<(ostream &os, const NativePackage &pkg) {
+  os << pkg.name << "-v" << pkg.majorVersion;
+  return os;
+}
+
+static const std::array<NativePackage, 1> kKnownNativePackages = {
+    NativePackage{"mapper", 5},
+};
 static const std::vector<std::string> kNativeHalPaths = {
     "/vendor/lib/hw/",
     "/vendor/lib64/hw/",
 };
+
+static std::optional<NativePackage> findKnownNativePackage(
+    std::string_view package) {
+  for (const auto &it : kKnownNativePackages) {
+    if (it.name == package) {
+      return it;
+    }
+  }
+  return std::nullopt;
+}
 
 // using device manifest test for access to GetNativeInstances
 TEST(NativeDeclaredTest, NativeDeclaredIfExists) {
@@ -664,8 +687,7 @@ TEST(NativeDeclaredTest, NativeDeclaredIfExists) {
       if (name.substr(dot_end) != ".so") continue;
 
       std::string package = name.substr(0, dot_one);
-      if (kKnownNativePackages.find(package) == kKnownNativePackages.end())
-        continue;
+      if (!findKnownNativePackage(package).has_value()) continue;
 
       names.insert(name.substr(0, dot_end));
     }
@@ -692,13 +714,14 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SingleNativeTest);
 TEST_P(SingleNativeTest, ExistsIfDeclared) {
   const auto &[native_instance, manifest] = GetParam();
 
-  // TODO - we need a generic way to test the version
-  EXPECT_EQ(native_instance.major_version(), 1);
+  // Currently only support rev'ing the major version
   EXPECT_EQ(native_instance.minor_version(), 0);
-  EXPECT_NE(kKnownNativePackages.end(),
-            kKnownNativePackages.find(native_instance.package()))
+
+  auto knownPackageInfo = findKnownNativePackage(native_instance.package());
+  ASSERT_TRUE(knownPackageInfo.has_value())
       << "Unsupported package: " << native_instance.package()
       << " must be one of: " << base::Join(kKnownNativePackages, ", ");
+  EXPECT_EQ(native_instance.major_version(), knownPackageInfo->majorVersion);
   EXPECT_TRUE(native_instance.interface() == "I" ||
               native_instance.interface() == "")
       << "Interface must be 'I' or '' for native HAL: "
@@ -721,6 +744,27 @@ TEST_P(SingleNativeTest, ExistsIfDeclared) {
                   << " is declared in the VINTF manifest, but it cannot be "
                      "found at one of the supported paths: "
                   << base::Join(paths, ", ");
+  }
+
+  for (const auto &path : available_paths) {
+    bool pathIs64bit = path.find("lib64") != std::string::npos;
+    if ((sizeof(void *) == 8 && pathIs64bit) ||
+        (sizeof(void *) == 4 && !pathIs64bit)) {
+      void *so = dlopen(path.c_str(), RTLD_LAZY | RTLD_LOCAL);
+      ASSERT_NE(so, nullptr) << "Failed to load " << path << dlerror();
+      std::string upperPackage = native_instance.package();
+      std::transform(upperPackage.begin(), upperPackage.end(),
+                     upperPackage.begin(), ::toupper);
+      std::string versionSymbol = "ANDROID_HAL_" + upperPackage + "_VERSION";
+      int32_t *halVersion = (int32_t *)dlsym(so, versionSymbol.c_str());
+      ASSERT_NE(halVersion, nullptr)
+          << "Failed to find symbol " << versionSymbol;
+      EXPECT_EQ(native_instance.major_version(), *halVersion);
+      dlclose(so);
+
+    } else {
+      continue;
+    }
   }
 }
 
