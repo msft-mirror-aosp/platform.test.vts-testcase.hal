@@ -16,6 +16,7 @@
 
 package com.android.tests.usbgadget;
 
+import android.platform.test.annotations.RequiresDevice;
 import com.android.tests.usbgadget.libusb.ConfigDescriptor;
 import com.android.tests.usbgadget.libusb.DeviceDescriptor;
 import com.android.tests.usbgadget.libusb.IUsbNative;
@@ -45,7 +46,7 @@ import org.junit.runner.RunWith;
 public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
     public static final String TAG = VtsHalUsbGadgetV2_0HostTest.class.getSimpleName();
 
-    private static final String HAL_SERVICE = "android.hardware.usb.gadget-service";
+    private static final String HAL_SERVICE = "android.hardware.usb.gadget.IUsbGadget/default";
     private static final String FEATURE_AUTOMOTIVE = "android.hardware.type.automotive";
     private static final long CONN_TIMEOUT = 5000;
     private static final int UNKNOWN_SPEED = -1;
@@ -66,7 +67,7 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
     public static void beforeClassWithDevice(TestInformation testInfo) throws Exception {
         String serviceFound =
                 testInfo.getDevice()
-                        .executeShellCommand(String.format("ps -A | grep \"%s\"", HAL_SERVICE))
+                        .executeShellCommand(String.format("dumpsys -l | grep \"%s\"", HAL_SERVICE))
                         .trim();
         mHasService = !Strings.isNullOrEmpty(serviceFound) && serviceFound.contains(HAL_SERVICE);
 
@@ -108,6 +109,7 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
     }
 
     /** Check for ADB */
+    @RequiresDevice
     @Test
     public void testAndroidUSB() throws Exception {
         Assume.assumeTrue(
@@ -121,6 +123,7 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
      * <p>Enables mtp and checks the host to see if mtp interface is present. MTP:
      * https://en.wikipedia.org/wiki/Media_Transfer_Protocol.
      */
+    @RequiresDevice
     @Test
     public void testMtp() throws Exception {
         Assume.assumeTrue(
@@ -136,6 +139,7 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
      * <p>Enables ptp and checks the host to see if ptp interface is present. PTP:
      * https://en.wikipedia.org/wiki/Picture_Transfer_Protocol.
      */
+    @RequiresDevice
     @Test
     public void testPtp() throws Exception {
         Assume.assumeTrue(
@@ -151,6 +155,7 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
      * <p>Enables midi and checks the host to see if midi interface is present. MIDI:
      * https://en.wikipedia.org/wiki/MIDI.
      */
+    @RequiresDevice
     @Test
     public void testMIDI() throws Exception {
         Assume.assumeFalse("Skip test: MIDI support is not required for automotive",
@@ -169,6 +174,7 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
      * For NCM interface definition, you can find more information on
      * https://www.usb.org/.
      */
+    @RequiresDevice
     @Test
     public void testAndroidNcm() throws Exception {
         Assume.assumeTrue(
@@ -190,10 +196,12 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
      * <p>Gets the command result from USB Gadget Hal v1.2. If success,
      * it will get the USB speed except unknown.
      */
+    @RequiresDevice
     @Test
     public void testGetUsbSpeed() throws Exception {
         Assume.assumeTrue(
                 String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
+
         Assert.assertNotNull("Target device does not exist", mDevice);
 
         String deviceSerialNumber = mDevice.getSerialNumber();
@@ -211,10 +219,12 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
      *
      * <p>This command will reset USB Gadget.
      */
+    @RequiresDevice
     @Test
     public void testResetUsbGadget() throws Exception {
         Assume.assumeTrue(
                 String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
+
         Assert.assertNotNull("Target device does not exist", mDevice);
 
         String deviceSerialNumber = mDevice.getSerialNumber();
