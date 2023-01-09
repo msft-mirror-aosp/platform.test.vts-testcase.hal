@@ -31,6 +31,7 @@ static constexpr int kMaxNumberOfHidlHals = 20;
 // 14 and later.
 class VintfNoHidlTest : public ::testing::Test {};
 
+// @VsrTest = VSR-3.2-001.001|VSR-3.2-001.002
 TEST_F(VintfNoHidlTest, NoHidl) {
   if (std::stoi(android::base::GetProperty("ro.vendor.api_level", "0")) <
       __ANDROID_API_U__) {
