@@ -61,7 +61,13 @@ android::base::Result<void> TestTargetFcmVersion(Level target_fcm_version,
     // O / O-MR1 vendor image doesn't have target FCM version declared and
     // target FCM version is inferred from vendor API level, hence it always
     // meets the requirement.
-    return {};
+    if (vendor_api_level <= 27) {  // O-MR1
+      return {};
+    }
+    return android::base::Error() << "Target FCM version (device manifest "
+                                     "target-level) must be set for "
+                                     "device with vendor api level "
+                                  << vendor_api_level;
   }
 
   if (vendor_api_level < kApiLevel2FcmMap.begin()->first /* 25 */) {
