@@ -45,8 +45,8 @@ static const std::map<uint64_t /* Vendor API Level */, Level /* FCM Version */>
         {29, Level::Q},
         {30, Level::R},
         {31, Level::S},
-        {32, Level::S},  // subject to change, placeholder value
-        {33, Level::T},  // subject to change, placeholder value
+        {32, Level::S},
+        {33, Level::T},
         {34, Level::U},  // subject to change, placeholder value
     }};
 
