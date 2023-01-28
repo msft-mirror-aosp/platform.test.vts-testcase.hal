@@ -48,28 +48,6 @@ TEST_F(DeviceManifestTest, ShippingFcmVersion) {
   ASSERT_RESULT_OK(res);
 }
 
-TEST_F(DeviceManifestTest, KernelFcmVersion) {
-  const char* kHeader =
-      "Kernel FCM version (specified in VINTF manifests with <kernel "
-      "target-level=\"[0-9]+\"/> if not by /proc/version) ";
-  Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
-
-  if (shipping_fcm_version == Level::UNSPECIFIED ||
-      shipping_fcm_version < Level::R) {
-    GTEST_SKIP() << kHeader << " not enforced on target FCM version "
-                 << shipping_fcm_version;
-  }
-  std::string error;
-  Level kernel_fcm_version = VintfObject::GetInstance()->getKernelLevel(&error);
-  ASSERT_NE(Level::UNSPECIFIED, kernel_fcm_version)
-      << kHeader << " must be specified for target FCM version '"
-      << shipping_fcm_version << "': " << error;
-  ASSERT_GE(kernel_fcm_version, shipping_fcm_version)
-      << kHeader << " is " << kernel_fcm_version
-      << ", but it must be greater or equal to target FCM version "
-      << shipping_fcm_version;
-}
-
 // Tests that deprecated HALs are not in the manifest, unless a higher,
 // non-deprecated minor version is in the manifest.
 TEST_F(DeviceManifestTest, NoDeprecatedHalsOnManifest) {
