@@ -128,6 +128,24 @@ TEST_F(DeviceManifestTest, GrallocHal) {
       << "Device must have either graphics allocator HIDL HAL or AIDL HAL";
 }
 
+// Devices after Android T must have either the HIDL or the
+// AIDL thermal HAL. Because compatibility matrices cannot express OR condition
+// between <hal>'s, add a test here.
+TEST_F(DeviceManifestTest, ThermalHal) {
+  Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
+  if (shipping_fcm_version == Level::UNSPECIFIED ||
+      shipping_fcm_version < Level::T) {
+    GTEST_SKIP()
+        << "Thermal HAL is only required on devices launching in T or later";
+  }
+  bool has_hidl = vendor_manifest_->hasHidlInstance(
+      "android.hardware.thermal", {2, 0}, "IThermal", "default");
+  bool has_aidl = vendor_manifest_->hasAidlInstance("android.hardware.thermal",
+                                                    "IThermal", "default");
+  ASSERT_TRUE(has_hidl || has_aidl)
+      << "Device must have either thermal HIDL HAL or AIDL HAL";
+}
+
 // Tests that devices launching T support allocator@4.0 or AIDL.
 // Go devices are exempt
 // from this requirement, so we use this test to enforce instead of the
