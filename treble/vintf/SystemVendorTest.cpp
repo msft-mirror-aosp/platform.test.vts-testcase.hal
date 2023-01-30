@@ -19,6 +19,7 @@
 #include "SystemVendorTest.h"
 
 #include <android-base/logging.h>
+#include <android-base/properties.h>
 #include <android-base/strings.h>
 #include <gmock/gmock.h>
 #include <vintf/VintfObject.h>
@@ -99,9 +100,20 @@ TEST_F(SystemVendorTest, KernelCompatibility) {
 TEST_F(SystemVendorTest, NoMainlineKernel) {
   auto runtime_info = VintfObject::GetRuntimeInfo();
   ASSERT_NE(nullptr, runtime_info) << "Failed to get runtime info.";
-  ASSERT_FALSE(runtime_info->isMainlineKernel())
-      << "uname returns \"" << runtime_info->osRelease()
-      << "\". Mainline kernel is not allowed.";
+
+  const bool is_release =
+      base::GetProperty("ro.build.version.codename", "") == "REL";
+
+  if (runtime_info->isMainlineKernel()) {
+    if (is_release) {
+      ADD_FAILURE() << "uname returns \"" << runtime_info->osRelease()
+                    << "\". Mainline kernel is not allowed.";
+    } else {
+      GTEST_LOG_(ERROR)
+          << "uname returns \"" << runtime_info->osRelease()
+          << "\". Mainline kernel will not be allowed upon release.";
+    }
+  }
 }
 
 // Tests that vendor and framework are compatible.
