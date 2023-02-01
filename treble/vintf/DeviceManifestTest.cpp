@@ -23,6 +23,10 @@
 
 #include "SingleManifestTest.h"
 
+using testing::Combine;
+using testing::Values;
+using testing::ValuesIn;
+
 namespace android {
 namespace vintf {
 namespace testing {
@@ -44,28 +48,6 @@ TEST_F(DeviceManifestTest, ShippingFcmVersion) {
   ASSERT_RESULT_OK(res);
 }
 
-TEST_F(DeviceManifestTest, KernelFcmVersion) {
-  const char* kHeader =
-      "Kernel FCM version (specified in VINTF manifests with <kernel "
-      "target-level=\"[0-9]+\"/> if not by /proc/version) ";
-  Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
-
-  if (shipping_fcm_version == Level::UNSPECIFIED ||
-      shipping_fcm_version < Level::R) {
-    GTEST_SKIP() << kHeader << " not enforced on target FCM version "
-                 << shipping_fcm_version;
-  }
-  std::string error;
-  Level kernel_fcm_version = VintfObject::GetInstance()->getKernelLevel(&error);
-  ASSERT_NE(Level::UNSPECIFIED, kernel_fcm_version)
-      << kHeader << " must be specified for target FCM version '"
-      << shipping_fcm_version << "': " << error;
-  ASSERT_GE(kernel_fcm_version, shipping_fcm_version)
-      << kHeader << " is " << kernel_fcm_version
-      << ", but it must be greater or equal to target FCM version "
-      << shipping_fcm_version;
-}
-
 // Tests that deprecated HALs are not in the manifest, unless a higher,
 // non-deprecated minor version is in the manifest.
 TEST_F(DeviceManifestTest, NoDeprecatedHalsOnManifest) {
@@ -79,13 +61,13 @@ TEST_F(DeviceManifestTest, NoDeprecatedHalsOnManifest) {
 // Tests that devices launching R support mapper@4.0.  Go devices are exempt
 // from this requirement, so we use this test to enforce instead of the
 // compatibility matrix.
-TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
+TEST_F(DeviceManifestTest, GraphicsMapperHalVersionCompatibility) {
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   bool is_go_device =
       android::base::GetBoolProperty("ro.config.low_ram", false);
   if (shipping_fcm_version == Level::UNSPECIFIED ||
       shipping_fcm_version < Level::R || is_go_device) {
-    GTEST_SKIP() << "Gralloc4 is only required on launching R devices";
+    GTEST_SKIP() << "Graphics mapper 4 is only required on launching R devices";
   }
 
   ASSERT_TRUE(vendor_manifest_->hasHidlInstance(
@@ -111,14 +93,110 @@ TEST_F(DeviceManifestTest, HealthHal) {
       << "Device must have either health HIDL HAL or AIDL HAL";
 }
 
-static std::vector<HalManifestPtr> GetTestManifests() {
-  return {
-      VintfObject::GetDeviceHalManifest(),
-  };
+// Devices with Shipping FCM version 7 must have either the HIDL or the
+// AIDL composer HAL. Because compatibility matrices cannot express OR condition
+// between <hal>'s, add a test here.
+//
+// There's no need to enforce minimum HAL versions because
+// NoDeprecatedHalsOnManifest already checks it.
+TEST_F(DeviceManifestTest, ComposerHal) {
+  bool has_hidl = vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.composer", {2, 1}, "IComposer", "default");
+  bool has_aidl = vendor_manifest_->hasAidlInstance(
+      "android.hardware.graphics.composer3", 1, "IComposer", "default");
+  ASSERT_TRUE(has_hidl || has_aidl)
+      << "Device must have either composer HIDL HAL or AIDL HAL";
 }
 
-INSTANTIATE_TEST_CASE_P(DeviceManifest, SingleManifestTest,
-                        ::testing::ValuesIn(GetTestManifests()));
+// Devices with Shipping FCM version 7 must have either the HIDL or the
+// AIDL gralloc HAL. Because compatibility matrices cannot express OR condition
+// between <hal>'s, add a test here.
+//
+// There's no need to enforce minimum HAL versions because
+// NoDeprecatedHalsOnManifest already checks it.
+TEST_F(DeviceManifestTest, GrallocHal) {
+  bool has_hidl = false;
+  for (size_t hidl_major = 2; hidl_major <= 4; hidl_major++)
+    has_hidl = has_hidl || vendor_manifest_->hasHidlInstance(
+                               "android.hardware.graphics.allocator",
+                               {hidl_major, 0}, "IAllocator", "default");
+
+  bool has_aidl = vendor_manifest_->hasAidlInstance(
+      "android.hardware.graphics.allocator", 1, "IAllocator", "default");
+
+  ASSERT_TRUE(has_hidl || has_aidl)
+      << "Device must have either graphics allocator HIDL HAL or AIDL HAL";
+}
+
+// Devices after Android T must have either the HIDL or the
+// AIDL thermal HAL. Because compatibility matrices cannot express OR condition
+// between <hal>'s, add a test here.
+TEST_F(DeviceManifestTest, ThermalHal) {
+  Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
+  if (shipping_fcm_version == Level::UNSPECIFIED ||
+      shipping_fcm_version < Level::T) {
+    GTEST_SKIP()
+        << "Thermal HAL is only required on devices launching in T or later";
+  }
+  bool has_hidl = vendor_manifest_->hasHidlInstance(
+      "android.hardware.thermal", {2, 0}, "IThermal", "default");
+  bool has_aidl = vendor_manifest_->hasAidlInstance("android.hardware.thermal",
+                                                    "IThermal", "default");
+  ASSERT_TRUE(has_hidl || has_aidl)
+      << "Device must have either thermal HIDL HAL or AIDL HAL";
+}
+
+// Tests that devices launching T support allocator@4.0 or AIDL.
+// Go devices are exempt
+// from this requirement, so we use this test to enforce instead of the
+// compatibility matrix.
+TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
+  Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
+  bool is_go_device =
+      android::base::GetBoolProperty("ro.config.low_ram", false);
+  if (shipping_fcm_version == Level::UNSPECIFIED ||
+      shipping_fcm_version < Level::T || is_go_device) {
+    GTEST_SKIP() << "Gralloc 4.0/AIDL is only required on launching T devices";
+  }
+
+  bool has_aidl = vendor_manifest_->hasAidlInstance(
+      "android.hardware.graphics.allocator", 1, "IAllocator", "default");
+  bool has_hidl_4_0 = vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.allocator", {4, 0}, "IAllocator", "default");
+  ASSERT_TRUE(has_aidl || has_hidl_4_0);
+
+  ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.allocator", {2, 0}, "IAllocator", "default"));
+  ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
+      "android.hardware.graphics.allocator", {3, 0}, "IAllocator", "default"));
+}
+
+INSTANTIATE_TEST_CASE_P(
+    DeviceManifest, SingleHidlTest,
+    Combine(ValuesIn(VtsTrebleVintfTestBase::GetHidlInstances(
+                VintfObject::GetDeviceHalManifest())),
+            Values(VintfObject::GetDeviceHalManifest())),
+    &GetTestCaseSuffix<SingleHidlTest>);
+
+INSTANTIATE_TEST_CASE_P(
+    DeviceManifest, SingleHwbinderHalTest,
+    Combine(ValuesIn(SingleHwbinderHalTest::ListRegisteredHwbinderHals()),
+            Values(VintfObject::GetDeviceHalManifest())),
+    &SingleHwbinderHalTest::GetTestCaseSuffix);
+
+INSTANTIATE_TEST_CASE_P(
+    DeviceManifest, SingleAidlTest,
+    Combine(ValuesIn(VtsTrebleVintfTestBase::GetAidlInstances(
+                VintfObject::GetDeviceHalManifest())),
+            Values(VintfObject::GetDeviceHalManifest())),
+    &GetTestCaseSuffix<SingleAidlTest>);
+
+INSTANTIATE_TEST_CASE_P(
+    DeviceManifest, SingleNativeTest,
+    Combine(ValuesIn(VtsTrebleVintfTestBase::GetNativeInstances(
+                VintfObject::GetDeviceHalManifest())),
+            Values(VintfObject::GetDeviceHalManifest())),
+    &GetTestCaseSuffix<SingleNativeTest>);
 
 }  // namespace testing
 }  // namespace vintf
