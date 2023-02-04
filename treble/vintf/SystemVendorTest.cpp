@@ -168,6 +168,8 @@ TEST_P(SystemVendorSingleHwbinderHalTest, ServedHwbinderHalIsInManifests) {
       << fq_instance_name << " is being served, but it is not in a manifest.";
 }
 
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    SystemVendorSingleHwbinderHalTest);
 INSTANTIATE_TEST_CASE_P(
     SystemVendorTest, SystemVendorSingleHwbinderHalTest,
     ValuesIn(SingleHwbinderHalTest::ListRegisteredHwbinderHals()),
