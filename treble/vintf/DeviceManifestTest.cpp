@@ -171,6 +171,7 @@ TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
       "android.hardware.graphics.allocator", {3, 0}, "IAllocator", "default"));
 }
 
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SingleHidlTest);
 INSTANTIATE_TEST_CASE_P(
     DeviceManifest, SingleHidlTest,
     Combine(ValuesIn(VtsTrebleVintfTestBase::GetHidlInstances(
@@ -178,6 +179,7 @@ INSTANTIATE_TEST_CASE_P(
             Values(VintfObject::GetDeviceHalManifest())),
     &GetTestCaseSuffix<SingleHidlTest>);
 
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SingleHwbinderHalTest);
 INSTANTIATE_TEST_CASE_P(
     DeviceManifest, SingleHwbinderHalTest,
     Combine(ValuesIn(SingleHwbinderHalTest::ListRegisteredHwbinderHals()),
