@@ -115,6 +115,21 @@ TEST_F(DeviceManifestTest, HealthHal) {
       << "Device must have either health HIDL HAL or AIDL HAL";
 }
 
+// Devices must have either the HIDL or the AIDL gatekeeper HAL.
+// Because compatibility matrices cannot express OR condition
+// between <hal>'s, add a test here.
+//
+// There's no need to enforce minimum HAL versions because
+// NoDeprecatedHalsOnManifest already checks it.
+TEST_F(DeviceManifestTest, GatekeeperHal) {
+  bool has_hidl = vendor_manifest_->hasHidlInstance(
+      "android.hardware.gatekeeper", {1, 0}, "IGatekeeper", "default");
+  bool has_aidl = vendor_manifest_->hasAidlInstance(
+      "android.hardware.gatekeeper", "IGatekeeper", "default");
+  ASSERT_TRUE(has_hidl || has_aidl)
+      << "Device must have either gatekeeper HIDL HAL or AIDL HAL";
+}
+
 // Devices with Shipping FCM version 7 must have either the HIDL or the
 // AIDL composer HAL. Because compatibility matrices cannot express OR condition
 // between <hal>'s, add a test here.
