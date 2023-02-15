@@ -29,6 +29,8 @@ import com.android.tradefed.log.LogUtil.CLog;
 import com.android.tradefed.testtype.DeviceJUnit4ClassRunner;
 import com.android.tradefed.testtype.junit4.BaseHostJUnit4Test;
 import com.android.tradefed.testtype.junit4.BeforeClassWithInfo;
+import com.android.tradefed.util.RunInterruptedException;
+import com.android.tradefed.util.RunUtil;
 import com.google.common.base.Strings;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
@@ -129,7 +131,7 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
         Assume.assumeTrue(
                 String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         getDevice().executeShellCommand("svc usb setFunctions mtp true");
-        Thread.sleep(CONN_TIMEOUT);
+        RunUtil.getDefault().sleep(CONN_TIMEOUT);
         Assert.assertTrue("MTP not present", checkProtocol(6, 1, 1));
     }
 
@@ -145,7 +147,7 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
         Assume.assumeTrue(
                 String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         getDevice().executeShellCommand("svc usb setFunctions ptp true");
-        Thread.sleep(CONN_TIMEOUT);
+        RunUtil.getDefault().sleep(CONN_TIMEOUT);
         Assert.assertTrue("PTP not present", checkProtocol(6, 1, 1));
     }
 
@@ -163,7 +165,7 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
         Assume.assumeTrue(
                 String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         getDevice().executeShellCommand("svc usb setFunctions midi true");
-        Thread.sleep(CONN_TIMEOUT);
+        RunUtil.getDefault().sleep(CONN_TIMEOUT);
         Assert.assertTrue("MIDI not present", checkProtocol(1, 3, 0));
     }
 
@@ -186,7 +188,7 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
         CLog.i("testAndroidNcm on device [%s]", deviceSerialNumber);
 
         mDevice.executeShellCommand("svc usb setFunctions ncm");
-        Thread.sleep(CONN_TIMEOUT);
+        RunUtil.getDefault().sleep(CONN_TIMEOUT);
         Assert.assertTrue("NCM not present", checkProtocol(2, 13, 0));
     }
 
@@ -235,24 +237,24 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
             public void run() {
                 try {
                     mDevice.waitForDeviceNotAvailable(CONN_TIMEOUT);
-                    Thread.sleep(300);
+                    RunUtil.getDefault().sleep(300);
                     mDevice.waitForDeviceAvailable(CONN_TIMEOUT);
                     mReconnected = true;
                 } catch (DeviceNotAvailableException dnae) {
                     CLog.e("Device is not available");
-                } catch (InterruptedException ie) {
+                } catch (RunInterruptedException ie) {
                     CLog.w("Thread.sleep interrupted");
                 }
             }
         }).start();
 
-        Thread.sleep(100);
+        RunUtil.getDefault().sleep(100);
         String cmd = "svc usb resetUsbGadget";
         CLog.i("Invoke shell command [" + cmd + "]");
         long startTime = System.currentTimeMillis();
         mDevice.executeShellCommand("svc usb resetUsbGadget");
         while (!mReconnected && System.currentTimeMillis() - startTime < CONN_TIMEOUT) {
-            Thread.sleep(100);
+            RunUtil.getDefault().sleep(100);
         }
 
         Assert.assertTrue("usb not reconnect", mReconnected);
