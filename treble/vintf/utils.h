@@ -78,10 +78,8 @@ struct HidlInstance : private ManifestInstance {
   string instance_name() const { return instance(); };
   Transport transport() const { return ManifestInstance::transport(); }
 
-  // Sanitized test case name
   string test_case_name() const;
 };
-// Description for test case
 ostream& operator<<(ostream& os, const HidlInstance& val);
 
 // Wrapper of ManifestInstance that hides details irrelevant to AIDL.
@@ -98,11 +96,29 @@ struct AidlInstance : private ManifestInstance {
     return ManifestInstance::updatableViaApex();
   }
 
-  // Sanitized test case name
   string test_case_name() const;
 };
-
 ostream& operator<<(ostream& os, const AidlInstance& val);
+
+struct NativeInstance : private ManifestInstance {
+ public:
+  NativeInstance(const ManifestInstance& other);
+  NativeInstance(const NativeInstance&) = default;
+  NativeInstance(NativeInstance&&) = default;
+
+  string package() const { return ManifestInstance::package(); }
+  uint64_t minor_version() const {
+    return ManifestInstance::version().minorVer;
+  }
+  uint64_t major_version() const {
+    return ManifestInstance::version().majorVer;
+  }
+  string interface() const { return ManifestInstance::interface(); }
+  string instance() const { return ManifestInstance::instance(); }
+
+  string test_case_name() const;
+};
+ostream& operator<<(ostream& os, const NativeInstance& val);
 
 // Sanitize a string so it can be used as a test case name.
 std::string SanitizeTestCaseName(std::string original);

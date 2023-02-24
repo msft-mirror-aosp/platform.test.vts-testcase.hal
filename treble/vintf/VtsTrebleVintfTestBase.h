@@ -43,6 +43,7 @@ class VtsTrebleVintfTestBase : public ::testing::Test {
   // Applies given function to each HAL instance in VINTF.
   static std::vector<AidlInstance> GetAidlInstances(const HalManifestPtr &);
   static std::vector<HidlInstance> GetHidlInstances(const HalManifestPtr &);
+  static std::vector<NativeInstance> GetNativeInstances(const HalManifestPtr &);
 
   // Retrieves an existing HAL service.
   static sp<IBase> GetHidlService(const string &fq_name,
