@@ -41,7 +41,7 @@ import org.junit.runner.RunWith;
 public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
     public static final String TAG = VtsAidlUsbHostTest.class.getSimpleName();
 
-    private static final String HAL_SERVICE = "android.hardware.usb.IUsb/default";
+    private static final String HAL_SERVICE = "android.hardware.usb-service";
     private static final long CONN_TIMEOUT = 5000;
 
     private static boolean mHasService;
@@ -58,7 +58,7 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
     public static void beforeClassWithDevice(TestInformation testInfo) throws Exception {
         String serviceFound =
                 testInfo.getDevice()
-                        .executeShellCommand(String.format("dumpsys -l | grep \"%s\"", HAL_SERVICE))
+                        .executeShellCommand(String.format("ps -A | grep \"%s\"", HAL_SERVICE))
                         .trim();
         mHasService = !Strings.isNullOrEmpty(serviceFound);
     }
