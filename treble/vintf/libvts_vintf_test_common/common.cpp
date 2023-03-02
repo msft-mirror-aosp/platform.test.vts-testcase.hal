@@ -50,6 +50,16 @@ static const std::map<uint64_t /* Vendor API Level */, Level /* FCM Version */>
         {34, Level::U},  // subject to change, placeholder value
     }};
 
+android::base::Result<Level> GetFcmVersionFromApiLevel(uint64_t api_level) {
+  auto it = android::vintf::testing::kApiLevel2FcmMap.find(api_level);
+  if (it == android::vintf::testing::kApiLevel2FcmMap.end()) {
+    return android::base::Error()
+           << "Can't find corresponding VINTF level for API level " << api_level
+           << ". Is the test updated?";
+  }
+  return it->second;
+}
+
 android::base::Result<void> TestTargetFcmVersion(Level target_fcm_version,
                                                  uint64_t vendor_api_level) {
   if (vendor_api_level == 0u) {
