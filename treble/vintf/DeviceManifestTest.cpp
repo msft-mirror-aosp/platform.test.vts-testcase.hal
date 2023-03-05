@@ -93,6 +93,21 @@ TEST_F(DeviceManifestTest, HealthHal) {
       << "Device must have either health HIDL HAL or AIDL HAL";
 }
 
+// Devices must have either the HIDL or the AIDL gatekeeper HAL.
+// Because compatibility matrices cannot express OR condition
+// between <hal>'s, add a test here.
+//
+// There's no need to enforce minimum HAL versions because
+// NoDeprecatedHalsOnManifest already checks it.
+TEST_F(DeviceManifestTest, GatekeeperHal) {
+  bool has_hidl = vendor_manifest_->hasHidlInstance(
+      "android.hardware.gatekeeper", {1, 0}, "IGatekeeper", "default");
+  bool has_aidl = vendor_manifest_->hasAidlInstance(
+      "android.hardware.gatekeeper", "IGatekeeper", "default");
+  ASSERT_TRUE(has_hidl || has_aidl)
+      << "Device must have either gatekeeper HIDL HAL or AIDL HAL";
+}
+
 // Devices with Shipping FCM version 7 must have either the HIDL or the
 // AIDL composer HAL. Because compatibility matrices cannot express OR condition
 // between <hal>'s, add a test here.
@@ -169,6 +184,38 @@ TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
       "android.hardware.graphics.allocator", {2, 0}, "IAllocator", "default"));
   ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
       "android.hardware.graphics.allocator", {3, 0}, "IAllocator", "default"));
+}
+
+// Devices must have either the HIDL or the AIDL audio HAL, both "core" and
+// "effect" parts must be of the same type. Checked by a test because
+// compatibility matrices cannot express these conditions.
+TEST_F(DeviceManifestTest, AudioHal) {
+  Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
+  if (shipping_fcm_version == Level::UNSPECIFIED ||
+      shipping_fcm_version < Level::U) {
+    GTEST_SKIP() << "AIDL Audio HAL can only appear on launching U devices";
+  }
+  bool has_hidl_core = false;
+  for (const auto v :
+       {Version(5, 0), Version(6, 0), Version(7, 0), Version(7, 1)}) {
+    has_hidl_core |= vendor_manifest_->hasHidlInstance(
+        "android.hardware.audio", v, "IDevicesFactory", "default");
+  }
+  bool has_hidl_effect = false;
+  for (const auto v : {Version(5, 0), Version(6, 0), Version(7, 0)}) {
+    has_hidl_effect |= vendor_manifest_->hasHidlInstance(
+        "android.hardware.audio.effect", v, "IEffectsFactory", "default");
+  }
+  bool has_aidl_core = vendor_manifest_->hasAidlInstance(
+      "android.hardware.audio.core", "IConfig", "default");
+  bool has_aidl_effect = vendor_manifest_->hasAidlInstance(
+      "android.hardware.audio.effect", "IFactory", "default");
+  EXPECT_EQ(has_hidl_core, has_hidl_effect)
+      << "Device must have both Audio Core and Effect HALs of the same type";
+  EXPECT_EQ(has_aidl_core, has_aidl_effect)
+      << "Device must have both Audio Core and Effect HALs of the same type";
+  EXPECT_TRUE(has_hidl_core || has_aidl_core)
+      << "Device must have either Audio HIDL HAL or AIDL HAL";
 }
 
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SingleHidlTest);
