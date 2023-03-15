@@ -106,7 +106,8 @@ static FqInstance ToFqInstance(const string &interface,
 // Given android.foo.bar@x.y::IFoo/default, attempt to get
 // android.foo.bar@x.y::IFoo/default, android.foo.bar@x.(y-1)::IFoo/default,
 // ... android.foo.bar@x.0::IFoo/default until the passthrough HAL is retrieved.
-static sp<IBase> GetPassthroughService(const FqInstance &fq_instance) {
+static sp<IBase> GetPassthroughServiceExact(const FqInstance &fq_instance,
+                                            bool expect_interface_chain_valid) {
   for (size_t minor_version = fq_instance.getMinorVersion();; --minor_version) {
     // String out instance name from fq_instance.
     FqInstance interface;
@@ -131,7 +132,7 @@ static sp<IBase> GetPassthroughService(const FqInstance &fq_instance) {
           }
         }
       });
-      if (!interface_chain_valid) {
+      if (!interface_chain_valid && expect_interface_chain_valid) {
         ADD_FAILURE() << "Retrieved " << interface.string() << "/"
                       << fq_instance.getInstance() << " as "
                       << fq_instance.string()
@@ -150,6 +151,82 @@ static sp<IBase> GetPassthroughService(const FqInstance &fq_instance) {
     }
   }
   ADD_FAILURE() << "Should not reach here";
+  return nullptr;
+}
+
+// Given vendor.foo.bar@x.y::IFoo/default, also look up all declared passthrough
+// HAL implementations on the device that implements this interface.
+sp<IBase> SingleHidlTest::GetPassthroughService(const FqInstance &fq_instance) {
+  sp<IBase> hal_service = GetPassthroughServiceExact(
+      fq_instance, true /* expect_interface_chain_valid */);
+  if (hal_service != nullptr) {
+    return hal_service;
+  }
+
+  // For vendor extensions, hal_service may be null because we don't know
+  // its interfaceChain()[1] to call getService(). However, the base interface
+  // should be declared in the manifest. Attempt to find it.
+  cout
+      << "Can't find passthrough service " << fq_instance.string()
+      << ". It might be a vendor extension. Searching all passthrough services "
+         "on the device for a match."
+      << endl;
+
+  const auto &[_, manifest] = GetParam();
+  auto all_declared_passthrough_instances = GetHidlInstances(manifest);
+  for (const HidlInstance &other_hidl_instance :
+       all_declared_passthrough_instances) {
+    if (other_hidl_instance.transport() != Transport::PASSTHROUGH) {
+      continue;
+    }
+    if (other_hidl_instance.instance_name() != fq_instance.getInstance()) {
+      cout << "Skipping " << other_hidl_instance.fq_name().string() << "/"
+           << other_hidl_instance.instance_name()
+           << " because instance name is not " << fq_instance.getInstance();
+      continue;
+    }
+    auto other_fq_instance = FqInstance::from(
+        other_hidl_instance.fq_name(), other_hidl_instance.instance_name());
+    if (!other_fq_instance) {
+      cout << other_hidl_instance.fq_name().string() << "/"
+           << other_hidl_instance.instance_name()
+           << " is not a valid FqInstance, skipping." << endl;
+      continue;
+    }
+    auto other_service = GetPassthroughServiceExact(
+        *other_fq_instance, false /* expect_interface_chain_valid */);
+    if (other_service == nullptr) {
+      cout << "Cannot retrieve " << other_fq_instance->string() << ", skipping."
+           << endl;
+      continue;
+    }
+    bool match = false;
+    auto other_interface_chain_ret =
+        other_service->interfaceChain([&](const auto &chain) {
+          for (const auto &intf : chain) {
+            auto other_fq_instance_in_chain = FqInstance::from(
+                std::string(intf) + "/" + other_fq_instance->getInstance());
+            if (other_fq_instance_in_chain == fq_instance) {
+              match = true;
+              break;
+            }
+          }
+        });
+    if (!other_interface_chain_ret.isOk()) {
+      cout << "Cannot call interfaceChain on " << other_fq_instance->string()
+           << ", skipping." << endl;
+      continue;
+    }
+    if (match) {
+      cout << "The implementation of " << other_fq_instance->string()
+           << " also implements " << fq_instance.string()
+           << ", using it to check if passthrough is allowed for "
+           << fq_instance.string() << endl;
+      return other_service;
+    }
+  }
+  cout << "Can't find any other passthrough service implementing "
+       << fq_instance.string() << endl;
   return nullptr;
 }
 
