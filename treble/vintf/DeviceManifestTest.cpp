@@ -93,6 +93,20 @@ TEST_F(DeviceManifestTest, HealthHal) {
       << "Device must have either health HIDL HAL or AIDL HAL";
 }
 
+// Devices with Shipping FCM version 5+ must have the
+// AIDL power HAL.
+//
+// The specific versions are handled by the framework compatibility matrix.
+TEST_F(DeviceManifestTest, PowerHal) {
+  Level fcm_version = VintfObject::GetDeviceHalManifest()->level();
+  if (fcm_version == Level::UNSPECIFIED || fcm_version < Level::R) {
+    GTEST_SKIP() << "Power HAL is only required on launching R+ devices";
+  }
+  ASSERT_TRUE(vendor_manifest_->hasAidlInstance("android.hardware.power",
+                                                "IPower", "default"))
+      << "Device must have the android.hardware.power.IPower/default HAL";
+}
+
 // Devices must have either the HIDL or the AIDL gatekeeper HAL.
 // Because compatibility matrices cannot express OR condition
 // between <hal>'s, add a test here.
