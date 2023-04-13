@@ -56,7 +56,7 @@ public class HalUsbGadgetV1_0HostTest extends BaseHostJUnit4Test {
                 testInfo.getDevice()
                         .executeShellCommand(String.format("lshal | grep \"%s\"", HAL_SERVICE))
                         .trim();
-        mHasService = !Strings.isNullOrEmpty(serviceFound);
+        mHasService = !Strings.isNullOrEmpty(serviceFound) && serviceFound.contains(HAL_SERVICE);
 
         if (mHasService) {
             mUsb = (IUsbNative) Native.loadLibrary("usb-1.0", IUsbNative.class);
