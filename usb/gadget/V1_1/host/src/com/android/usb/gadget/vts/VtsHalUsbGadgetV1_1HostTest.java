@@ -56,7 +56,7 @@ public final class VtsHalUsbGadgetV1_1HostTest extends BaseHostJUnit4Test {
                 testInfo.getDevice()
                         .executeShellCommand(String.format("lshal | grep \"%s\"", HAL_SERVICE))
                         .trim();
-        mHasService = !Strings.isNullOrEmpty(serviceFound);
+        mHasService = !Strings.isNullOrEmpty(serviceFound) && serviceFound.contains(HAL_SERVICE);
     }
 
     @Test
