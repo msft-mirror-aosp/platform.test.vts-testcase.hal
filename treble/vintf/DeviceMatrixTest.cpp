@@ -35,6 +35,7 @@ void DeviceMatrixTest::SetUp() {
       << "Failed to get device compatibility matrix." << endl;
 }
 
+// @VsrTest = VSR-3.2-014
 TEST_F(DeviceMatrixTest, VndkVersion) {
   if (GetBoardApiLevel() < 28) {
     GTEST_SKIP()
