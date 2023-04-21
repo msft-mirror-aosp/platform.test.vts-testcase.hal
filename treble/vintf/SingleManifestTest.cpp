@@ -252,6 +252,7 @@ static bool IsApexUpdated(const std::string &apex_name) {
 
 // Tests that no HAL outside of the allowed set is specified as passthrough in
 // VINTF.
+// @VsrTest = VSR-3.2-014
 TEST_P(SingleHidlTest, HalIsBinderized) {
   const auto &[hidl_instance, manifest] = GetParam();
   const FQName &fq_name = hidl_instance.fq_name();
@@ -315,6 +316,7 @@ TEST_P(SingleHidlTest, HalIsBinderized) {
 // Tests that all HALs specified in the VINTF are available through service
 // manager.
 // This tests (HAL in manifest) => (HAL is served)
+// @VsrTest = VSR-3.2-014
 TEST_P(SingleHidlTest, HalIsServed) {
   // Verifies that HAL is available through service manager and is served from a
   // specific set of partitions.
@@ -382,6 +384,7 @@ TEST_P(SingleHidlTest, HalIsServed) {
 
 // Tests that all HALs which are served are specified in the VINTF
 // This tests (HAL is served) => (HAL in manifest)
+// @VsrTest = VSR-3.2-014
 TEST_P(SingleHwbinderHalTest, ServedHwbinderHalIsInManifest) {
   const auto &[fq_instance_name, manifest] = GetParam();
 
@@ -437,6 +440,7 @@ std::string SingleHwbinderHalTest::GetTestCaseSuffix(
 
 // Tests that all HALs which are served are specified in the VINTF
 // This tests (HAL is served) => (HAL in manifest) for passthrough HALs
+// @VsrTest = VSR-3.2-014
 TEST_P(SingleHidlTest, ServedPassthroughHalIsInManifest) {
   const auto &[hidl_instance, manifest] = GetParam();
   const FQName &fq_name = hidl_instance.fq_name();
@@ -480,6 +484,7 @@ TEST_P(SingleHidlTest, ServedPassthroughHalIsInManifest) {
 }
 
 // Tests that HAL interfaces are officially released.
+// @VsrTest = VSR-3.2-014
 TEST_P(SingleHidlTest, InterfaceIsReleased) {
   const auto &[hidl_instance, manifest] = GetParam();
 
@@ -636,6 +641,7 @@ static bool CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
 // An AIDL HAL with VINTF stability can only be registered if it is in the
 // manifest. However, we still must manually check that every declared HAL is
 // actually present on the device.
+// @VsrTest = VSR-3.2-014
 TEST_P(SingleAidlTest, HalIsServed) {
   const auto &[aidl_instance, manifest] = GetParam();
   const string &package = aidl_instance.package();

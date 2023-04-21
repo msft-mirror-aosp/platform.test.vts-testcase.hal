@@ -41,6 +41,7 @@ void DeviceManifestTest::SetUp() {
 
 // Tests that Shipping FCM Version in the device manifest is at least the
 // minimum Shipping FCM Version as required by Board API level.
+// @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, ShippingFcmVersion) {
   uint64_t board_api_level = GetBoardApiLevel();
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
@@ -50,6 +51,7 @@ TEST_F(DeviceManifestTest, ShippingFcmVersion) {
 
 // Tests that deprecated HALs are not in the manifest, unless a higher,
 // non-deprecated minor version is in the manifest.
+// @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, NoDeprecatedHalsOnManifest) {
   string error;
   EXPECT_EQ(android::vintf::NO_DEPRECATED_HALS,
@@ -61,6 +63,7 @@ TEST_F(DeviceManifestTest, NoDeprecatedHalsOnManifest) {
 // Tests that devices launching R support mapper@4.0.  Go devices are exempt
 // from this requirement, so we use this test to enforce instead of the
 // compatibility matrix.
+// @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, GraphicsMapperHalVersionCompatibility) {
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   bool is_go_device =
@@ -84,6 +87,7 @@ TEST_F(DeviceManifestTest, GraphicsMapperHalVersionCompatibility) {
 //
 // There's no need to enforce minimum HAL versions because
 // NoDeprecatedHalsOnManifest already checks it.
+// @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, HealthHal) {
   bool has_hidl = vendor_manifest_->hasHidlInstance(
       "android.hardware.health", {2, 0}, "IHealth", "default");
@@ -97,6 +101,7 @@ TEST_F(DeviceManifestTest, HealthHal) {
 // AIDL power HAL.
 //
 // The specific versions are handled by the framework compatibility matrix.
+// @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, PowerHal) {
   Level fcm_version = VintfObject::GetDeviceHalManifest()->level();
   if (fcm_version == Level::UNSPECIFIED || fcm_version < Level::R) {
@@ -113,6 +118,7 @@ TEST_F(DeviceManifestTest, PowerHal) {
 //
 // There's no need to enforce minimum HAL versions because
 // NoDeprecatedHalsOnManifest already checks it.
+// @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, GatekeeperHal) {
   bool has_hidl = vendor_manifest_->hasHidlInstance(
       "android.hardware.gatekeeper", {1, 0}, "IGatekeeper", "default");
@@ -128,6 +134,7 @@ TEST_F(DeviceManifestTest, GatekeeperHal) {
 //
 // There's no need to enforce minimum HAL versions because
 // NoDeprecatedHalsOnManifest already checks it.
+// @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, ComposerHal) {
   bool has_hidl = vendor_manifest_->hasHidlInstance(
       "android.hardware.graphics.composer", {2, 1}, "IComposer", "default");
@@ -143,6 +150,7 @@ TEST_F(DeviceManifestTest, ComposerHal) {
 //
 // There's no need to enforce minimum HAL versions because
 // NoDeprecatedHalsOnManifest already checks it.
+// @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, GrallocHal) {
   bool has_hidl = false;
   for (size_t hidl_major = 2; hidl_major <= 4; hidl_major++)
@@ -160,6 +168,7 @@ TEST_F(DeviceManifestTest, GrallocHal) {
 // Devices after Android T must have either the HIDL or the
 // AIDL thermal HAL. Because compatibility matrices cannot express OR condition
 // between <hal>'s, add a test here.
+// @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, ThermalHal) {
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   if (shipping_fcm_version == Level::UNSPECIFIED ||
@@ -179,6 +188,7 @@ TEST_F(DeviceManifestTest, ThermalHal) {
 // Go devices are exempt
 // from this requirement, so we use this test to enforce instead of the
 // compatibility matrix.
+// @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   bool is_go_device =
@@ -203,6 +213,7 @@ TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
 // Devices must have either the HIDL or the AIDL audio HAL, both "core" and
 // "effect" parts must be of the same type. Checked by a test because
 // compatibility matrices cannot express these conditions.
+// @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, AudioHal) {
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   if (shipping_fcm_version == Level::UNSPECIFIED ||
