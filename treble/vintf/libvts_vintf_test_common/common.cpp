@@ -48,6 +48,7 @@ static const std::map<uint64_t /* Vendor API Level */, Level /* FCM Version */>
         {32, Level::S},
         {33, Level::T},
         {34, Level::U},  // subject to change, placeholder value
+        {35, Level::V},  // subject to change, placeholder value
     }};
 
 android::base::Result<Level> GetFcmVersionFromApiLevel(uint64_t api_level) {
