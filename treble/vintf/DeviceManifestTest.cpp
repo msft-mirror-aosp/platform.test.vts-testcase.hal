@@ -159,7 +159,7 @@ TEST_F(DeviceManifestTest, GrallocHal) {
                                {hidl_major, 0}, "IAllocator", "default");
 
   bool has_aidl = vendor_manifest_->hasAidlInstance(
-      "android.hardware.graphics.allocator", 1, "IAllocator", "default");
+      "android.hardware.graphics.allocator", "IAllocator", "default");
 
   ASSERT_TRUE(has_hidl || has_aidl)
       << "Device must have either graphics allocator HIDL HAL or AIDL HAL";
