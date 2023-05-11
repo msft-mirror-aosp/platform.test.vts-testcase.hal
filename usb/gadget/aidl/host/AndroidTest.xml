@@ -19,7 +19,7 @@
     <option name="config-descriptor:metadata" key="plan" value="vts-hal" />
     <target_preparer class="com.android.tradefed.targetprep.RootTargetPreparer" />
 
-    <test class="com.android.compatibility.common.tradefed.testtype.JarHostTest">
+    <test class="com.android.tradefed.testtype.HostTest">
         <option name="jar" value="VtsHalUsbGadgetV2_0HostTest.jar" />
     </test>
 </configuration>
