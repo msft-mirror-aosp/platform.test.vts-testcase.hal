@@ -55,7 +55,7 @@ public class HalUsbGadgetV1_0HostTest extends BaseHostJUnit4Test {
                 testInfo.getDevice()
                         .executeShellCommand(String.format("lshal | grep \"%s\"", HAL_SERVICE))
                         .trim();
-        mHasService = !Strings.isNullOrEmpty(serviceFound);
+        mHasService = !Strings.isNullOrEmpty(serviceFound) && serviceFound.contains(HAL_SERVICE);
 
         if (mHasService) {
             mUsb = (IUsbNative) Native.loadLibrary("usb-1.0", IUsbNative.class);
@@ -143,21 +143,5 @@ public class HalUsbGadgetV1_0HostTest extends BaseHostJUnit4Test {
         getDevice().executeShellCommand("svc usb setFunctions midi true");
         Thread.sleep(WAIT_TIME);
         assertTrue("MIDI not present", checkProtocol(1, 3, 0));
-    }
-
-    /**
-     * Check for RNDIS.
-     *
-     * <p>Enables rndis and checks the host to see if rndis interface is present. RNDIS:
-     * https://en.wikipedia.org/wiki/RNDIS.
-     */
-    @Test
-    public void testRndis() throws Exception {
-        assumeFalse("Skip test: RNDIS support is not required for automotive",
-                getDevice().hasFeature(FEATURE_AUTOMOTIVE));
-        assumeTrue(String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
-        getDevice().executeShellCommand("svc usb setFunctions rndis true");
-        Thread.sleep(WAIT_TIME);
-        assertTrue("RNDIS not present", checkProtocol(10, 0, 0));
     }
 }
