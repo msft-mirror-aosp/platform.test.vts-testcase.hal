@@ -24,7 +24,7 @@ namespace android {
 namespace vintf {
 namespace testing {
 
-static constexpr int kMaxNumberOfHidlHals = 20;
+static constexpr int kMaxNumberOfHidlHals = 100;
 
 // Tests that the device is not registering any HIDL interfaces.
 // HIDL is being deprecated. Only applicable to devices launching with Android
