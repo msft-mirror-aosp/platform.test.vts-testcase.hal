@@ -1,5 +1,4 @@
-//
-// Copyright (C) 2017 The Android Open Source Project
+// Copyright (C) 2022 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,26 +17,20 @@ package {
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
-python_test_host {
-    name: "vts_treble_platform_version_test",
-    main: "vts_treble_platform_version_test.py",
-    srcs: [
-        "vts_treble_platform_version_test.py",
-    ],
+java_test_host {
+    name: "VtsHalUsbGadgetV2_0HostTest",
     libs: [
-        "vndk_utils",
-        "vts_vndk_utils",
+        "compatibility-host-util",
+        "tradefed",
     ],
+
+    static_libs: [
+        "platform-test-annotations-host",
+    ],
+
+    srcs: ["src/**/*.java"],
     test_suites: [
+        "general-tests",
         "vts",
     ],
-    auto_gen_config: true,
-    version: {
-        py3: {
-            embedded_launcher: true,
-        }
-    },
-    test_options: {
-        unit_test: false,
-    },
 }
