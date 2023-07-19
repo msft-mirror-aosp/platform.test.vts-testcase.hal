@@ -70,7 +70,8 @@ TEST_F(DeviceManifestTest, GraphicsMapperHalVersionCompatibility) {
   bool is_go_device =
       android::base::GetBoolProperty("ro.config.low_ram", false);
   if (shipping_fcm_version == Level::UNSPECIFIED ||
-      shipping_fcm_version < Level::R || is_go_device) {
+      shipping_fcm_version < Level::R ||
+      (is_go_device && shipping_fcm_version < Level::V)) {
     GTEST_SKIP() << "Graphics mapper 4 is only required on launching R devices";
   }
 
@@ -195,7 +196,8 @@ TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
   bool is_go_device =
       android::base::GetBoolProperty("ro.config.low_ram", false);
   if (shipping_fcm_version == Level::UNSPECIFIED ||
-      shipping_fcm_version < Level::T || is_go_device) {
+      shipping_fcm_version < Level::T ||
+      (is_go_device && shipping_fcm_version < Level::V)) {
     GTEST_SKIP() << "Gralloc 4.0/AIDL is only required on launching T devices";
   }
 
