@@ -24,7 +24,10 @@ namespace android {
 namespace vintf {
 namespace testing {
 
-static constexpr int kMaxNumberOfHidlHals = 100;
+static constexpr int kMaxNumberOfHidlHalsU = 100;
+// TODO(b/232439834) This number will be 0 for Android V. There is still some
+// cleanup left to do.
+static constexpr int kMaxNumberOfHidlHalsV = 10;
 
 // Tests that the device is not registering any HIDL interfaces.
 // HIDL is being deprecated. Only applicable to devices launching with Android
@@ -33,15 +36,27 @@ class VintfNoHidlTest : public ::testing::Test {};
 
 // @VsrTest = VSR-3.2-001.001|VSR-3.2-001.002
 TEST_F(VintfNoHidlTest, NoHidl) {
-  if (std::stoi(android::base::GetProperty("ro.vendor.api_level", "0")) <
-      __ANDROID_API_U__) {
+  int apiLevel = android::base::GetIntProperty("ro.vendor.api_level", 0);
+  if (apiLevel < __ANDROID_API_U__) {
     GTEST_SKIP() << "Not applicable to this device";
     return;
+  }
+  int maxNumberOfHidlHals = 0;
+  if (apiLevel == __ANDROID_API_U__) {
+    maxNumberOfHidlHals = kMaxNumberOfHidlHalsU;
+  } else if (apiLevel == __ANDROID_API_V__) {
+    maxNumberOfHidlHals = kMaxNumberOfHidlHalsV;
+  } else {
+    // TODO(232439834) We can remove this once kMaxNumberOfHidlHalsV is 0.
+    GTEST_FAIL() << "Unexpected Android API version (" << apiLevel
+                 << "). Must be either " << __ANDROID_API_U__ << " or "
+                 << __ANDROID_API_V__;
   }
   sp<hidl::manager::V1_0::IServiceManager> sm =
       ::android::hardware::defaultServiceManager();
   ASSERT_NE(sm, nullptr);
-  hardware::Return<void> ret = sm->list([](const auto& interfaces) {
+  hardware::Return<void> ret = sm->list([&maxNumberOfHidlHals](
+                                            const auto& interfaces) {
     std::set<std::string> packages;
     for (const auto& interface : interfaces) {
       std::vector<std::string> splitInterface =
@@ -52,7 +67,7 @@ TEST_F(VintfNoHidlTest, NoHidl) {
       // are implementing
       packages.insert(splitInterface[0]);
     }
-    if (packages.size() > kMaxNumberOfHidlHals) {
+    if (packages.size() > maxNumberOfHidlHals) {
       ADD_FAILURE() << "There are " << packages.size()
                     << " HIDL interfaces served on the device. "
                     << "These must be converted to AIDL as part of HIDL's "
