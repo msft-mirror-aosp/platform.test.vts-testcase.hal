@@ -74,12 +74,28 @@ TEST_F(DeviceManifestTest, GraphicsMapperHalVersionCompatibility) {
     GTEST_SKIP() << "Graphics mapper 4 is only required on launching R devices";
   }
 
-  ASSERT_TRUE(vendor_manifest_->hasHidlInstance(
-      "android.hardware.graphics.mapper", {4, 0}, "IMapper", "default"));
-  ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
-      "android.hardware.graphics.mapper", {2, 0}, "IMapper", "default"));
-  ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
-      "android.hardware.graphics.mapper", {2, 1}, "IMapper", "default"));
+  if (shipping_fcm_version >= Level::V) {
+    bool exists = false;
+    ASSERT_TRUE(vendor_manifest_->forEachInstance(
+        [&](const ManifestHal::InstanceType& instance) -> bool {
+          if (instance.package() == "mapper" &&
+              instance.format() == HalFormat::NATIVE &&
+              instance.version().majorVer == 5 &&
+              instance.version().minorVer == 0 &&
+              instance.instance() == "minigbm")
+            exists = true;
+          return true;
+        }));
+    ASSERT_TRUE(exists)
+        << "Graphics mapper 5 is required on launching V+ devices";
+  } else {
+    ASSERT_TRUE(vendor_manifest_->hasHidlInstance(
+        "android.hardware.graphics.mapper", {4, 0}, "IMapper", "default"));
+    ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
+        "android.hardware.graphics.mapper", {2, 0}, "IMapper", "default"));
+    ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
+        "android.hardware.graphics.mapper", {2, 1}, "IMapper", "default"));
+  }
 }
 
 // Devices with Shipping FCM version 3~6 must have either the HIDL or the
