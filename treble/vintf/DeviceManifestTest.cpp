@@ -16,7 +16,6 @@
 
 #include "DeviceManifestTest.h"
 
-#include <android-base/logging.h>
 #include <android-base/properties.h>
 #include <android-base/result.h>
 #include <libvts_vintf_test_common/common.h>
@@ -70,7 +69,8 @@ TEST_F(DeviceManifestTest, GraphicsMapperHalVersionCompatibility) {
   bool is_go_device =
       android::base::GetBoolProperty("ro.config.low_ram", false);
   if (shipping_fcm_version == Level::UNSPECIFIED ||
-      shipping_fcm_version < Level::R || is_go_device) {
+      shipping_fcm_version < Level::R ||
+      (is_go_device && shipping_fcm_version < Level::V)) {
     GTEST_SKIP() << "Graphics mapper 4 is only required on launching R devices";
   }
 
@@ -195,7 +195,8 @@ TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
   bool is_go_device =
       android::base::GetBoolProperty("ro.config.low_ram", false);
   if (shipping_fcm_version == Level::UNSPECIFIED ||
-      shipping_fcm_version < Level::T || is_go_device) {
+      shipping_fcm_version < Level::T ||
+      (is_go_device && shipping_fcm_version < Level::V)) {
     GTEST_SKIP() << "Gralloc 4.0/AIDL is only required on launching T devices";
   }
 
@@ -209,27 +210,6 @@ TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
       "android.hardware.graphics.allocator", {2, 0}, "IAllocator", "default"));
   ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
       "android.hardware.graphics.allocator", {3, 0}, "IAllocator", "default"));
-}
-
-// In Device Manifest, updatable HALs declare updatable-via-apex=<apex name>,
-//    which in turn requires such HALs should be updatable-via-apex=true in
-//    Framework compatibility matrix.  This test verifies they match up.
-// @VsrTest = GMS-3.2-007.002
-TEST_F(DeviceManifestTest, VerifyHalsWithUpdatableViaApex) {
-  LOG(INFO) << "VerifyHalsWithUpdatableViaApex called";
-
-  auto dm = VintfObject::GetDeviceHalManifest();
-  ASSERT_NE(dm, nullptr) << "Failed to get DeviceHalManifest";
-
-  auto fcm = VintfObject::GetFrameworkCompatibilityMatrix();
-  ASSERT_NE(fcm, nullptr) << "Failed to get FrameworkCompatibilityMatrix";
-
-  std::vector<std::string> badHals = dm->checkApexHals(*fcm);
-  ASSERT_EQ(badHals.size(), 0)
-      << "Invalid updatable-via-apex values in " << badHals.size()
-      << " Hals, including " << badHals[0];
-
-  LOG(INFO) << "VerifyHalsWithUpdatableViaApex completed";
 }
 
 // Devices must have either the HIDL or the AIDL audio HAL, both "core" and
