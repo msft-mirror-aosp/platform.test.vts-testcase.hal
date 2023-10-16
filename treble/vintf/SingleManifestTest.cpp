@@ -702,7 +702,7 @@ TEST_P(SingleAidlTest, HalIsServed) {
     //
     // we only require that these are frozen, but we cannot check them for
     // accuracy
-    if (hash.empty()) {
+    if (hash.empty() || hash == "notfrozen") {
       if (is_release) {
         ADD_FAILURE() << "Interface " << name
                       << " is used but not frozen (cannot find hash for it).";
