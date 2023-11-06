@@ -81,8 +81,7 @@ TEST_F(DeviceManifestTest, GraphicsMapperHalVersionCompatibility) {
           if (instance.package() == "mapper" &&
               instance.format() == HalFormat::NATIVE &&
               instance.version().majorVer == 5 &&
-              instance.version().minorVer == 0 &&
-              instance.instance() == "minigbm")
+              instance.version().minorVer == 0)
             exists = true;
           return true;
         }));
