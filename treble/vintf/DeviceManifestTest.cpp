@@ -88,12 +88,26 @@ TEST_F(DeviceManifestTest, GraphicsMapperHalVersionCompatibility) {
     ASSERT_TRUE(exists)
         << "Graphics mapper 5 is required on launching V+ devices";
   } else {
-    ASSERT_TRUE(vendor_manifest_->hasHidlInstance(
-        "android.hardware.graphics.mapper", {4, 0}, "IMapper", "default"));
-    ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
-        "android.hardware.graphics.mapper", {2, 0}, "IMapper", "default"));
-    ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
-        "android.hardware.graphics.mapper", {2, 1}, "IMapper", "default"));
+    bool exists = false;
+    bool ret = vendor_manifest_->forEachInstance(
+        [&](const ManifestHal::InstanceType& instance) -> bool {
+          if (instance.package() == "mapper" &&
+              instance.format() == HalFormat::NATIVE &&
+              instance.version().majorVer == 5 &&
+              instance.version().minorVer == 0)
+            exists = true;
+          return true;
+        });
+    // If native implementation doesn't exist, then the HIDL implementation must
+    // exist on this device.
+    if (!ret || !exists) {
+      ASSERT_TRUE(vendor_manifest_->hasHidlInstance(
+          "android.hardware.graphics.mapper", {4, 0}, "IMapper", "default"));
+      ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
+          "android.hardware.graphics.mapper", {2, 0}, "IMapper", "default"));
+      ASSERT_FALSE(vendor_manifest_->hasHidlInstance(
+          "android.hardware.graphics.mapper", {2, 1}, "IMapper", "default"));
+    }
   }
 }
 
