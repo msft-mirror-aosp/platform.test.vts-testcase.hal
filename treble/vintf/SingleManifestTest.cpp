@@ -154,6 +154,9 @@ static sp<IBase> GetPassthroughServiceExact(const FqInstance &fq_instance,
   return nullptr;
 }
 
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SingleHwbinderHalTest);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SingleHidlTest);
+
 // Given vendor.foo.bar@x.y::IFoo/default, also look up all declared passthrough
 // HAL implementations on the device that implements this interface.
 sp<IBase> SingleHidlTest::GetPassthroughService(const FqInstance &fq_instance) {
