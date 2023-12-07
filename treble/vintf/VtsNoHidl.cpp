@@ -20,8 +20,6 @@
 #include <gmock/gmock.h>
 #include <hidl/ServiceManagement.h>
 
-#define __ANDROID_VENDOR_API_24Q2__ 202404
-
 namespace android {
 namespace vintf {
 namespace testing {
@@ -46,13 +44,13 @@ TEST_F(VintfNoHidlTest, NoHidl) {
   int maxNumberOfHidlHals = 0;
   if (apiLevel == __ANDROID_API_U__) {
     maxNumberOfHidlHals = kMaxNumberOfHidlHalsU;
-  } else if (apiLevel == __ANDROID_VENDOR_API_24Q2__) {
+  } else if (apiLevel == __ANDROID_API_V__) {
     maxNumberOfHidlHals = kMaxNumberOfHidlHalsV;
   } else {
     // TODO(232439834) We can remove this once kMaxNumberOfHidlHalsV is 0.
-    GTEST_FAIL() << "Unexpected Android vendor API level (" << apiLevel
+    GTEST_FAIL() << "Unexpected Android API version (" << apiLevel
                  << "). Must be either " << __ANDROID_API_U__ << " or "
-                 << __ANDROID_VENDOR_API_24Q2__;
+                 << __ANDROID_API_V__;
   }
   sp<hidl::manager::V1_0::IServiceManager> sm =
       ::android::hardware::defaultServiceManager();
