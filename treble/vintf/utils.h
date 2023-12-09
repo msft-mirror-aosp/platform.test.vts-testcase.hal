@@ -174,9 +174,6 @@ Partition PartitionOfProcess(int32_t pid);
 // Returns SYSTEM for FRAMEWORK, VENDOR for DEVICE.
 Partition PartitionOfType(SchemaType type);
 
-// Returns true iff the device has the specified feature.
-bool DeviceSupportsFeature(const char* feature);
-
 }  // namespace testing
 }  // namespace vintf
 
