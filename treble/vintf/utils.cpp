@@ -167,26 +167,6 @@ Partition PartitionOfType(SchemaType type) {
   return Partition::UNKNOWN;
 }
 
-bool DeviceSupportsFeature(const char *feature) {
-  bool device_supports_feature = false;
-  FILE *p = popen("pm list features", "re");
-  if (!p) {
-    return false;
-  }
-
-  char *line = NULL;
-  size_t len = 0;
-  while (getline(&line, &len, p) > 0) {
-    if (strstr(line, feature)) {
-      device_supports_feature = true;
-      break;
-    }
-  }
-  pclose(p);
-
-  return device_supports_feature;
-}
-
 }  // namespace testing
 }  // namespace vintf
 }  // namespace android
