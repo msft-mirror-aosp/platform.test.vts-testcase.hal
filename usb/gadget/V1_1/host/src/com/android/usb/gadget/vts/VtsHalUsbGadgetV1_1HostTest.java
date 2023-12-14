@@ -43,6 +43,19 @@ public final class VtsHalUsbGadgetV1_1HostTest extends BaseHostJUnit4Test {
     private ITestDevice mDevice;
     private boolean mReconnected = false;
 
+    private long getAdjustedTimeout() {
+        int multiplier = 1;
+        try {
+            String multiplierStr = mDevice.getProperty("ro.hw_timeout_multiplier");
+            if (multiplierStr != null) {
+                multiplier = Integer.parseInt(multiplierStr);
+            }
+        } catch (Exception e) {
+            // Whatever issue, just ignore and keep with 'multiplier' of 1
+        }
+        return CONN_TIMEOUT * multiplier;
+    }
+
     @Before
     public void setUp() {
         CLog.i("setUp");
@@ -69,12 +82,14 @@ public final class VtsHalUsbGadgetV1_1HostTest extends BaseHostJUnit4Test {
 
         CLog.i("testResetUsbGadget on device [%s]", deviceSerialNumber);
 
+        final long adjustedTimeout = getAdjustedTimeout();
+
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    mDevice.waitForDeviceNotAvailable(CONN_TIMEOUT);
+                    mDevice.waitForDeviceNotAvailable(adjustedTimeout);
                     RunUtil.getDefault().sleep(300);
-                    mDevice.waitForDeviceAvailable(CONN_TIMEOUT);
+                    mDevice.waitForDeviceAvailable(adjustedTimeout);
                     mReconnected = true;
                 } catch (DeviceNotAvailableException dnae) {
                     CLog.e("Device is not available");
@@ -89,7 +104,7 @@ public final class VtsHalUsbGadgetV1_1HostTest extends BaseHostJUnit4Test {
         CLog.i("Invoke shell command [" + cmd + "]");
         long startTime = System.currentTimeMillis();
         mDevice.executeShellCommand("svc usb resetUsbGadget");
-        while (!mReconnected && System.currentTimeMillis() - startTime < CONN_TIMEOUT) {
+        while (!mReconnected && System.currentTimeMillis() - startTime < adjustedTimeout) {
             RunUtil.getDefault().sleep(100);
         }
 
