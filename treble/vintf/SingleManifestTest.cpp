@@ -633,6 +633,16 @@ static bool CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
   return false;
 }
 
+static bool IsAndroidTvVertical() {
+  return DeviceSupportsFeature("android.software.leanback");
+}
+
+// For Android TV devices that have ThreadNetwork HAL backported, exempt the AIDL
+// frozen requirement.
+static bool IsHalPackageFreezeExempt(const string& package) {
+  return IsAndroidTvVertical() && package == "android.hardware.threadnetwork";
+}
+
 // An AIDL HAL with VINTF stability can only be registered if it is in the
 // manifest. However, we still must manually check that every declared HAL is
 // actually present on the device.
@@ -681,7 +691,11 @@ TEST_P(SingleAidlTest, HalIsServed) {
 
   if (is_aosp) {
     if (!found_hash) {
-      if (is_release || (reliable_version && is_existing)) {
+      if (IsHalPackageFreezeExempt(package)) {
+        std::cout << "Warning: Interface " << name << " has an unrecognized hash: '"
+                  << hash << "' but the package '" << package
+                  << "' has been exempted from the test.";
+      } else if (is_release || (reliable_version && is_existing)) {
         ADD_FAILURE() << "Interface " << name << " has an unrecognized hash: '"
                       << hash << "'. The following hashes are known:\n"
                       << base::Join(hashes, '\n')
