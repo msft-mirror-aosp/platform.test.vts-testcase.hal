@@ -29,7 +29,7 @@ namespace testing {
 static constexpr int kMaxNumberOfHidlHalsU = 100;
 // TODO(b/232439834) This number will be 0 for Android V. There is still some
 // cleanup left to do.
-static constexpr int kMaxNumberOfHidlHalsV = 10;
+static constexpr int kMaxNumberOfHidlHalsV = 4;
 
 // Tests that the device is not registering any HIDL interfaces.
 // HIDL is being deprecated. Only applicable to devices launching with Android

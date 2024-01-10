@@ -41,7 +41,11 @@ public final class VtsHalUsbGadgetV1_1HostTest extends BaseHostJUnit4Test {
 
     private static boolean mHasService;
     private ITestDevice mDevice;
-    private boolean mReconnected = false;
+
+    private static final int STATE_WAITING_FOR_INITIAL_DISCONNECT = 1;
+    private static final int STATE_WAITING_FOR_RECONNECT = 2;
+    private static final int STATE_RECONNECTED = 3;
+    private int mReconnectedState = STATE_WAITING_FOR_INITIAL_DISCONNECT;
 
     private long getAdjustedTimeout() {
         int multiplier = 1;
@@ -87,10 +91,12 @@ public final class VtsHalUsbGadgetV1_1HostTest extends BaseHostJUnit4Test {
         new Thread(new Runnable() {
             public void run() {
                 try {
+                    mReconnectedState = STATE_WAITING_FOR_INITIAL_DISCONNECT;
                     mDevice.waitForDeviceNotAvailable(adjustedTimeout);
+                    mReconnectedState = STATE_WAITING_FOR_RECONNECT;
                     RunUtil.getDefault().sleep(300);
                     mDevice.waitForDeviceAvailable(adjustedTimeout);
-                    mReconnected = true;
+                    mReconnectedState = STATE_RECONNECTED;
                 } catch (DeviceNotAvailableException dnae) {
                     CLog.e("Device is not available");
                 } catch (RunInterruptedException ie) {
@@ -104,10 +110,17 @@ public final class VtsHalUsbGadgetV1_1HostTest extends BaseHostJUnit4Test {
         CLog.i("Invoke shell command [" + cmd + "]");
         long startTime = System.currentTimeMillis();
         mDevice.executeShellCommand("svc usb resetUsbGadget");
-        while (!mReconnected && System.currentTimeMillis() - startTime < adjustedTimeout) {
+        while ((mReconnectedState != STATE_RECONNECTED)
+                && (System.currentTimeMillis() - startTime < adjustedTimeout)) {
             RunUtil.getDefault().sleep(100);
         }
 
-        Assert.assertTrue("usb not reconnect", mReconnected);
+        Assert.assertTrue(
+                String.format("usb never initially disconnected within %d ms", adjustedTimeout),
+                (mReconnectedState != STATE_WAITING_FOR_INITIAL_DISCONNECT));
+        Assert.assertTrue(String.format("usb disconnected, but never reconnected within %d ms",
+                                  adjustedTimeout),
+                (mReconnectedState != STATE_WAITING_FOR_RECONNECT));
+        Assert.assertTrue("Unexpected connection state", (mReconnectedState == STATE_RECONNECTED));
     }
 }
