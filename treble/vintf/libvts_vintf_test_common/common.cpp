@@ -15,6 +15,7 @@
  */
 
 #include <libvts_vintf_test_common/common.h>
+#include <vintf/parse_string.h>
 
 namespace android::vintf::testing {
 
