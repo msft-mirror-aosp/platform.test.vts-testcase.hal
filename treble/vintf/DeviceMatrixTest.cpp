@@ -69,10 +69,16 @@ TEST_F(DeviceMatrixTest, VndkVersion) {
     ASSERT_LE(syspropVndkVersionNumber, __ANDROID_API_V__)
         << kVndkVersionProp << " must be less or equal than "
         << __ANDROID_API_V__;
+
+    if (syspropVndkVersionNumber == __ANDROID_API_V__) {
+      GTEST_SKIP()
+          << "VNDK version 35 may not have matching VINTF VNDK version.";
+    }
   }
 
   ASSERT_NE("", syspropVndkVersion)
       << kVndkVersionProp << " must not be empty.";
+
   std::string vintfVndkVersion = vendor_matrix_->getVendorNdkVersion();
   ASSERT_NE("", vintfVndkVersion)
       << "Device compatibility matrix does not declare proper VNDK version.";
