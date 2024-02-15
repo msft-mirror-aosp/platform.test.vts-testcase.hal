@@ -154,6 +154,9 @@ static sp<IBase> GetPassthroughServiceExact(const FqInstance &fq_instance,
   return nullptr;
 }
 
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SingleHwbinderHalTest);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SingleHidlTest);
+
 // Given vendor.foo.bar@x.y::IFoo/default, also look up all declared passthrough
 // HAL implementations on the device that implements this interface.
 sp<IBase> SingleHidlTest::GetPassthroughService(const FqInstance &fq_instance) {
@@ -252,6 +255,7 @@ static bool IsApexUpdated(const std::string &apex_name) {
 
 // Tests that no HAL outside of the allowed set is specified as passthrough in
 // VINTF.
+// @VsrTest = VSR-3.2-014
 TEST_P(SingleHidlTest, HalIsBinderized) {
   const auto &[hidl_instance, manifest] = GetParam();
   const FQName &fq_name = hidl_instance.fq_name();
@@ -315,6 +319,7 @@ TEST_P(SingleHidlTest, HalIsBinderized) {
 // Tests that all HALs specified in the VINTF are available through service
 // manager.
 // This tests (HAL in manifest) => (HAL is served)
+// @VsrTest = VSR-3.2-014
 TEST_P(SingleHidlTest, HalIsServed) {
   // Verifies that HAL is available through service manager and is served from a
   // specific set of partitions.
@@ -382,6 +387,7 @@ TEST_P(SingleHidlTest, HalIsServed) {
 
 // Tests that all HALs which are served are specified in the VINTF
 // This tests (HAL is served) => (HAL in manifest)
+// @VsrTest = VSR-3.2-014
 TEST_P(SingleHwbinderHalTest, ServedHwbinderHalIsInManifest) {
   const auto &[fq_instance_name, manifest] = GetParam();
 
@@ -437,6 +443,7 @@ std::string SingleHwbinderHalTest::GetTestCaseSuffix(
 
 // Tests that all HALs which are served are specified in the VINTF
 // This tests (HAL is served) => (HAL in manifest) for passthrough HALs
+// @VsrTest = VSR-3.2-014
 TEST_P(SingleHidlTest, ServedPassthroughHalIsInManifest) {
   const auto &[hidl_instance, manifest] = GetParam();
   const FQName &fq_name = hidl_instance.fq_name();
@@ -480,6 +487,7 @@ TEST_P(SingleHidlTest, ServedPassthroughHalIsInManifest) {
 }
 
 // Tests that HAL interfaces are officially released.
+// @VsrTest = VSR-3.2-014
 TEST_P(SingleHidlTest, InterfaceIsReleased) {
   const auto &[hidl_instance, manifest] = GetParam();
 
@@ -636,6 +644,7 @@ static bool CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
 // An AIDL HAL with VINTF stability can only be registered if it is in the
 // manifest. However, we still must manually check that every declared HAL is
 // actually present on the device.
+// @VsrTest = VSR-3.2-014
 TEST_P(SingleAidlTest, HalIsServed) {
   const auto &[aidl_instance, manifest] = GetParam();
   const string &package = aidl_instance.package();
@@ -696,7 +705,7 @@ TEST_P(SingleAidlTest, HalIsServed) {
     //
     // we only require that these are frozen, but we cannot check them for
     // accuracy
-    if (hash.empty()) {
+    if (hash.empty() || hash == "notfrozen") {
       if (is_release) {
         ADD_FAILURE() << "Interface " << name
                       << " is used but not frozen (cannot find hash for it).";
@@ -804,45 +813,20 @@ TEST_P(SingleNativeTest, ExistsIfDeclared) {
       << "Interface must be 'I' or '' for native HAL: "
       << native_instance.interface();
 
-  std::vector<std::string> paths;
-  std::vector<std::string> available_paths;
-  for (const std::string &dir : kNativeHalPaths) {
-    std::string path = dir + native_instance.package() + "." +
-                       native_instance.instance() + ".so";
-    paths.push_back(path);
+  void *so = openDeclaredPassthroughHal(
+      String16(native_instance.package().c_str()),
+      String16(native_instance.instance().c_str()), RTLD_LAZY | RTLD_LOCAL);
+  ASSERT_NE(so, nullptr) << "Failed to load " << native_instance << dlerror();
 
-    if (0 == access(path.c_str(), F_OK)) {
-      available_paths.push_back(path);
-    }
-  }
+  std::string upperPackage = native_instance.package();
+  std::transform(upperPackage.begin(), upperPackage.end(), upperPackage.begin(),
+                 ::toupper);
+  std::string versionSymbol = "ANDROID_HAL_" + upperPackage + "_VERSION";
+  int32_t *halVersion = (int32_t *)dlsym(so, versionSymbol.c_str());
+  ASSERT_NE(halVersion, nullptr) << "Failed to find symbol " << versionSymbol;
+  EXPECT_EQ(native_instance.major_version(), *halVersion);
 
-  if (available_paths.empty()) {
-    ADD_FAILURE() << native_instance
-                  << " is declared in the VINTF manifest, but it cannot be "
-                     "found at one of the supported paths: "
-                  << base::Join(paths, ", ");
-  }
-
-  for (const auto &path : available_paths) {
-    bool pathIs64bit = path.find("lib64") != std::string::npos;
-    if ((sizeof(void *) == 8 && pathIs64bit) ||
-        (sizeof(void *) == 4 && !pathIs64bit)) {
-      void *so = dlopen(path.c_str(), RTLD_LAZY | RTLD_LOCAL);
-      ASSERT_NE(so, nullptr) << "Failed to load " << path << dlerror();
-      std::string upperPackage = native_instance.package();
-      std::transform(upperPackage.begin(), upperPackage.end(),
-                     upperPackage.begin(), ::toupper);
-      std::string versionSymbol = "ANDROID_HAL_" + upperPackage + "_VERSION";
-      int32_t *halVersion = (int32_t *)dlsym(so, versionSymbol.c_str());
-      ASSERT_NE(halVersion, nullptr)
-          << "Failed to find symbol " << versionSymbol;
-      EXPECT_EQ(native_instance.major_version(), *halVersion);
-      dlclose(so);
-
-    } else {
-      continue;
-    }
-  }
+  dlclose(so);
 }
 
 }  // namespace testing
