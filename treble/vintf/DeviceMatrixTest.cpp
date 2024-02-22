@@ -46,35 +46,27 @@ TEST_F(DeviceMatrixTest, VndkVersion) {
 
   std::string syspropVndkVersion = GetProperty(kVndkVersionProp, "");
 
-  // TODO(b/306081093) As of VNDK deprecation, there is no good property to
-  // check which platform version is used to build vendor. For now, let's assume
-  // that any device running board api level Android R or above can be a
-  // candidate of Android V, and skip test for those devices. This should be
-  // revisited once we have a new property to check platform version used to
-  // build vendor.
-  if (GetBoardApiLevel() >= __ANDROID_API_R__) {
-    // TODO(b/306081093) When vendor's target platform is greater or equal than
-    // V, check if vendor VNDK version (both sysprop and VINTF) is empty and
-    // fail if not.
-    if (syspropVndkVersion.empty()) {
-      GTEST_SKIP() << "VNDK version doesn't need to be set on devices built "
-                      "with Android V";
-    }
-
-    uint64_t syspropVndkVersionNumber;
-    if (!android::base::ParseUint(syspropVndkVersion, &syspropVndkVersionNumber)) {
-      syspropVndkVersionNumber = 0;
-    }
-
-    ASSERT_LE(syspropVndkVersionNumber, __ANDROID_API_V__)
-        << kVndkVersionProp << " must be less or equal than "
-        << __ANDROID_API_V__;
-
-    if (syspropVndkVersionNumber == __ANDROID_API_V__) {
-      GTEST_SKIP()
-          << "VNDK version 35 may not have matching VINTF VNDK version.";
-    }
+  // Device with ro.board.api_level 202404 or later should not set VNDK version.
+  uint64_t board_api_level =
+      android::base::GetUintProperty<uint64_t>("ro.board.api_level", 0);
+  if (board_api_level >= 202404) {
+    GTEST_SKIP() << "VNDK version doesn't need to be set on devices built "
+                    "with Android V or later";
   }
+
+  uint64_t syspropVndkVersionNumber;
+  if (!android::base::ParseUint(syspropVndkVersion,
+                                &syspropVndkVersionNumber)) {
+    syspropVndkVersionNumber = 0;
+  }
+
+  if (syspropVndkVersionNumber == __ANDROID_API_V__) {
+    GTEST_SKIP() << "Android based on 24Q1 release with VNDK version V should "
+                    "be skipped from check";
+  }
+
+  ASSERT_LT(syspropVndkVersionNumber, __ANDROID_API_V__)
+      << kVndkVersionProp << " must be less than " << __ANDROID_API_V__;
 
   ASSERT_NE("", syspropVndkVersion)
       << kVndkVersionProp << " must not be empty.";
