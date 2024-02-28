@@ -96,9 +96,20 @@ class VtsTreblePlatformVersionTest(unittest.TestCase):
         temporary configuration file and ro.vndk.version to default value.
         """
 
-        vndkVersion = self.getProp("ro.vndk.version")
-        if vndkVersion is None:
-            asserts.fail("VNDK version is not defined")
+        boardApiLevelStr = self.getProp("ro.board.api_level", required=False)
+        vndkVersion = self.getProp("ro.vndk.version", required=False)
+
+        if boardApiLevelStr is not None:
+            try:
+                boardApiLevel = int(boardApiLevelStr)
+                if boardApiLevel >= 202404:
+                    self.assertIsNone(vndkVersion, "VNDK version is defined")
+                else:
+                    self.assertIsNotNone(vndkVersion, "VNDK version is not defined")
+            except ValueError as e:
+                asserts.fail("Unexpected value returned from ro.board.api_level: %s" % e)
+        else:
+            self.assertIsNotNone(vndkVersion, "VNDK version is not defined")
 
         firstApiLevel = self.dut.GetLaunchApiLevel()
         if firstApiLevel > api.PLATFORM_API_LEVEL_O_MR1:
