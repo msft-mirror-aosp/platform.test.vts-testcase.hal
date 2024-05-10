@@ -17,6 +17,8 @@
 #ifndef VTS_TREBLE_VINTF_TEST_SINGLE_MANIFEST_TEST_H_
 #define VTS_TREBLE_VINTF_TEST_SINGLE_MANIFEST_TEST_H_
 #include <gtest/gtest.h>
+#include <hidl-util/FqInstance.h>
+
 #include "VtsTrebleVintfTestBase.h"
 
 namespace android {
@@ -30,6 +32,8 @@ class SingleHidlTest : public VtsTrebleVintfTestBase,
                            std::tuple<HidlInstance, HalManifestPtr>> {
  public:
   virtual ~SingleHidlTest() {}
+
+  sp<IBase> GetPassthroughService(const android::FqInstance& fq_instance);
 };
 
 // A parameterized test for an HIDL HAL registered through hwservicemanager

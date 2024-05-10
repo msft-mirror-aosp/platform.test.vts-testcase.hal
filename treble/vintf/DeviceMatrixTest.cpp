@@ -16,7 +16,9 @@
 
 #include "DeviceMatrixTest.h"
 
+#include <android-base/parseint.h>
 #include <android-base/properties.h>
+#include <android/api-level.h>
 #include <vintf/VintfObject.h>
 
 using android::base::GetProperty;
@@ -35,15 +37,40 @@ void DeviceMatrixTest::SetUp() {
       << "Failed to get device compatibility matrix." << endl;
 }
 
+// @VsrTest = VSR-3.2-014
 TEST_F(DeviceMatrixTest, VndkVersion) {
-  if (GetBoardApiLevel() < 28) {
+  if (GetBoardApiLevel() < __ANDROID_API_P__) {
     GTEST_SKIP()
         << "VNDK version doesn't need to be set on devices before Android P";
   }
 
   std::string syspropVndkVersion = GetProperty(kVndkVersionProp, "");
+
+  // Device with ro.board.api_level 202404 or later should not set VNDK version.
+  uint64_t board_api_level =
+      android::base::GetUintProperty<uint64_t>("ro.board.api_level", 0);
+  if (board_api_level >= 202404) {
+    GTEST_SKIP() << "VNDK version doesn't need to be set on devices built "
+                    "with Android V or later";
+  }
+
+  uint64_t syspropVndkVersionNumber;
+  if (!android::base::ParseUint(syspropVndkVersion,
+                                &syspropVndkVersionNumber)) {
+    syspropVndkVersionNumber = 0;
+  }
+
+  if (syspropVndkVersionNumber == __ANDROID_API_V__) {
+    GTEST_SKIP() << "Android based on 24Q1 release with VNDK version V should "
+                    "be skipped from check";
+  }
+
+  ASSERT_LT(syspropVndkVersionNumber, __ANDROID_API_V__)
+      << kVndkVersionProp << " must be less than " << __ANDROID_API_V__;
+
   ASSERT_NE("", syspropVndkVersion)
       << kVndkVersionProp << " must not be empty.";
+
   std::string vintfVndkVersion = vendor_matrix_->getVendorNdkVersion();
   ASSERT_NE("", vintfVndkVersion)
       << "Device compatibility matrix does not declare proper VNDK version.";
