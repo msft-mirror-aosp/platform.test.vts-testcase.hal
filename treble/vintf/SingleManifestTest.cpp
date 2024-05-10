@@ -716,6 +716,15 @@ TEST_P(SingleAidlTest, HalIsServed) {
   ASSERT_TRUE(!is_aosp || metadata)
       << "AOSP interface must have metadata: " << package;
 
+  if (GetBoardApiLevel() >= kAndroidApi202404 &&
+      !android::internal::Stability::requiresVintfDeclaration(binder)) {
+    ADD_FAILURE() << "Interface " << name
+                  << " is declared in the VINTF manifest "
+                  << "but it does not have \"vintf\" stability. "
+                  << "Add 'stability: \"vintf\" to the aidl_interface module, "
+                  << "or remove it from the VINTF manifest.";
+  }
+
   const bool is_release =
       base::GetProperty("ro.build.version.codename", "") == "REL";
 
