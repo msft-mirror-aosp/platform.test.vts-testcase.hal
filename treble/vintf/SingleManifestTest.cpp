@@ -24,6 +24,7 @@
 #include <android/apex/IApexService.h>
 #include <binder/IServiceManager.h>
 #include <binder/Parcel.h>
+#include <binder/Stability.h>
 #include <binder/Status.h>
 #include <dirent.h>
 #include <dlfcn.h>
@@ -45,6 +46,11 @@ namespace android {
 namespace vintf {
 namespace testing {
 
+namespace {
+
+constexpr int kAndroidApi202404 = 202404;
+
+}  // namespace
 using android::FqInstance;
 using android::vintf::toFQNameString;
 
@@ -641,6 +647,41 @@ static bool CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
   return false;
 }
 
+// This checks to make sure all vintf extensions are frozen.
+// We do not check for known hashes because the Android framework does not
+// support these extensions without out-of-tree changes from partners.
+// @param binder - the parent binder to check all of its extensions
+void checkVintfExtensionInterfaces(const sp<IBinder> &binder, bool is_release) {
+  // if you end up here because of a stack overflow when running this
+  // test... you have a cycle in your interface extensions. Break that
+  // cycle to continue.
+  if (!binder) return;
+  sp<IBinder> extension;
+  status_t status = binder->getExtension(&extension);
+  if (status != OK || !extension) return;
+
+  if (android::internal::Stability::requiresVintfDeclaration(extension)) {
+    const std::string hash = getInterfaceHash(extension);
+    if (hash.empty() || hash == "notfrozen") {
+      if (is_release) {
+        ADD_FAILURE() << "Interface extension "
+                      << extension->getInterfaceDescriptor()
+                      << " is unfrozen! It is attached to "
+                      << " a binder for frozen VINTF interface ("
+                      << binder->getInterfaceDescriptor()
+                      << " so it must also be frozen.";
+      } else {
+        std::cout << "INFO: missing hash for vintf interface extension "
+                  << binder->getInterfaceDescriptor()
+                  << " which is attached to "
+                  << binder->getInterfaceDescriptor()
+                  << ". This will become an error upon release." << std::endl;
+      }
+    }
+  }
+  checkVintfExtensionInterfaces(extension, is_release);
+}
+
 // An AIDL HAL with VINTF stability can only be registered if it is in the
 // manifest. However, we still must manually check that every declared HAL is
 // actually present on the device.
@@ -675,6 +716,15 @@ TEST_P(SingleAidlTest, HalIsServed) {
   ASSERT_TRUE(!is_aosp || metadata)
       << "AOSP interface must have metadata: " << package;
 
+  if (GetBoardApiLevel() >= kAndroidApi202404 &&
+      !android::internal::Stability::requiresVintfDeclaration(binder)) {
+    ADD_FAILURE() << "Interface " << name
+                  << " is declared in the VINTF manifest "
+                  << "but it does not have \"vintf\" stability. "
+                  << "Add 'stability: \"vintf\" to the aidl_interface module, "
+                  << "or remove it from the VINTF manifest.";
+  }
+
   const bool is_release =
       base::GetProperty("ro.build.version.codename", "") == "REL";
 
@@ -701,7 +751,7 @@ TEST_P(SingleAidlTest, HalIsServed) {
       }
     }
   } else {
-    // is extension
+    // is partner-owned
     //
     // we only require that these are frozen, but we cannot check them for
     // accuracy
@@ -714,6 +764,9 @@ TEST_P(SingleAidlTest, HalIsServed) {
                   << ". This will become an error upon release." << std::endl;
       }
     }
+  }
+  if (GetBoardApiLevel() >= kAndroidApi202404) {
+    checkVintfExtensionInterfaces(binder, is_release);
   }
 }
 
