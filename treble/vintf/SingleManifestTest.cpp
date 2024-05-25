@@ -17,6 +17,7 @@
 #include "SingleManifestTest.h"
 
 #include <aidl/metadata.h>
+#include <android-base/file.h>
 #include <android-base/hex.h>
 #include <android-base/properties.h>
 #include <android-base/strings.h>
@@ -41,6 +42,7 @@
 
 using ::testing::AnyOf;
 using ::testing::Contains;
+using ::testing::StartsWith;
 
 namespace android {
 namespace vintf {
@@ -682,6 +684,19 @@ void checkVintfExtensionInterfaces(const sp<IBinder> &binder, bool is_release) {
   checkVintfExtensionInterfaces(extension, is_release);
 }
 
+// This checks if @updatable-via-apex in VINTF is correct.
+void checkVintfUpdatableViaApex(const sp<IBinder> &binder,
+                                const std::string &apex_name) {
+  pid_t pid;
+  ASSERT_EQ(OK, binder->getDebugPid(&pid));
+
+  std::string exe;
+  ASSERT_TRUE(base::Readlink("/proc/" + std::to_string(pid) + "/exe", &exe));
+
+  // HAL service should start from the apex
+  ASSERT_THAT(exe, StartsWith("/apex/" + apex_name + "/"));
+}
+
 // An AIDL HAL with VINTF stability can only be registered if it is in the
 // manifest. However, we still must manually check that every declared HAL is
 // actually present on the device.
@@ -767,6 +782,10 @@ TEST_P(SingleAidlTest, HalIsServed) {
   }
   if (GetBoardApiLevel() >= kAndroidApi202404) {
     checkVintfExtensionInterfaces(binder, is_release);
+  }
+
+  if (updatable_via_apex.has_value()) {
+    checkVintfUpdatableViaApex(binder, updatable_via_apex.value());
   }
 }
 
