@@ -15,6 +15,7 @@
  */
 
 #include <libvts_vintf_test_common/common.h>
+#include <vintf/parse_string.h>
 
 namespace android::vintf::testing {
 
@@ -47,7 +48,9 @@ static const std::map<uint64_t /* Vendor API Level */, Level /* FCM Version */>
         {31, Level::S},
         {32, Level::S},
         {33, Level::T},
-        {34, Level::U},  // subject to change, placeholder value
+        {34, Level::U},
+        // Starting from 2024Q2, vendor api level has YYYYMM format.
+        {202404, Level::V},
     }};
 
 android::base::Result<Level> GetFcmVersionFromApiLevel(uint64_t api_level) {
