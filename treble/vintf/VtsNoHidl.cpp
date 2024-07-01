@@ -28,7 +28,6 @@ namespace vintf {
 namespace testing {
 
 static constexpr int kMaxNumberOfHidlHalsU = 100;
-static constexpr int kMaxNumberOfHidlHalsV = 0;
 
 // Tests that the device is not registering any HIDL interfaces.
 // HIDL is being deprecated. Only applicable to devices launching with Android
@@ -56,7 +55,7 @@ TEST_F(VintfNoHidlTest, NoHidl) {
     GTEST_SKIP() << "Not applicable to this device";
     return;
   }
-  int maxNumberOfHidlHals = 0;
+  int maxNumberOfHidlHals;
   std::set<std::string> halInterfaces;
   if (apiLevel == __ANDROID_API_U__) {
     maxNumberOfHidlHals = kMaxNumberOfHidlHalsU;
@@ -75,14 +74,9 @@ TEST_F(VintfNoHidlTest, NoHidl) {
             halInterfaces.insert(splitInterface[0]);
           }
         });
-  } else if (apiLevel == __ANDROID_VENDOR_API_24Q2__) {
-    maxNumberOfHidlHals = kMaxNumberOfHidlHalsV;
-    halInterfaces = allHidlManifestInterfaces();
   } else {
-    // TODO(232439834) We can remove this once kMaxNumberOfHidlHalsV is 0.
-    GTEST_FAIL() << "Unexpected Android vendor API level (" << apiLevel
-                 << "). Must be either " << __ANDROID_API_U__ << " or "
-                 << __ANDROID_VENDOR_API_24Q2__;
+    maxNumberOfHidlHals = 0;
+    halInterfaces = allHidlManifestInterfaces();
   }
   if (halInterfaces.size() > maxNumberOfHidlHals) {
     ADD_FAILURE() << "There are " << halInterfaces.size()
