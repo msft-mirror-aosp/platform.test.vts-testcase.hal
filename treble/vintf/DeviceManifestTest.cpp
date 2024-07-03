@@ -40,12 +40,12 @@ void DeviceManifestTest::SetUp() {
 }
 
 // Tests that Shipping FCM Version in the device manifest is at least the
-// minimum Shipping FCM Version as required by Board API level.
+// minimum Shipping FCM Version as required by Vendor API level.
 // @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, ShippingFcmVersion) {
-  uint64_t board_api_level = GetBoardApiLevel();
+  uint64_t vendor_api_level = GetVendorApiLevel();
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
-  auto res = TestTargetFcmVersion(shipping_fcm_version, board_api_level);
+  auto res = TestTargetFcmVersion(shipping_fcm_version, vendor_api_level);
   ASSERT_RESULT_OK(res);
 }
 

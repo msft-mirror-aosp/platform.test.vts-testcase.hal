@@ -59,7 +59,7 @@ using android::vintf::toFQNameString;
 // For devices that launched <= Android O-MR1, systems/hals/implementations
 // were delivered to companies which either don't start up on device boot.
 bool LegacyAndExempt(const FQName &fq_name) {
-  return GetBoardApiLevel() <= 27 && !IsAndroidPlatformInterface(fq_name);
+  return GetVendorApiLevel() <= 27 && !IsAndroidPlatformInterface(fq_name);
 }
 
 void FailureHalMissing(const FQName &fq_name, const std::string &instance) {
@@ -731,7 +731,7 @@ TEST_P(SingleAidlTest, HalIsServed) {
   ASSERT_TRUE(!is_aosp || metadata)
       << "AOSP interface must have metadata: " << package;
 
-  if (GetBoardApiLevel() >= kAndroidApi202404 &&
+  if (GetVendorApiLevel() >= kAndroidApi202404 &&
       !android::internal::Stability::requiresVintfDeclaration(binder)) {
     ADD_FAILURE() << "Interface " << name
                   << " is declared in the VINTF manifest "
@@ -780,7 +780,7 @@ TEST_P(SingleAidlTest, HalIsServed) {
       }
     }
   }
-  if (GetBoardApiLevel() >= kAndroidApi202404) {
+  if (GetVendorApiLevel() >= kAndroidApi202404) {
     checkVintfExtensionInterfaces(binder, is_release);
   }
 
