@@ -145,18 +145,10 @@ extern const map<string, string> kPackageRoot;
 // HALs that are allowed to be passthrough under Treble rules.
 extern const set<string> kPassthroughHals;
 
-// Read ro.vendor.api_level, that shows the minimum of the following two
-// values:
-// * First non-empty value for the board api level from the following
-// properties:
-// -- ro.board.api_level
-// -- ro.board.first_api_level
-// -- ro.vendor.build.version.sdk
-// * First non-empty value for the device api level from the following
-// properties:
-// -- ro.product.first_api_level
-// -- ro.build.version.sdk
-uint64_t GetBoardApiLevel();
+// Read ro.vendor.api_level
+// See `property_initialize_ro_vendor_api_level()` for details on how
+// this is calculated. In system/core/init/property_service.cpp.
+uint64_t GetVendorApiLevel();
 
 // For a given interface returns package root if known. Returns empty string
 // otherwise.
