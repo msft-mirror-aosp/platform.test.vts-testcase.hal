@@ -83,6 +83,14 @@ TEST_F(SystemVendorTest, FrameworkMatrixDeviceRuntimeCompatibility) {
 
 // Tests that runtime kernel matches requirements in compatibility matrix.
 // This includes testing kernel version and kernel configurations.
+//
+// Requirements:
+//
+// VSR-3.4.6-001: CONFIG_RANDOMIZE_BASE
+// VSR-3.4.6-002: CONFIG_SHADOW_CALL_STACK
+// VSR-3.4.6-002|VSR-3.4.6-003: CONFIG_CFI_CLANG
+//
+// @VsrTest = VSR-3.4.6-001|VSR-3.4.6-002|VSR-3.4.6-003
 TEST_F(SystemVendorTest, KernelCompatibility) {
   auto fwk_matrix = VintfObject::GetFrameworkCompatibilityMatrix();
   ASSERT_NE(fwk_matrix, nullptr)
