@@ -113,7 +113,7 @@ ostream &operator<<(ostream &os, const NativeInstance &val) {
   return os;
 }
 
-uint64_t GetBoardApiLevel() {
+uint64_t GetVendorApiLevel() {
   return GetUintProperty<uint64_t>("ro.vendor.api_level", 0);
 }
 
