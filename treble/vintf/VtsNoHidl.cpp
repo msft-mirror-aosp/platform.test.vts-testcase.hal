@@ -79,10 +79,18 @@ TEST_F(VintfNoHidlTest, NoHidl) {
     halInterfaces = allHidlManifestInterfaces();
   }
   if (halInterfaces.size() > maxNumberOfHidlHals) {
-    ADD_FAILURE() << "There are " << halInterfaces.size()
-                  << " HIDL interfaces served on the device. "
-                  << "These must be converted to AIDL as part of HIDL's "
-                     "deprecation processes.";
+    ADD_FAILURE()
+        << "There are " << halInterfaces.size()
+        << " HIDL interfaces served on the device. "
+        << "These must be converted to AIDL as part of HIDL's "
+           "deprecation processes.\n"
+           "NOTE: vts_treble_vintf_vendor_test should pass before this test. "
+           "Make sure the device under test is targeting "
+           "the correct Framework Compatibility Matrix with "
+           "target-level=\"202404\" or greater. That will cause "
+           "the framework/system HIDL services to stop being registered. "
+           "If those are still registered because the device is targeting "
+           "and older FCM, this test will fail.";
     for (const auto& interface : halInterfaces) {
       ADD_FAILURE() << interface << " registered as a HIDL interface "
                     << "but must be in AIDL";
