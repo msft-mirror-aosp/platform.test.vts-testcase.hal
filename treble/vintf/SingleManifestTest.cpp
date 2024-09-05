@@ -718,8 +718,11 @@ TEST_P(SingleAidlTest, HalIsServed) {
   ASSERT_NE(binder, nullptr) << "Failed to get " << name;
 
   // allow upgrade if updatable HAL's declared APEX is actually updated.
-  const bool allow_upgrade = updatable_via_apex.has_value() &&
-                             IsApexUpdated(updatable_via_apex.value());
+  // or if the HAL is updatable via system.
+  const bool allow_upgrade = (updatable_via_apex.has_value() &&
+                              IsApexUpdated(updatable_via_apex.value())) ||
+                             aidl_instance.updatable_via_system();
+
   const bool reliable_version =
       CheckAidlVersionMatchesDeclared(binder, name, version, allow_upgrade);
 
