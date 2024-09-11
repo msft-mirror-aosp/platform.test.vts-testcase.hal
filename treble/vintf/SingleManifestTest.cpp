@@ -649,6 +649,13 @@ static bool CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
   return false;
 }
 
+static std::vector<std::string> halsUpdatableViaSystem() {
+  std::vector<std::string> hals = {};
+  // TODO(b/364820126): Add HALs depending on the Trusty VM when the
+  // feature is enabled through system property.
+  return hals;
+}
+
 // This checks to make sure all vintf extensions are frozen.
 // We do not check for known hashes because the Android framework does not
 // support these extensions without out-of-tree changes from partners.
@@ -697,6 +704,24 @@ void checkVintfUpdatableViaApex(const sp<IBinder> &binder,
   ASSERT_THAT(exe, StartsWith("/apex/" + apex_name + "/"));
 }
 
+TEST_P(SingleAidlTest, ExpectedUpdatableViaSystemHals) {
+  const auto &[aidl_instance, _] = GetParam();
+  const std::string name = aidl_instance.package() + "." +
+                           aidl_instance.interface() + "/" +
+                           aidl_instance.instance();
+
+  const auto hals = halsUpdatableViaSystem();
+  if (std::find(hals.begin(), hals.end(), name) != hals.end()) {
+    ASSERT_TRUE(aidl_instance.updatable_via_system())
+        << "HAL " << name << " has system dependency but not declared with "
+        << "updatable-via-system in the VINTF manifest.";
+  } else {
+    ASSERT_FALSE(aidl_instance.updatable_via_system())
+        << "HAL " << name << " is declared with updatable-via-system in the "
+        << "VINTF manifest but it does not have system dependency.";
+  }
+}
+
 // An AIDL HAL with VINTF stability can only be registered if it is in the
 // manifest. However, we still must manually check that every declared HAL is
 // actually present on the device.
@@ -718,8 +743,11 @@ TEST_P(SingleAidlTest, HalIsServed) {
   ASSERT_NE(binder, nullptr) << "Failed to get " << name;
 
   // allow upgrade if updatable HAL's declared APEX is actually updated.
-  const bool allow_upgrade = updatable_via_apex.has_value() &&
-                             IsApexUpdated(updatable_via_apex.value());
+  // or if the HAL is updatable via system.
+  const bool allow_upgrade = (updatable_via_apex.has_value() &&
+                              IsApexUpdated(updatable_via_apex.value())) ||
+                             aidl_instance.updatable_via_system();
+
   const bool reliable_version =
       CheckAidlVersionMatchesDeclared(binder, name, version, allow_upgrade);
 
