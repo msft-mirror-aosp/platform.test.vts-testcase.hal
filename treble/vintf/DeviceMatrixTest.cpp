@@ -39,7 +39,7 @@ void DeviceMatrixTest::SetUp() {
 
 // @VsrTest = VSR-3.2-014
 TEST_F(DeviceMatrixTest, VndkVersion) {
-  if (GetBoardApiLevel() < __ANDROID_API_P__) {
+  if (GetVendorApiLevel() < __ANDROID_API_P__) {
     GTEST_SKIP()
         << "VNDK version doesn't need to be set on devices before Android P";
   }
@@ -63,6 +63,13 @@ TEST_F(DeviceMatrixTest, VndkVersion) {
   if (syspropVndkVersionNumber == __ANDROID_API_V__) {
     GTEST_SKIP() << "Android based on 24Q1 release with VNDK version V should "
                     "be skipped from check";
+  } else if (board_api_level <= __ANDROID_API_U__ &&
+             board_api_level >= __ANDROID_API_R__ &&
+             syspropVndkVersion.empty()) {
+    GTEST_SKIP() << kVndkVersionProp
+                 << " is empty, but this is allowed when the "
+                    "ro.board.api_level is set to "
+                 << board_api_level;
   }
 
   ASSERT_LT(syspropVndkVersionNumber, __ANDROID_API_V__)
