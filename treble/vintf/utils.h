@@ -95,6 +95,9 @@ struct AidlInstance : private ManifestInstance {
   std::optional<string> updatable_via_apex() const {
     return ManifestInstance::updatableViaApex();
   }
+  bool updatable_via_system() const {
+    return ManifestInstance::updatableViaSystem();
+  }
 
   string test_case_name() const;
 };
