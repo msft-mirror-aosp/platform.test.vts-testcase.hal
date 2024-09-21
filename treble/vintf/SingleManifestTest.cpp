@@ -651,8 +651,20 @@ static bool CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
 
 static std::vector<std::string> halsUpdatableViaSystem() {
   std::vector<std::string> hals = {};
-  // TODO(b/364820126): Add HALs depending on the Trusty VM when the
-  // feature is enabled through system property.
+  // The KeyMint HALs connecting to the Trusty VM in the system image are
+  // supposed to be enabled in vendor init when the system property
+  // |ro.hardware.security.keymint.trusty.system| is set to true in W.
+  if (base::GetBoolProperty("ro.hardware.security.keymint.trusty.system",
+                            false)) {
+    hals.push_back("android.hardware.security.keymint.IKeyMintDevice/default");
+    hals.push_back(
+        "android.hardware.security.keymint.IRemotelyProvisionedComponent/"
+        "default");
+    hals.push_back(
+        "android.hardware.security.sharedsecret.ISharedSecret/default");
+    hals.push_back(
+        "android.hardware.security.secureclock.ISecureClock/default");
+  }
   return hals;
 }
 
