@@ -211,9 +211,7 @@ public final class VtsHalUsbGadgetV2_0HostTest extends BaseHostJUnit4Test {
         CLog.i("testGetUsbSpeed on device [%s]", deviceSerialNumber);
 
         String output = mDevice.executeShellCommand("svc usb getUsbSpeed");
-        int speed = Integer.parseInt(output.trim());
-
-        Assert.assertNotNull("There is no USB enumeration", speed);
+        int unused = Integer.parseInt(output.trim());
     }
 
     /**
