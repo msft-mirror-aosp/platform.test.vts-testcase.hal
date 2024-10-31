@@ -90,10 +90,12 @@ class VtsTreblePlatformVersionTest(unittest.TestCase):
             asserts.fail("Unexpected value returned from getprop: %s" % e)
 
     def testVndkVersion(self):
-        """Test that VNDK version is specified.
+        """Test that VNDK version is specified only when ro.board.api_level is
+        not set because some devices that have ro.board.api_level may unset
+        ro.vndk.version.
 
-        If ro.vndk.version is not defined on boot, GSI sets LD_CONFIG_FILE to
-        temporary configuration file and ro.vndk.version to default value.
+        ro.vndk.version is deprecated in 202404. Test if the version is not
+        defined in that case.
         """
 
         boardApiLevelStr = self.getProp("ro.board.api_level", required=False)
@@ -104,8 +106,6 @@ class VtsTreblePlatformVersionTest(unittest.TestCase):
                 boardApiLevel = int(boardApiLevelStr)
                 if boardApiLevel >= 202404:
                     self.assertIsNone(vndkVersion, "VNDK version is defined")
-                else:
-                    self.assertIsNotNone(vndkVersion, "VNDK version is not defined")
             except ValueError as e:
                 asserts.fail("Unexpected value returned from ro.board.api_level: %s" % e)
         else:
