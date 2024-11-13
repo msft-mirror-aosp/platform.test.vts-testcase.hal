@@ -68,10 +68,17 @@ TEST_F(DeviceManifestTest, GraphicsMapperHalVersionCompatibility) {
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   bool is_go_device =
       android::base::GetBoolProperty("ro.config.low_ram", false);
-  if (shipping_fcm_version == Level::UNSPECIFIED ||
-      shipping_fcm_version < Level::R ||
-      (is_go_device && shipping_fcm_version < Level::V)) {
-    GTEST_SKIP() << "Graphics mapper 4 is only required on launching R devices";
+  const auto sdkLevel =
+      android::base::GetUintProperty<uint64_t>("ro.build.version.sdk", 10000);
+  // API 36+ requires mapper4.0 or newer regardless of the initial shipping
+  // version
+  if (sdkLevel < 36) {
+    if (shipping_fcm_version == Level::UNSPECIFIED ||
+        shipping_fcm_version < Level::R ||
+        (is_go_device && shipping_fcm_version < Level::V)) {
+      GTEST_SKIP()
+          << "Graphics mapper 4 is only required on launching R devices";
+    }
   }
 
   if (shipping_fcm_version >= Level::V) {
