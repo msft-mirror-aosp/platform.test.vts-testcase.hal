@@ -653,8 +653,8 @@ static std::vector<std::string> halsUpdatableViaSystem() {
   std::vector<std::string> hals = {};
   // The KeyMint HALs connecting to the Trusty VM in the system image are
   // supposed to be enabled in vendor init when the system property
-  // |ro.hardware.security.keymint.trusty.system| is set to true in W.
-  if (base::GetBoolProperty("ro.hardware.security.keymint.trusty.system",
+  // |ro.hardware.trusty.security_vm.keymint.enabled| is set to true in W.
+  if (base::GetBoolProperty("ro.hardware.trusty.security_vm.keymint.enabled",
                             false)) {
     hals.push_back("android.hardware.security.keymint.IKeyMintDevice/default");
     hals.push_back(
