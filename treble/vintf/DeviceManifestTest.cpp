@@ -49,6 +49,25 @@ TEST_F(DeviceManifestTest, ShippingFcmVersion) {
   ASSERT_RESULT_OK(res);
 }
 
+// Check for unused HALs being declared. Every HAL that is declared in the vintf
+// Manifest must have an entry in the Compatibility Matrix
+TEST_F(DeviceManifestTest, UnusedHals) {
+  auto vintfObject = VintfObject::GetInstance();
+  auto res = vintfObject->checkUnusedHals({});
+
+  if (!res.ok()) {
+    uint64_t vendor_api_level = GetVendorApiLevel();
+    if (vendor_api_level < 202504) {
+      GTEST_LOG_(ERROR) << res.error();
+      GTEST_SKIP()
+          << "Not enforcing this so that existing devices can continue "
+             "to pass without changes";
+    } else {
+      ADD_FAILURE() << res.error();
+    }
+  }
+}
+
 // Tests that deprecated HALs are not in the manifest, unless a higher,
 // non-deprecated minor version is in the manifest.
 // @VsrTest = VSR-3.2-014
