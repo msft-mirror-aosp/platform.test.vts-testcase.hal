@@ -16,6 +16,8 @@
 
 package com.android.tests.usbport;
 
+import com.android.compatibility.common.util.VsrTest;
+import com.android.compatibility.common.util.PropertyUtil;
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.device.ITestDevice;
 import com.android.tradefed.log.LogUtil.CLog;
@@ -29,6 +31,7 @@ import com.google.common.base.Strings;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Assert;
@@ -45,6 +48,10 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
     private static final long CONN_TIMEOUT = 5000;
     // Extra time to wait for device to be available after being NOT_AVAILABLE state.
     private static final long EXTRA_RECOVERY_TIMEOUT = 1000;
+    private static final String BOARD_API_LEVEL_PROP = "ro.board.api_level";
+    private static final String BOARD_FIRST_API_LEVEL_PROP = "ro.board.first_api_level";
+    // TODO Remove unknown once b/383164760 is fixed.
+    private static final Set<String> VSR_54_REQUIRED_HAL_VERSIONS = Set.of("V2_0", "V1_3", "unknown");
 
     private static boolean mHasService;
 
@@ -112,5 +119,35 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         }
 
         Assert.assertTrue("USB port did not reconnect within 6000ms timeout.", mReconnected.get());
+    }
+
+    @Test
+    @VsrTest(requirements = {"VSR-5.4-009"})
+    public void testVerifyUsbHalVersion() throws Exception {
+        Assume.assumeTrue(
+            String.format("The device doesn't have service %s", HAL_SERVICE),
+            mHasService);
+        Assert.assertNotNull("Target device does not exist", mDevice);
+        long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
+        long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
+        if(roBoardApiLevel != -1) {
+            Assume.assumeTrue("Skip on devices with ro.board.api_level "
+                                  + roBoardApiLevel + " < 202504",
+                roBoardApiLevel >= 202504);
+        } else {
+            Assume.assumeTrue("Skip on devices with ro.board.first_api_level "
+                                  + roBoardFirstApiLevel + " < 202504",
+                roBoardFirstApiLevel >= 202504);
+        }
+
+        RunUtil.getDefault().sleep(100);
+        String cmd = "svc usb getUsbHalVersion";
+        CLog.i("Invoke shell command [" + cmd + "]");
+        String result = mDevice.executeShellCommand(cmd).trim();
+
+        Assert.assertTrue("Expected HAL version to be one of "
+                              + VSR_54_REQUIRED_HAL_VERSIONS.toString()
+                              + " but got: " + result,
+            VSR_54_REQUIRED_HAL_VERSIONS.contains(result));
     }
 }
