@@ -51,7 +51,7 @@ static const std::map<uint64_t /* Vendor API Level */, Level /* FCM Version */>
         {34, Level::U},
         // Starting from 2024Q2, vendor api level has YYYYMM format.
         {202404, Level::V},
-        {202504, Level::W},  // TODO(b/346861728) placeholder level
+        {202504, Level::B},
     }};
 
 android::base::Result<Level> GetFcmVersionFromApiLevel(uint64_t api_level) {
