@@ -49,6 +49,25 @@ TEST_F(DeviceManifestTest, ShippingFcmVersion) {
   ASSERT_RESULT_OK(res);
 }
 
+// Check for unused HALs being declared. Every HAL that is declared in the vintf
+// Manifest must have an entry in the Compatibility Matrix
+TEST_F(DeviceManifestTest, UnusedHals) {
+  auto vintfObject = VintfObject::GetInstance();
+  auto res = vintfObject->checkUnusedHals({});
+
+  if (!res.ok()) {
+    uint64_t vendor_api_level = GetVendorApiLevel();
+    if (vendor_api_level < 202504) {
+      GTEST_LOG_(ERROR) << res.error();
+      GTEST_SKIP()
+          << "Not enforcing this so that existing devices can continue "
+             "to pass without changes";
+    } else {
+      ADD_FAILURE() << res.error();
+    }
+  }
+}
+
 // Tests that deprecated HALs are not in the manifest, unless a higher,
 // non-deprecated minor version is in the manifest.
 // @VsrTest = VSR-3.2-014
@@ -68,10 +87,17 @@ TEST_F(DeviceManifestTest, GraphicsMapperHalVersionCompatibility) {
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   bool is_go_device =
       android::base::GetBoolProperty("ro.config.low_ram", false);
-  if (shipping_fcm_version == Level::UNSPECIFIED ||
-      shipping_fcm_version < Level::R ||
-      (is_go_device && shipping_fcm_version < Level::V)) {
-    GTEST_SKIP() << "Graphics mapper 4 is only required on launching R devices";
+  const auto sdkLevel =
+      android::base::GetUintProperty<uint64_t>("ro.build.version.sdk", 10000);
+  // API 36+ requires mapper4.0 or newer regardless of the initial shipping
+  // version
+  if (sdkLevel < 36) {
+    if (shipping_fcm_version == Level::UNSPECIFIED ||
+        shipping_fcm_version < Level::R ||
+        (is_go_device && shipping_fcm_version < Level::V)) {
+      GTEST_SKIP()
+          << "Graphics mapper 4 is only required on launching R devices";
+    }
   }
 
   if (shipping_fcm_version >= Level::V) {
