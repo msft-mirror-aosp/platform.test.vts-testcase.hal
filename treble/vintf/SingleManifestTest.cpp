@@ -51,6 +51,7 @@ namespace testing {
 namespace {
 
 constexpr int kAndroidApi202404 = 202404;
+constexpr int kAndroidApi202504 = 202504;
 
 }  // namespace
 using android::FqInstance;
@@ -703,11 +704,7 @@ void checkVintfExtensionInterfaces(const sp<IBinder> &binder, bool is_release) {
 }
 
 // This checks if @updatable-via-apex in VINTF is correct.
-void checkVintfUpdatableViaApex(const sp<IBinder> &binder,
-                                const std::string &apex_name) {
-  pid_t pid;
-  ASSERT_EQ(OK, binder->getDebugPid(&pid));
-
+void checkVintfUpdatableViaApex(pid_t pid, const std::string &apex_name) {
   std::string exe;
   ASSERT_TRUE(base::Readlink("/proc/" + std::to_string(pid) + "/exe", &exe));
 
@@ -819,12 +816,24 @@ TEST_P(SingleAidlTest, HalIsServed) {
       }
     }
   }
+
+  pid_t pid;
+  ASSERT_EQ(OK, binder->getDebugPid(&pid));
+
   if (GetVendorApiLevel() >= kAndroidApi202404) {
     checkVintfExtensionInterfaces(binder, is_release);
   }
 
+  Partition partition = PartitionOfProcess(pid);
+  // TODO(b/388106311): always be able to determine where this code comes from
+  const bool ableToDeterminePartition = partition != Partition::UNKNOWN;
+  if (GetVendorApiLevel() >= kAndroidApi202504 && ableToDeterminePartition) {
+    Partition expected_partition = PartitionOfType(manifest->type());
+    EXPECT_EQ(expected_partition, partition);
+  }
+
   if (updatable_via_apex.has_value()) {
-    checkVintfUpdatableViaApex(binder, updatable_via_apex.value());
+    checkVintfUpdatableViaApex(pid, updatable_via_apex.value());
   }
 }
 
