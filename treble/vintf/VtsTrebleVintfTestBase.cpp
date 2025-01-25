@@ -94,6 +94,11 @@ sp<IServiceManager> VtsTrebleVintfTestBase::default_manager() {
 
 std::vector<HidlInstance> VtsTrebleVintfTestBase::GetHidlInstances(
     const HalManifestPtr &manifest) {
+  if (manifest == nullptr) {
+    ADD_FAILURE() << "Failed to parse the HAL Manifest files. Check logcat for "
+                     "more details";
+    return {};
+  }
   std::vector<HidlInstance> ret;
   manifest->forEachInstance([manifest, &ret](const auto &manifest_instance) {
     if (manifest_instance.format() == HalFormat::HIDL) {
@@ -106,6 +111,11 @@ std::vector<HidlInstance> VtsTrebleVintfTestBase::GetHidlInstances(
 
 std::vector<AidlInstance> VtsTrebleVintfTestBase::GetAidlInstances(
     const HalManifestPtr &manifest) {
+  if (manifest == nullptr) {
+    ADD_FAILURE() << "Failed to parse the HAL Manifest files. Check logcat for "
+                     "more details";
+    return {};
+  }
   std::vector<AidlInstance> ret;
   manifest->forEachInstance([manifest, &ret](const auto &manifest_instance) {
     if (manifest_instance.format() == HalFormat::AIDL) {
@@ -118,6 +128,11 @@ std::vector<AidlInstance> VtsTrebleVintfTestBase::GetAidlInstances(
 
 std::vector<NativeInstance> VtsTrebleVintfTestBase::GetNativeInstances(
     const HalManifestPtr &manifest) {
+  if (manifest == nullptr) {
+    ADD_FAILURE() << "Failed to parse the HAL Manifest files. Check logcat for "
+                     "more details";
+    return {};
+  }
   std::vector<NativeInstance> ret;
   manifest->forEachInstance([manifest, &ret](const auto &manifest_instance) {
     if (manifest_instance.format() == HalFormat::NATIVE) {
@@ -219,6 +234,11 @@ Partition VtsTrebleVintfTestBase::GetPartition(sp<IBase> hal_service) {
 
 set<string> VtsTrebleVintfTestBase::GetDeclaredHidlHalsOfTransport(
     HalManifestPtr manifest, Transport transport) {
+  if (manifest == nullptr) {
+    ADD_FAILURE() << "Failed to parse the HAL Manifest files. Check logcat for "
+                     "more details";
+    return {};
+  }
   EXPECT_THAT(transport,
               AnyOf(Eq(Transport::HWBINDER), Eq(Transport::PASSTHROUGH)))
       << "Unrecognized transport of HIDL: " << transport;
