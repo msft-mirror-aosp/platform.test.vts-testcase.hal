@@ -150,4 +150,112 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
                               + " but got: " + result,
             VSR_54_REQUIRED_HAL_VERSIONS.contains(result));
     }
+
+    @Test
+    @VsrTest(requirements = {"VSR-5.4-006", "VSR-5.4-007"})
+    public void testAoaDirectoryExists() throws Exception {
+        Assume.assumeTrue(
+                String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
+        Assert.assertNotNull("Target device does not exist", mDevice);
+        long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
+        long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
+        if (roBoardApiLevel != -1) {
+            Assume.assumeTrue(
+                    "Skip on devices with ro.board.api_level " + roBoardApiLevel + " < 202504",
+                    roBoardApiLevel >= 202504);
+        } else {
+            Assume.assumeTrue("Skip on devices with ro.board.first_api_level "
+                            + roBoardFirstApiLevel + " < 202504",
+                    roBoardFirstApiLevel >= 202504);
+        }
+
+        RunUtil.getDefault().sleep(100);
+        String cmd = "ls -l /dev/usb-ffs/aoa";
+        CLog.i("Invoke shell command [" + cmd + "]");
+        String result = mDevice.executeShellCommand(cmd).trim();
+
+        Assert.assertTrue(
+                "Expected AOA directory to exist but got: " + result, result.contains("ep0"));
+    }
+
+    @Test
+    @VsrTest(requirements = {"VSR-5.4-006", "VSR-5.4-007"})
+    public void testAoaControlDirectoryExists() throws Exception {
+        Assume.assumeTrue(
+                String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
+        Assert.assertNotNull("Target device does not exist", mDevice);
+        long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
+        long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
+        if (roBoardApiLevel != -1) {
+            Assume.assumeTrue(
+                    "Skip on devices with ro.board.api_level " + roBoardApiLevel + " < 202504",
+                    roBoardApiLevel >= 202504);
+        } else {
+            Assume.assumeTrue("Skip on devices with ro.board.first_api_level "
+                            + roBoardFirstApiLevel + " < 202504",
+                    roBoardFirstApiLevel >= 202504);
+        }
+
+        RunUtil.getDefault().sleep(100);
+        String cmd = "ls -l /dev/usb-ffs/ctrl";
+        CLog.i("Invoke shell command [" + cmd + "]");
+        String result = mDevice.executeShellCommand(cmd).trim();
+
+        Assert.assertTrue("Expected AOA control directory to exist but got: " + result,
+                result.contains("ep0"));
+    }
+
+    @Test
+    @VsrTest(requirements = {"VSR-5.4-005"})
+    public void testAoaDirectoryMountedAsFfs() throws Exception {
+        Assume.assumeTrue(
+                String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
+        Assert.assertNotNull("Target device does not exist", mDevice);
+        long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
+        long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
+        if (roBoardApiLevel != -1) {
+            Assume.assumeTrue(
+                    "Skip on devices with ro.board.api_level " + roBoardApiLevel + " < 202504",
+                    roBoardApiLevel >= 202504);
+        } else {
+            Assume.assumeTrue("Skip on devices with ro.board.first_api_level "
+                            + roBoardFirstApiLevel + " < 202504",
+                    roBoardFirstApiLevel >= 202504);
+        }
+
+        RunUtil.getDefault().sleep(100);
+        String cmd = "mount | grep \"/dev/usb-ffs/aoa\"";
+        CLog.i("Invoke shell command [" + cmd + "]");
+        String result = mDevice.executeShellCommand(cmd).trim();
+
+        Assert.assertTrue("Expected AOA directory to be mounted as FunctionFS but got: " + result,
+                result.contains("functionfs"));
+    }
+
+    @Test
+    @VsrTest(requirements = {"VSR-5.4-008"})
+    public void testAoaEndpointsNotMountedAtBoot() throws Exception {
+        Assume.assumeTrue(
+                String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
+        Assert.assertNotNull("Target device does not exist", mDevice);
+        long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
+        long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
+        if (roBoardApiLevel != -1) {
+            Assume.assumeTrue(
+                    "Skip on devices with ro.board.api_level " + roBoardApiLevel + " < 202504",
+                    roBoardApiLevel >= 202504);
+        } else {
+            Assume.assumeTrue("Skip on devices with ro.board.first_api_level "
+                            + roBoardFirstApiLevel + " < 202504",
+                    roBoardFirstApiLevel >= 202504);
+        }
+
+        RunUtil.getDefault().sleep(100);
+        String cmd = "ls -l /dev/usb-ffs/aoa";
+        CLog.i("Invoke shell command [" + cmd + "]");
+        String result = mDevice.executeShellCommand(cmd).trim();
+
+        Assert.assertFalse("Expected AOA endpoints to not be mounted but got: " + result,
+                result.contains("ep1") || result.contains("ep2"));
+    }
 }
