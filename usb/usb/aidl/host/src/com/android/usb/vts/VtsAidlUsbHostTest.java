@@ -48,6 +48,7 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
     private static final long CONN_TIMEOUT = 5000;
     // Extra time to wait for device to be available after being NOT_AVAILABLE state.
     private static final long EXTRA_RECOVERY_TIMEOUT = 1000;
+    private static final String PRODUCT_FIRST_API_LEVEL_PROP = "ro.product.first_api_level";
     private static final String BOARD_API_LEVEL_PROP = "ro.board.api_level";
     private static final String BOARD_FIRST_API_LEVEL_PROP = "ro.board.first_api_level";
     // TODO Remove unknown once b/383164760 is fixed.
@@ -157,8 +158,12 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         Assume.assumeTrue(
                 String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         Assert.assertNotNull("Target device does not exist", mDevice);
+        long roProductFirstApiLevel = mDevice.getIntProperty(PRODUCT_FIRST_API_LEVEL_PROP, -1);
         long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
         long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
+        Assume.assumeTrue("Skip on devices with ro.product.first_api_level "
+                        + roProductFirstApiLevel + "< 36 (Android 16)",
+                roProductFirstApiLevel >= 36);
         if (roBoardApiLevel != -1) {
             Assume.assumeTrue(
                     "Skip on devices with ro.board.api_level " + roBoardApiLevel + " < 202504",
@@ -184,8 +189,12 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         Assume.assumeTrue(
                 String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         Assert.assertNotNull("Target device does not exist", mDevice);
+        long roProductFirstApiLevel = mDevice.getIntProperty(PRODUCT_FIRST_API_LEVEL_PROP, -1);
         long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
         long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
+        Assume.assumeTrue("Skip on devices with ro.product.first_api_level "
+                        + roProductFirstApiLevel + "< 36 (Android 16)",
+                roProductFirstApiLevel >= 36);
         if (roBoardApiLevel != -1) {
             Assume.assumeTrue(
                     "Skip on devices with ro.board.api_level " + roBoardApiLevel + " < 202504",
@@ -211,8 +220,12 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         Assume.assumeTrue(
                 String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         Assert.assertNotNull("Target device does not exist", mDevice);
+        long roProductFirstApiLevel = mDevice.getIntProperty(PRODUCT_FIRST_API_LEVEL_PROP, -1);
         long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
         long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
+        Assume.assumeTrue("Skip on devices with ro.product.first_api_level "
+                        + roProductFirstApiLevel + "< 36 (Android 16)",
+                roProductFirstApiLevel >= 36);
         if (roBoardApiLevel != -1) {
             Assume.assumeTrue(
                     "Skip on devices with ro.board.api_level " + roBoardApiLevel + " < 202504",
@@ -238,8 +251,12 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         Assume.assumeTrue(
                 String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         Assert.assertNotNull("Target device does not exist", mDevice);
+        long roProductFirstApiLevel = mDevice.getIntProperty(PRODUCT_FIRST_API_LEVEL_PROP, -1);
         long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
         long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
+        Assume.assumeTrue("Skip on devices with ro.product.first_api_level "
+                        + roProductFirstApiLevel + "< 36 (Android 16)",
+                roProductFirstApiLevel >= 36);
         if (roBoardApiLevel != -1) {
             Assume.assumeTrue(
                     "Skip on devices with ro.board.api_level " + roBoardApiLevel + " < 202504",
