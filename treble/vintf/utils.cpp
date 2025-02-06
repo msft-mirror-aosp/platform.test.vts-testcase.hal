@@ -149,9 +149,14 @@ set<string> ReleasedHashes(const FQName &fq_iface_name) {
 Partition PartitionOfProcess(int32_t pid) {
   auto partition = android::procpartition::getPartition(pid);
 
-  // TODO(b/70033981): remove once ODM and Vendor manifests are distinguished
+  // we should have a library dedicated to Treble containers.
+
   if (partition == Partition::ODM) {
     partition = Partition::VENDOR;
+  } else if (partition == Partition::SYSTEM_EXT) {
+    partition = Partition::SYSTEM;
+  } else if (partition == Partition::PRODUCT) {
+    partition = Partition::SYSTEM;
   }
 
   return partition;
