@@ -668,11 +668,71 @@ static std::vector<std::string> halsUpdatableViaSystem() {
   return hals;
 }
 
+static inline void checkHash(
+    const std::string &interface, const sp<IBinder> &binder, bool ignore_rel,
+    const std::optional<const std::string> &parent_interface) {
+  const std::string hash = getInterfaceHash(binder);
+  const std::optional<AidlInterfaceMetadata> metadata =
+      metadataForInterface(interface);
+  const std::string parent_log =
+      parent_interface
+          ? "\nThis interface is set as an extension via setExtension on " +
+                *parent_interface
+          : "";
+
+  const bool is_aosp = base::StartsWith(interface, "android.");
+  ASSERT_TRUE(!is_aosp || metadata)
+      << "AOSP interface must have metadata: "
+      << interface << ". Do not use the "
+      << "'android.' prefix for non-AOSP HALs" << parent_log;
+  const bool is_release =
+      base::GetProperty("ro.build.version.codename", "") == "REL";
+
+  const std::vector<std::string> hashes =
+      metadata ? metadata->hashes : std::vector<std::string>();
+  const bool found_hash =
+      std::find(hashes.begin(), hashes.end(), hash) != hashes.end();
+
+  if (is_aosp) {
+    if (!found_hash) {
+      if (is_release || ignore_rel) {
+        ADD_FAILURE() << "Interface "
+                      << interface << " has an unrecognized hash: '" << hash
+                      << "'. The following hashes are known:\n"
+                      << base::Join(hashes, '\n')
+                      << "\nHAL interfaces must be released and unchanged."
+                      << parent_log;
+      } else {
+        std::cout << "INFO: using unfrozen hash '" << hash << "' for "
+                  << interface << ". This will become an error upon release."
+                  << parent_log << std::endl;
+      }
+    }
+  } else {
+    // is partner-owned
+    //
+    // we only require that these are frozen, but we cannot check them for
+    // accuracy
+    if (hash.empty() || hash == "notfrozen") {
+      if (is_release) {
+        ADD_FAILURE()
+            << "Interface "
+            << interface << " is used but not frozen (cannot find hash for it)."
+            << parent_log;
+      } else {
+        std::cout << "INFO: missing hash for "
+                  << interface << ". This will become an error upon release."
+                  << parent_log << std::endl;
+      }
+    }
+  }
+}
+
 // This checks to make sure all vintf extensions are frozen.
 // We do not check for known hashes because the Android framework does not
 // support these extensions without out-of-tree changes from partners.
 // @param binder - the parent binder to check all of its extensions
-void checkVintfExtensionInterfaces(const sp<IBinder> &binder, bool is_release) {
+void checkVintfExtensionInterfaces(const sp<IBinder> &binder) {
   // if you end up here because of a stack overflow when running this
   // test... you have a cycle in your interface extensions. Break that
   // cycle to continue.
@@ -682,25 +742,13 @@ void checkVintfExtensionInterfaces(const sp<IBinder> &binder, bool is_release) {
   if (status != OK || !extension) return;
 
   if (android::internal::Stability::requiresVintfDeclaration(extension)) {
-    const std::string hash = getInterfaceHash(extension);
-    if (hash.empty() || hash == "notfrozen") {
-      if (is_release) {
-        ADD_FAILURE() << "Interface extension "
-                      << extension->getInterfaceDescriptor()
-                      << " is unfrozen! It is attached to "
-                      << " a binder for frozen VINTF interface ("
-                      << binder->getInterfaceDescriptor()
-                      << " so it must also be frozen.";
-      } else {
-        std::cout << "INFO: missing hash for vintf interface extension "
-                  << binder->getInterfaceDescriptor()
-                  << " which is attached to "
-                  << binder->getInterfaceDescriptor()
-                  << ". This will become an error upon release." << std::endl;
-      }
-    }
+    const std::string parent_descriptor(
+        String8(binder->getInterfaceDescriptor()).c_str());
+    const std::string ext_descriptor(
+        String8(extension->getInterfaceDescriptor()).c_str());
+    checkHash(ext_descriptor, binder, false, parent_descriptor);
   }
-  checkVintfExtensionInterfaces(extension, is_release);
+  checkVintfExtensionInterfaces(extension);
 }
 
 // This checks if @updatable-via-apex in VINTF is correct.
@@ -750,23 +798,6 @@ TEST_P(SingleAidlTest, HalIsServed) {
 
   ASSERT_NE(binder, nullptr) << "Failed to get " << name;
 
-  // allow upgrade if updatable HAL's declared APEX is actually updated.
-  // or if the HAL is updatable via system.
-  const bool allow_upgrade = (updatable_via_apex.has_value() &&
-                              IsApexUpdated(updatable_via_apex.value())) ||
-                             aidl_instance.updatable_via_system();
-
-  const bool reliable_version =
-      CheckAidlVersionMatchesDeclared(binder, name, version, allow_upgrade);
-
-  const std::string hash = getInterfaceHash(binder);
-  const std::optional<AidlInterfaceMetadata> metadata =
-      metadataForInterface(type);
-
-  const bool is_aosp = base::StartsWith(package, "android.");
-  ASSERT_TRUE(!is_aosp || metadata)
-      << "AOSP interface must have metadata: " << package;
-
   if (GetVendorApiLevel() >= kAndroidApi202404 &&
       !android::internal::Stability::requiresVintfDeclaration(binder)) {
     ADD_FAILURE() << "Interface " << name
@@ -776,52 +807,31 @@ TEST_P(SingleAidlTest, HalIsServed) {
                   << "or remove it from the VINTF manifest.";
   }
 
-  const bool is_release =
-      base::GetProperty("ro.build.version.codename", "") == "REL";
-
+  // allow upgrade if updatable HAL's declared APEX is actually updated.
+  // or if the HAL is updatable via system.
+  const bool allow_upgrade = (updatable_via_apex.has_value() &&
+                              IsApexUpdated(updatable_via_apex.value())) ||
+                             aidl_instance.updatable_via_system();
+  // If we know this version is frozen, even on non-REL builds we should throw
+  // an error if this is an AOSP interfaces with a hash that we don't know
+  // about.
+  const bool reliable_version =
+      CheckAidlVersionMatchesDeclared(binder, name, version, allow_upgrade);
+  const std::optional<AidlInterfaceMetadata> metadata =
+      metadataForInterface(type);
   const bool is_existing =
       metadata ? std::find(metadata->versions.begin(), metadata->versions.end(),
                            version) != metadata->versions.end()
                : false;
+  const bool ignore_rel_for_aosp = reliable_version && is_existing;
 
-  const std::vector<std::string> hashes =
-      metadata ? metadata->hashes : std::vector<std::string>();
-  const bool found_hash =
-      std::find(hashes.begin(), hashes.end(), hash) != hashes.end();
-
-  if (is_aosp) {
-    if (!found_hash) {
-      if (is_release || (reliable_version && is_existing)) {
-        ADD_FAILURE() << "Interface " << name << " has an unrecognized hash: '"
-                      << hash << "'. The following hashes are known:\n"
-                      << base::Join(hashes, '\n')
-                      << "\nHAL interfaces must be released and unchanged.";
-      } else {
-        std::cout << "INFO: using unfrozen hash '" << hash << "' for " << type
-                  << ". This will become an error upon release." << std::endl;
-      }
-    }
-  } else {
-    // is partner-owned
-    //
-    // we only require that these are frozen, but we cannot check them for
-    // accuracy
-    if (hash.empty() || hash == "notfrozen") {
-      if (is_release) {
-        ADD_FAILURE() << "Interface " << name
-                      << " is used but not frozen (cannot find hash for it).";
-      } else {
-        std::cout << "INFO: missing hash for " << type
-                  << ". This will become an error upon release." << std::endl;
-      }
-    }
-  }
+  checkHash(type, binder, ignore_rel_for_aosp, std::nullopt);
 
   pid_t pid;
   ASSERT_EQ(OK, binder->getDebugPid(&pid));
 
-  if (GetVendorApiLevel() >= kAndroidApi202404) {
-    checkVintfExtensionInterfaces(binder, is_release);
+  if (GetVendorApiLevel() >= kAndroidApi202504) {
+    checkVintfExtensionInterfaces(binder);
   }
 
   Partition partition = PartitionOfProcess(pid);
