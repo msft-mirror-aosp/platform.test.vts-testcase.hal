@@ -33,11 +33,6 @@ python_test_host {
         "vts",
     ],
     auto_gen_config: true,
-    version: {
-        py3: {
-            embedded_launcher: true,
-        }
-    },
     test_options: {
         unit_test: false,
     },
