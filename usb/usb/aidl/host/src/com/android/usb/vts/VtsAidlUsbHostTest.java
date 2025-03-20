@@ -17,7 +17,6 @@
 package com.android.tests.usbport;
 
 import com.android.compatibility.common.util.VsrTest;
-import com.android.compatibility.common.util.PropertyUtil;
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.device.ITestDevice;
 import com.android.tradefed.log.LogUtil.CLog;
@@ -32,6 +31,8 @@ import com.google.common.base.Strings;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Assert;
@@ -133,11 +134,11 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
         if(roBoardApiLevel != -1) {
             Assume.assumeTrue("Skip on devices with ro.board.api_level "
-                                  + roBoardApiLevel + " < 202504",
+                                  + roBoardApiLevel + " less than 202504",
                 roBoardApiLevel >= 202504);
         } else {
             Assume.assumeTrue("Skip on devices with ro.board.first_api_level "
-                                  + roBoardFirstApiLevel + " < 202504",
+                                  + roBoardFirstApiLevel + " less than 202504",
                 roBoardFirstApiLevel >= 202504);
         }
 
@@ -158,21 +159,7 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         Assume.assumeTrue(
                 String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         Assert.assertNotNull("Target device does not exist", mDevice);
-        long roProductFirstApiLevel = mDevice.getIntProperty(PRODUCT_FIRST_API_LEVEL_PROP, -1);
-        long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
-        long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
-        Assume.assumeTrue("Skip on devices with ro.product.first_api_level "
-                        + roProductFirstApiLevel + "< 36 (Android 16)",
-                roProductFirstApiLevel >= 36);
-        if (roBoardApiLevel != -1) {
-            Assume.assumeTrue(
-                    "Skip on devices with ro.board.api_level " + roBoardApiLevel + " < 202504",
-                    roBoardApiLevel >= 202504);
-        } else {
-            Assume.assumeTrue("Skip on devices with ro.board.first_api_level "
-                            + roBoardFirstApiLevel + " < 202504",
-                    roBoardFirstApiLevel >= 202504);
-        }
+        checkAoaRequirements();
 
         RunUtil.getDefault().sleep(100);
         String cmd = "ls -l /dev/usb-ffs/aoa";
@@ -189,21 +176,7 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         Assume.assumeTrue(
                 String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         Assert.assertNotNull("Target device does not exist", mDevice);
-        long roProductFirstApiLevel = mDevice.getIntProperty(PRODUCT_FIRST_API_LEVEL_PROP, -1);
-        long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
-        long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
-        Assume.assumeTrue("Skip on devices with ro.product.first_api_level "
-                        + roProductFirstApiLevel + "< 36 (Android 16)",
-                roProductFirstApiLevel >= 36);
-        if (roBoardApiLevel != -1) {
-            Assume.assumeTrue(
-                    "Skip on devices with ro.board.api_level " + roBoardApiLevel + " < 202504",
-                    roBoardApiLevel >= 202504);
-        } else {
-            Assume.assumeTrue("Skip on devices with ro.board.first_api_level "
-                            + roBoardFirstApiLevel + " < 202504",
-                    roBoardFirstApiLevel >= 202504);
-        }
+        checkAoaRequirements();
 
         RunUtil.getDefault().sleep(100);
         String cmd = "ls -l /dev/usb-ffs/ctrl";
@@ -220,21 +193,7 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         Assume.assumeTrue(
                 String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         Assert.assertNotNull("Target device does not exist", mDevice);
-        long roProductFirstApiLevel = mDevice.getIntProperty(PRODUCT_FIRST_API_LEVEL_PROP, -1);
-        long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
-        long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
-        Assume.assumeTrue("Skip on devices with ro.product.first_api_level "
-                        + roProductFirstApiLevel + "< 36 (Android 16)",
-                roProductFirstApiLevel >= 36);
-        if (roBoardApiLevel != -1) {
-            Assume.assumeTrue(
-                    "Skip on devices with ro.board.api_level " + roBoardApiLevel + " < 202504",
-                    roBoardApiLevel >= 202504);
-        } else {
-            Assume.assumeTrue("Skip on devices with ro.board.first_api_level "
-                            + roBoardFirstApiLevel + " < 202504",
-                    roBoardFirstApiLevel >= 202504);
-        }
+        checkAoaRequirements();
 
         RunUtil.getDefault().sleep(100);
         String cmd = "mount | grep \"/dev/usb-ffs/aoa\"";
@@ -251,21 +210,7 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         Assume.assumeTrue(
                 String.format("The device doesn't have service %s", HAL_SERVICE), mHasService);
         Assert.assertNotNull("Target device does not exist", mDevice);
-        long roProductFirstApiLevel = mDevice.getIntProperty(PRODUCT_FIRST_API_LEVEL_PROP, -1);
-        long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
-        long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
-        Assume.assumeTrue("Skip on devices with ro.product.first_api_level "
-                        + roProductFirstApiLevel + "< 36 (Android 16)",
-                roProductFirstApiLevel >= 36);
-        if (roBoardApiLevel != -1) {
-            Assume.assumeTrue(
-                    "Skip on devices with ro.board.api_level " + roBoardApiLevel + " < 202504",
-                    roBoardApiLevel >= 202504);
-        } else {
-            Assume.assumeTrue("Skip on devices with ro.board.first_api_level "
-                            + roBoardFirstApiLevel + " < 202504",
-                    roBoardFirstApiLevel >= 202504);
-        }
+        checkAoaRequirements();
 
         RunUtil.getDefault().sleep(100);
         String cmd = "ls -l /dev/usb-ffs/aoa";
@@ -274,5 +219,45 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
 
         Assert.assertFalse("Expected AOA endpoints to not be mounted but got: " + result,
                 result.contains("ep1") || result.contains("ep2"));
+    }
+
+    private void checkAoaRequirements() throws Exception {
+        long roProductFirstApiLevel = mDevice.getIntProperty(PRODUCT_FIRST_API_LEVEL_PROP, -1);
+        long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
+        long roBoardFirstApiLevel = mDevice.getIntProperty(BOARD_FIRST_API_LEVEL_PROP, -1);
+
+        RunUtil.getDefault().sleep(100);
+        String cmd = "uname -r";
+        CLog.i("Invoke shell command [" + cmd + "]");
+        String osVersion = mDevice.executeShellCommand(cmd).trim();
+
+        Assume.assumeTrue("Skip on devices with ro.product.first_api_level "
+                        + roProductFirstApiLevel + " less than 36 (Android 16)",
+                roProductFirstApiLevel >= 36);
+        if (roBoardApiLevel != -1) {
+            Assume.assumeTrue(
+                    "Skip on devices with ro.board.api_level " + roBoardApiLevel
+                        + " less than 202504",
+                    roBoardApiLevel >= 202504);
+        } else {
+            Assume.assumeTrue("Skip on devices with ro.board.first_api_level "
+                            + roBoardFirstApiLevel + " less than 202504",
+                    roBoardFirstApiLevel >= 202504);
+        }
+
+        Assume.assumeTrue("Skip on devices with kernel version "
+                        + osVersion + " less than 6.12 ",
+                isKernelVersionAtLeast(osVersion, 6,12));
+    }
+
+    private boolean isKernelVersionAtLeast(String osVersion,
+            int major, int minor) {
+        Pattern p = Pattern.compile("^(\\d+)\\.(\\d+)");
+        Matcher m1 = p.matcher(osVersion);
+        Assert.assertTrue("Unable to parse kernel release version: %s"
+                              .format(osVersion), m1.find());
+        return Integer.parseInt(m1.group(1)) > major
+                || (Integer.parseInt(m1.group(1)) == major
+                && Integer.parseInt(m1.group(2)) > minor);
     }
 }
