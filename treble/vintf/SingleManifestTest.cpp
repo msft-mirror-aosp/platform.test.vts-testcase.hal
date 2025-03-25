@@ -967,6 +967,20 @@ TEST_P(SingleAidlTest, HalIsServed) {
   }
 }
 
+TEST_P(SingleAidlTest, NoExclusiveToVmHalExistIfTrustedVmDisabled) {
+  const auto &[aidl_instance, _] = GetParam();
+  const std::string name = ServiceName(aidl_instance);
+
+  const bool trustyVmEnabled =
+      base::GetBoolProperty("trusty.security_vm.enabled", false) ||
+      base::GetBoolProperty("trusty.widevine_vm.enabled", false);
+  if (!trustyVmEnabled) {
+    ASSERT_NE(ExclusiveTo::VM, aidl_instance.exclusiveTo())
+        << "HAL " << name << " is exclusive to VM but the device does not "
+        << "support any Trusty VM.";
+  }
+}
+
 // We don't want to add more same process HALs in Android. We have some 3rd
 // party ones such as openGL and Vulkan. In the future, we should verify those
 // here as well. However we want to strictly limit other HALs because a
