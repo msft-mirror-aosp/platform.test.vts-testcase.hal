@@ -98,6 +98,7 @@ struct AidlInstance : private ManifestInstance {
   bool updatable_via_system() const {
     return ManifestInstance::updatableViaSystem();
   }
+  ExclusiveTo exclusiveTo() const { return ManifestInstance::exclusiveTo(); }
 
   string test_case_name() const;
 };

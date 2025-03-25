@@ -23,8 +23,11 @@
 #include <android-base/strings.h>
 #include <android/apex/ApexInfo.h>
 #include <android/apex/IApexService.h>
+#include <android/vintf/IServiceInfoFetcher.h>
+#include <android/vintf/ServiceInfo.h>
 #include <binder/IServiceManager.h>
 #include <binder/Parcel.h>
+#include <binder/RpcSession.h>
 #include <binder/Stability.h>
 #include <binder/Status.h>
 #include <dirent.h>
@@ -52,9 +55,12 @@ namespace {
 
 constexpr int kAndroidApi202404 = 202404;
 constexpr int kAndroidApi202504 = 202504;
+constexpr int kTrustyTestVmVintfTaPort = 1000;
 
 }  // namespace
 using android::FqInstance;
+using android::vintf::IServiceInfoFetcher;
+using android::vintf::ServiceInfo;
 using android::vintf::toFQNameString;
 
 // For devices that launched <= Android O-MR1, systems/hals/implementations
@@ -92,6 +98,15 @@ void FailureHashMissing(const FQName &fq_name) {
         << " has an empty hash. This is because it was compiled "
            "without being frozen in a corresponding current.txt file.";
   }
+}
+
+static inline std::string ServiceName(const AidlInstance &aidl_instance) {
+  return aidl_instance.package() + "." + aidl_instance.interface() + "/" +
+         aidl_instance.instance();
+}
+
+static inline std::string ServiceName(const ServiceInfo &hal_info) {
+  return hal_info.type + "/" + hal_info.instance;
 }
 
 static FqInstance ToFqInstance(const string &interface,
@@ -563,25 +578,59 @@ static std::optional<AidlInterfaceMetadata> metadataForInterface(
   return std::nullopt;
 }
 
-// TODO(b/150155678): using standard code to do this
-static std::string getInterfaceHash(const sp<IBinder> &binder) {
-  Parcel data;
-  Parcel reply;
-  data.writeInterfaceToken(binder->getInterfaceDescriptor());
-  status_t err =
-      binder->transact(IBinder::LAST_CALL_TRANSACTION - 1, data, &reply, 0);
-  if (err == UNKNOWN_TRANSACTION) {
-    return "";
+#ifdef TRUSTED_HAL_TEST
+sp<IServiceInfoFetcher> GetTrustedHalInfoFetcher() {
+  int test_vm_cid = base::GetIntProperty("trusty.test_vm.vm_cid", -1);
+  if (test_vm_cid == -1) {
+    cout << "no test VM is running";
+    return nullptr;
   }
-  EXPECT_EQ(OK, err);
-  binder::Status status;
-  EXPECT_EQ(OK, status.readFromParcel(reply));
-  EXPECT_TRUE(status.isOk()) << status.toString8().c_str();
-  std::string str;
-  EXPECT_EQ(OK, reply.readUtf8FromUtf16(&str));
-  return str;
+
+  auto session = RpcSession::make();
+  status_t status =
+      session->setupVsockClient(test_vm_cid, kTrustyTestVmVintfTaPort);
+  if (status != android::OK) {
+    cout << "unable to set up vsock client";
+    return nullptr;
+  }
+  sp<IBinder> root = session->getRootObject();
+  if (root == nullptr) {
+    cout << "failed to get root object for IServiceInfoFetcher";
+    return nullptr;
+  }
+  return IServiceInfoFetcher::asInterface(root);
 }
 
+TEST(TrustedHalDeclaredTest, TrustedHalDeclaredMatchesInstalled) {
+  auto trusted_hal_info_fetcher = GetTrustedHalInfoFetcher();
+  ASSERT_NE(trusted_hal_info_fetcher, nullptr)
+      << "failed to get IServiceInfoFetcher";
+
+  // Retrieve the list of actually installed Trusted HALs.
+  std::vector<std::string> actual_trusted_hal_list;
+  ASSERT_TRUE(
+      trusted_hal_info_fetcher->listAllServices(&actual_trusted_hal_list)
+          .isOk())
+      << "failed to list all services";
+  std::set<std::string> actual_instances(actual_trusted_hal_list.begin(),
+                                         actual_trusted_hal_list.end());
+
+  // Retrieve the list of declared Trusted HALs from the vintf manifest.
+  std::set<std::string> declared_instances = {};
+  for (const auto &aidl_instance : VtsTrebleVintfTestBase::GetAidlInstances(
+           VintfObject::GetDeviceHalManifest())) {
+    if (aidl_instance.exclusiveTo() == ExclusiveTo::VM) {
+      declared_instances.insert(ServiceName(aidl_instance));
+    }
+  }
+
+  // Compare the declared and actual sets.
+  ASSERT_EQ(declared_instances, actual_instances)
+      << "Declared Trusted HAL instances (exclusive to VM) do not match the "
+      << "actually installed instances.";
+}
+
+#else   // TRUSTED_HAL_TEST
 // TODO(b/150155678): using standard code to do this
 static int32_t getInterfaceVersion(const sp<IBinder> &binder) {
   Parcel data;
@@ -605,22 +654,74 @@ static int32_t getInterfaceVersion(const sp<IBinder> &binder) {
   return version;
 }
 
-static bool CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
-                                            const std::string &name,
-                                            uint64_t declared_version,
-                                            bool allow_upgrade) {
-  const int32_t actual_version = getInterfaceVersion(binder);
+// TODO(b/150155678): using standard code to do this
+static std::string getInterfaceHash(const sp<IBinder> &binder) {
+  Parcel data;
+  Parcel reply;
+  data.writeInterfaceToken(binder->getInterfaceDescriptor());
+  status_t err =
+      binder->transact(IBinder::LAST_CALL_TRANSACTION - 1, data, &reply, 0);
+  if (err == UNKNOWN_TRANSACTION) {
+    return "";
+  }
+  EXPECT_EQ(OK, err);
+  binder::Status status;
+  EXPECT_EQ(OK, status.readFromParcel(reply));
+  EXPECT_TRUE(status.isOk()) << status.toString8().c_str();
+  std::string str;
+  EXPECT_EQ(OK, reply.readUtf8FromUtf16(&str));
+  return str;
+}
+
+std::vector<ServiceInfo> getExtensionInfos(const sp<IBinder> &binder) {
+  // if you end up here because of a stack overflow when running this
+  // test... you have a cycle in your interface extensions. Break that
+  // cycle to continue.
+  std::vector<ServiceInfo> extensions = {};
+  sp<IBinder> parent = binder;
+  sp<IBinder> extension;
+  while (parent) {
+    status_t status = parent->getExtension(&extension);
+    if (status != OK || !extension) {
+      break;
+    }
+    ServiceInfo info;
+    info.type =
+        std::string(String8(extension->getInterfaceDescriptor()).c_str());
+    info.requireVintfDeclaration =
+        android::internal::Stability::requiresVintfDeclaration(extension);
+    info.hash = getInterfaceHash(parent);
+    extensions.push_back(info);
+    parent = extension;
+  }
+  return extensions;
+}
+#endif  // TRUSTED_HAL_TEST
+
+static bool CheckAidlVersionMatchesDeclared(
+    const AidlInstance &declared_instance, const ServiceInfo &actual_hal_info) {
+  const auto name = ServiceName(actual_hal_info);
+  const auto actual_version = actual_hal_info.version;
   if (actual_version < 1) {
     ADD_FAILURE() << "For " << name << ", version should be >= 1 but it is "
                   << actual_version << ".";
     return false;
   }
 
+  uint64_t declared_version = declared_instance.version();
   if (declared_version == actual_version) {
     std::cout << "For " << name << ", version " << actual_version
               << " matches declared value." << std::endl;
     return true;
   }
+
+  const optional<string> &updatable_via_apex =
+      declared_instance.updatable_via_apex();
+  // allow upgrade if updatable HAL's declared APEX is actually updated.
+  // or if the HAL is updatable via system.
+  const bool allow_upgrade = (updatable_via_apex.has_value() &&
+                              IsApexUpdated(updatable_via_apex.value())) ||
+                             declared_instance.updatable_via_system();
   if (allow_upgrade && actual_version > declared_version) {
     std::cout << "For " << name << ", upgraded version " << actual_version
               << " is okay. (declared value = " << declared_version << ".)"
@@ -650,28 +751,11 @@ static bool CheckAidlVersionMatchesDeclared(sp<IBinder> binder,
   return false;
 }
 
-static std::vector<std::string> halsUpdatableViaSystem() {
-  std::vector<std::string> hals = {};
-  // The KeyMint HALs connecting to the Trusty VM in the system image are
-  // supposed to be enabled in vendor init when the system property
-  // |trusty.security_vm.keymint.enabled| is set to true in W.
-  if (base::GetBoolProperty("trusty.security_vm.keymint.enabled", false)) {
-    hals.push_back("android.hardware.security.keymint.IKeyMintDevice/default");
-    hals.push_back(
-        "android.hardware.security.keymint.IRemotelyProvisionedComponent/"
-        "default");
-    hals.push_back(
-        "android.hardware.security.sharedsecret.ISharedSecret/default");
-    hals.push_back(
-        "android.hardware.security.secureclock.ISecureClock/default");
-  }
-  return hals;
-}
-
 static inline void checkHash(
-    const std::string &interface, const sp<IBinder> &binder, bool ignore_rel,
+    const ServiceInfo &hal_info, bool ignore_rel,
     const std::optional<const std::string> &parent_interface) {
-  const std::string hash = getInterfaceHash(binder);
+  const std::string &interface = hal_info.type;
+  const std::string &hash = hal_info.hash;
   const std::optional<AidlInterfaceMetadata> metadata =
       metadataForInterface(interface);
   const std::string parent_log =
@@ -732,39 +816,47 @@ static inline void checkHash(
 // We do not check for known hashes because the Android framework does not
 // support these extensions without out-of-tree changes from partners.
 // @param binder - the parent binder to check all of its extensions
-void checkVintfExtensionInterfaces(const sp<IBinder> &binder) {
+void checkVintfExtensionInterfaces(const ServiceInfo &info) {
   // if you end up here because of a stack overflow when running this
   // test... you have a cycle in your interface extensions. Break that
   // cycle to continue.
-  if (!binder) return;
-  sp<IBinder> extension;
-  status_t status = binder->getExtension(&extension);
-  if (status != OK || !extension) return;
-
-  if (android::internal::Stability::requiresVintfDeclaration(extension)) {
-    const std::string parent_descriptor(
-        String8(binder->getInterfaceDescriptor()).c_str());
-    const std::string ext_descriptor(
-        String8(extension->getInterfaceDescriptor()).c_str());
-    checkHash(ext_descriptor, binder, false, parent_descriptor);
+  for (const auto &extension : info.extensions) {
+    if (extension.requireVintfDeclaration) {
+      checkHash(extension, false, info.type);
+    }
+    checkVintfExtensionInterfaces(extension);
   }
-  checkVintfExtensionInterfaces(extension);
 }
 
 // This checks if @updatable-via-apex in VINTF is correct.
-void checkVintfUpdatableViaApex(pid_t pid, const std::string &apex_name) {
-  std::string exe;
-  ASSERT_TRUE(base::Readlink("/proc/" + std::to_string(pid) + "/exe", &exe));
-
+void checkVintfUpdatableViaApex(const std::string &exe,
+                                const std::string &apex_name) {
   // HAL service should start from the apex
   ASSERT_THAT(exe, StartsWith("/apex/" + apex_name + "/"));
 }
 
+#ifndef TRUSTED_HAL_TEST
+static std::vector<std::string> halsUpdatableViaSystem() {
+  std::vector<std::string> hals = {};
+  // The KeyMint HALs connecting to the Trusty VM in the system image are
+  // supposed to be enabled in vendor init when the system property
+  // |trusty.security_vm.keymint.enabled| is set to true in W.
+  if (base::GetBoolProperty("trusty.security_vm.keymint.enabled", false)) {
+    hals.push_back("android.hardware.security.keymint.IKeyMintDevice/default");
+    hals.push_back(
+        "android.hardware.security.keymint.IRemotelyProvisionedComponent/"
+        "default");
+    hals.push_back(
+        "android.hardware.security.sharedsecret.ISharedSecret/default");
+    hals.push_back(
+        "android.hardware.security.secureclock.ISecureClock/default");
+  }
+  return hals;
+}
+
 TEST_P(SingleAidlTest, ExpectedUpdatableViaSystemHals) {
   const auto &[aidl_instance, _] = GetParam();
-  const std::string name = aidl_instance.package() + "." +
-                           aidl_instance.interface() + "/" +
-                           aidl_instance.instance();
+  const std::string name = ServiceName(aidl_instance);
 
   const auto hals = halsUpdatableViaSystem();
   if (std::find(hals.begin(), hals.end(), name) != hals.end()) {
@@ -777,6 +869,7 @@ TEST_P(SingleAidlTest, ExpectedUpdatableViaSystemHals) {
         << "VINTF manifest but it does not have system dependency.";
   }
 }
+#endif  // TRUSTED_HAL_TEST
 
 // An AIDL HAL with VINTF stability can only be registered if it is in the
 // manifest. However, we still must manually check that every declared HAL is
@@ -794,29 +887,62 @@ TEST_P(SingleAidlTest, HalIsServed) {
   const std::string type = package + "." + interface;
   const std::string name = type + "/" + instance;
 
-  sp<IBinder> binder = GetAidlService(name);
+  ServiceInfo actual_hal_info;
+  Partition actual_partition;
 
+#ifdef TRUSTED_HAL_TEST
+  if (aidl_instance.exclusiveTo() != ExclusiveTo::VM) {
+    GTEST_SKIP() << name
+                 << " is not check in this test as it is not exclusive to VM";
+  }
+  auto trusted_hal_info_fetcher = GetTrustedHalInfoFetcher();
+  ASSERT_NE(trusted_hal_info_fetcher, nullptr)
+      << "failed to get IServiceInfoFetcher";
+
+  ASSERT_TRUE(
+      trusted_hal_info_fetcher->getServiceInfo(name, &actual_hal_info).isOk())
+      << "failed to get service info for HAL exclusive to VM: " << name;
+
+  actual_partition = Partition::VENDOR;
+#else   // TRUSTED_HAL_TEST
+  if (aidl_instance.exclusiveTo() == ExclusiveTo::VM) {
+    GTEST_SKIP() << name
+                 << " is not check in this test as it is exclusive to VM";
+  }
+  sp<IBinder> binder = GetAidlService(name);
   ASSERT_NE(binder, nullptr) << "Failed to get " << name;
 
+  actual_hal_info.type = type;
+  actual_hal_info.instance = instance;
+  actual_hal_info.requireVintfDeclaration =
+      android::internal::Stability::requiresVintfDeclaration(binder);
+  actual_hal_info.version = getInterfaceVersion(binder);
+  actual_hal_info.hash = getInterfaceHash(binder);
+
+  pid_t pid;
+  ASSERT_EQ(OK, binder->getDebugPid(&pid));
+  actual_partition = PartitionOfProcess(pid);
+
+  ASSERT_TRUE(base::Readlink("/proc/" + std::to_string(pid) + "/exe",
+                             &actual_hal_info.exe));
+
+  actual_hal_info.extensions = getExtensionInfos(binder);
+#endif  // TRUSTED_HAL_TEST
+
+  ASSERT_EQ(name, ServiceName(actual_hal_info));
   if (GetVendorApiLevel() >= kAndroidApi202404 &&
-      !android::internal::Stability::requiresVintfDeclaration(binder)) {
+      !actual_hal_info.requireVintfDeclaration) {
     ADD_FAILURE() << "Interface " << name
                   << " is declared in the VINTF manifest "
                   << "but it does not have \"vintf\" stability. "
                   << "Add 'stability: \"vintf\" to the aidl_interface module, "
                   << "or remove it from the VINTF manifest.";
   }
-
-  // allow upgrade if updatable HAL's declared APEX is actually updated.
-  // or if the HAL is updatable via system.
-  const bool allow_upgrade = (updatable_via_apex.has_value() &&
-                              IsApexUpdated(updatable_via_apex.value())) ||
-                             aidl_instance.updatable_via_system();
   // If we know this version is frozen, even on non-REL builds we should throw
   // an error if this is an AOSP interfaces with a hash that we don't know
   // about.
   const bool reliable_version =
-      CheckAidlVersionMatchesDeclared(binder, name, version, allow_upgrade);
+      CheckAidlVersionMatchesDeclared(aidl_instance, actual_hal_info);
   const std::optional<AidlInterfaceMetadata> metadata =
       metadataForInterface(type);
   const bool is_existing =
@@ -825,25 +951,35 @@ TEST_P(SingleAidlTest, HalIsServed) {
                : false;
   const bool ignore_rel_for_aosp = reliable_version && is_existing;
 
-  checkHash(type, binder, ignore_rel_for_aosp, std::nullopt);
-
-  pid_t pid;
-  ASSERT_EQ(OK, binder->getDebugPid(&pid));
+  checkHash(actual_hal_info, ignore_rel_for_aosp, std::nullopt);
 
   if (GetVendorApiLevel() >= kAndroidApi202504) {
-    checkVintfExtensionInterfaces(binder);
+    checkVintfExtensionInterfaces(actual_hal_info);
   }
 
-  Partition partition = PartitionOfProcess(pid);
   // TODO(b/388106311): always be able to determine where this code comes from
-  const bool ableToDeterminePartition = partition != Partition::UNKNOWN;
+  const bool ableToDeterminePartition = actual_partition != Partition::UNKNOWN;
   if (GetVendorApiLevel() >= kAndroidApi202504 && ableToDeterminePartition) {
     Partition expected_partition = PartitionOfType(manifest->type());
-    EXPECT_EQ(expected_partition, partition);
+    EXPECT_EQ(expected_partition, actual_partition);
   }
 
   if (updatable_via_apex.has_value()) {
-    checkVintfUpdatableViaApex(pid, updatable_via_apex.value());
+    checkVintfUpdatableViaApex(actual_hal_info.exe, updatable_via_apex.value());
+  }
+}
+
+TEST_P(SingleAidlTest, NoExclusiveToVmHalExistIfTrustedVmDisabled) {
+  const auto &[aidl_instance, _] = GetParam();
+  const std::string name = ServiceName(aidl_instance);
+
+  const bool trustyVmEnabled =
+      base::GetBoolProperty("trusty.security_vm.enabled", false) ||
+      base::GetBoolProperty("trusty.widevine_vm.enabled", false);
+  if (!trustyVmEnabled) {
+    ASSERT_NE(ExclusiveTo::VM, aidl_instance.exclusiveTo())
+        << "HAL " << name << " is exclusive to VM but the device does not "
+        << "support any Trusty VM.";
   }
 }
 

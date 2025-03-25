@@ -49,6 +49,7 @@ cc_defaults {
         "VtsTrebleVintfTestBase.cpp",
         "utils.cpp",
         "main.cpp",
+        ":libvintf_service_info_aidl",
     ],
     data: [
         ":android.hardware",
@@ -56,6 +57,15 @@ cc_defaults {
         ":android.system",
         ":android.hidl",
     ],
+}
+
+filegroup {
+    name: "libvintf_service_info_aidl",
+    srcs: [
+        "aidl/android/vintf/ServiceInfo.aidl",
+        "aidl/android/vintf/IServiceInfoFetcher.aidl",
+    ],
+    path: "aidl",
 }
 
 // Test vendor image that has the highest target FCM version. This test binary
@@ -74,6 +84,38 @@ cc_test {
         "DeviceMatrixTest.cpp",
         "SingleManifestTest.cpp",
     ],
+}
+
+cc_test {
+    name: "vts_treble_vintf_trusted_hal_test",
+    //Use test_config for vts suite.
+    test_config: "vts_treble_vintf_trusted_hal_test.xml",
+    test_suites: [
+        "vts",
+        "general-tests",
+    ],
+    defaults: ["vts_treble_vintf_test_defaults"],
+    srcs: [
+        "DeviceManifestTest.cpp",
+        "DeviceMatrixTest.cpp",
+        "SingleManifestTest.cpp",
+    ],
+    data: [
+        ":trusty_test_vm_elf",
+        ":trusty_test_vm_config",
+        ":trusty_vm_launcher_sh",
+        ":trusty_wait_ready_sh",
+        ":trusty-ut-ctrl.system",
+    ],
+    cflags: [
+        "-DTRUSTED_HAL_TEST",
+    ],
+    enabled: false,
+    arch: {
+        arm64: {
+            enabled: true,
+        },
+    },
 }
 
 // Check for HIDL services on device launching after Android 14.
