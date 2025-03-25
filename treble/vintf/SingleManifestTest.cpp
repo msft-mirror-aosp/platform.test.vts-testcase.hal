@@ -751,24 +751,6 @@ static bool CheckAidlVersionMatchesDeclared(
   return false;
 }
 
-static std::vector<std::string> halsUpdatableViaSystem() {
-  std::vector<std::string> hals = {};
-  // The KeyMint HALs connecting to the Trusty VM in the system image are
-  // supposed to be enabled in vendor init when the system property
-  // |trusty.security_vm.keymint.enabled| is set to true in W.
-  if (base::GetBoolProperty("trusty.security_vm.keymint.enabled", false)) {
-    hals.push_back("android.hardware.security.keymint.IKeyMintDevice/default");
-    hals.push_back(
-        "android.hardware.security.keymint.IRemotelyProvisionedComponent/"
-        "default");
-    hals.push_back(
-        "android.hardware.security.sharedsecret.ISharedSecret/default");
-    hals.push_back(
-        "android.hardware.security.secureclock.ISecureClock/default");
-  }
-  return hals;
-}
-
 static inline void checkHash(
     const ServiceInfo &hal_info, bool ignore_rel,
     const std::optional<const std::string> &parent_interface) {
@@ -853,6 +835,25 @@ void checkVintfUpdatableViaApex(const std::string &exe,
   ASSERT_THAT(exe, StartsWith("/apex/" + apex_name + "/"));
 }
 
+#ifndef TRUSTED_HAL_TEST
+static std::vector<std::string> halsUpdatableViaSystem() {
+  std::vector<std::string> hals = {};
+  // The KeyMint HALs connecting to the Trusty VM in the system image are
+  // supposed to be enabled in vendor init when the system property
+  // |trusty.security_vm.keymint.enabled| is set to true in W.
+  if (base::GetBoolProperty("trusty.security_vm.keymint.enabled", false)) {
+    hals.push_back("android.hardware.security.keymint.IKeyMintDevice/default");
+    hals.push_back(
+        "android.hardware.security.keymint.IRemotelyProvisionedComponent/"
+        "default");
+    hals.push_back(
+        "android.hardware.security.sharedsecret.ISharedSecret/default");
+    hals.push_back(
+        "android.hardware.security.secureclock.ISecureClock/default");
+  }
+  return hals;
+}
+
 TEST_P(SingleAidlTest, ExpectedUpdatableViaSystemHals) {
   const auto &[aidl_instance, _] = GetParam();
   const std::string name = ServiceName(aidl_instance);
@@ -868,6 +869,7 @@ TEST_P(SingleAidlTest, ExpectedUpdatableViaSystemHals) {
         << "VINTF manifest but it does not have system dependency.";
   }
 }
+#endif  // TRUSTED_HAL_TEST
 
 // An AIDL HAL with VINTF stability can only be registered if it is in the
 // manifest. However, we still must manually check that every declared HAL is
