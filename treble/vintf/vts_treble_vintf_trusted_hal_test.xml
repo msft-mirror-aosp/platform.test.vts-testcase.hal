@@ -40,12 +40,13 @@
         <!--Note: the first run-command shall not expect the background command to have started -->
         <option name="run-bg-command" value="sh /data/local/tmp/trusty_test_vm/trusty-vm-launcher.sh" />
         <option name="run-command" value="sh /data/local/tmp/trusty_test_vm/trusty-wait-ready.sh" />
-        <option name="run-command" value="start storageproxyd_test_vm_os" />
-        <option name="teardown-command" value="stop storageproxyd_test_vm_os" />
-        <option name="teardown-command" value="killall storageproxyd_test_vm_os || true" />
     </target_preparer>
     <test class="com.android.tradefed.testtype.GTest" >
         <option name="native-test-device-path" value="/data/local/tmp" />
         <option name="module-name" value="vts_treble_vintf_trusted_hal_test" />
     </test>
+    <metrics_collector class="com.android.tradefed.device.metric.FilePullerLogCollector">
+        <option name="directory-keys" value="/data/local/tmp/trusty_test_vm/logs" />
+        <option name="clean-up" value="false"/>
+    </metrics_collector>
 </configuration>
