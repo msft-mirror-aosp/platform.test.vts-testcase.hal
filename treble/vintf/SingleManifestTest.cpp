@@ -35,6 +35,7 @@
 #include <gmock/gmock.h>
 #include <hidl-util/FqInstance.h>
 #include <hidl/HidlTransportUtils.h>
+#include <linux/vm_sockets.h>
 #include <stdio.h>
 #include <vintf/constants.h>
 #include <vintf/parse_string.h>
@@ -55,10 +56,11 @@ namespace {
 
 constexpr int kAndroidApi202404 = 202404;
 constexpr int kAndroidApi202504 = 202504;
-constexpr int kTrustyTestVmVintfTaPort = 1000;
+constexpr unsigned int kTrustyTestVmVintfTaPort = 10;
 
 }  // namespace
 using android::FqInstance;
+using android::base::unique_fd;
 using android::vintf::IServiceInfoFetcher;
 using android::vintf::ServiceInfo;
 using android::vintf::toFQNameString;
@@ -587,8 +589,43 @@ sp<IServiceInfoFetcher> GetTrustedHalInfoFetcher() {
   }
 
   auto session = RpcSession::make();
-  status_t status =
-      session->setupVsockClient(test_vm_cid, kTrustyTestVmVintfTaPort);
+  auto request = [=] {
+    int s = socket(AF_VSOCK, SOCK_STREAM, 0);
+    if (s < 0) {
+      cout << "failed to get vsock; errno:" << errno;
+      return unique_fd{};
+    }
+    struct timeval connect_timeout = {.tv_sec = 60, .tv_usec = 0};
+    int res = setsockopt(s, AF_VSOCK, SO_VM_SOCKETS_CONNECT_TIMEOUT,
+                         &connect_timeout, sizeof(connect_timeout));
+    if (res) {
+      cout << "failed to set timeout; errno:" << errno;
+    }
+    struct sockaddr_vm addr = {
+        .svm_family = AF_VSOCK,
+        .svm_port = kTrustyTestVmVintfTaPort,
+        .svm_cid = static_cast<unsigned int>(test_vm_cid),
+    };
+    res =
+        TEMP_FAILURE_RETRY(connect(s, (struct sockaddr *)&addr, sizeof(addr)));
+    if (res != 0) {
+      cout << "failed to connect to VM. Error code:" << res;
+      return unique_fd{};
+    } else {
+      cout << "vsock connection successful\n";
+    }
+    // TODO(b/406418102): This is a temporary workaround because currently the
+    // TIPC bridge sends a packet back after initial connection
+    int8_t buf;
+    res = TEMP_FAILURE_RETRY(read(s, &buf, sizeof(buf)));
+    if (res == sizeof(buf)) {
+      return unique_fd(s);
+    } else {
+      cout << "failed to connect to Trusty VM service. Error code:" << res;
+      return unique_fd{};
+    }
+  };
+  auto status = session->setupPreconnectedClient(unique_fd{}, request);
   if (status != android::OK) {
     cout << "unable to set up vsock client";
     return nullptr;
