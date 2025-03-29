@@ -35,6 +35,7 @@
 #include <gmock/gmock.h>
 #include <hidl-util/FqInstance.h>
 #include <hidl/HidlTransportUtils.h>
+#include <linux/vm_sockets.h>
 #include <stdio.h>
 #include <vintf/constants.h>
 #include <vintf/parse_string.h>
@@ -55,10 +56,11 @@ namespace {
 
 constexpr int kAndroidApi202404 = 202404;
 constexpr int kAndroidApi202504 = 202504;
-constexpr int kTrustyTestVmVintfTaPort = 1000;
+constexpr unsigned int kTrustyTestVmVintfTaPort = 10;
 
 }  // namespace
 using android::FqInstance;
+using android::base::unique_fd;
 using android::vintf::IServiceInfoFetcher;
 using android::vintf::ServiceInfo;
 using android::vintf::toFQNameString;
@@ -587,8 +589,43 @@ sp<IServiceInfoFetcher> GetTrustedHalInfoFetcher() {
   }
 
   auto session = RpcSession::make();
-  status_t status =
-      session->setupVsockClient(test_vm_cid, kTrustyTestVmVintfTaPort);
+  auto request = [=] {
+    int s = socket(AF_VSOCK, SOCK_STREAM, 0);
+    if (s < 0) {
+      cout << "failed to get vsock; errno:" << errno;
+      return unique_fd{};
+    }
+    struct timeval connect_timeout = {.tv_sec = 60, .tv_usec = 0};
+    int res = setsockopt(s, AF_VSOCK, SO_VM_SOCKETS_CONNECT_TIMEOUT,
+                         &connect_timeout, sizeof(connect_timeout));
+    if (res) {
+      cout << "failed to set timeout; errno:" << errno;
+    }
+    struct sockaddr_vm addr = {
+        .svm_family = AF_VSOCK,
+        .svm_port = kTrustyTestVmVintfTaPort,
+        .svm_cid = static_cast<unsigned int>(test_vm_cid),
+    };
+    res =
+        TEMP_FAILURE_RETRY(connect(s, (struct sockaddr *)&addr, sizeof(addr)));
+    if (res != 0) {
+      cout << "failed to connect to VM. Error code:" << res;
+      return unique_fd{};
+    } else {
+      cout << "vsock connection successful\n";
+    }
+    // TODO(b/406418102): This is a temporary workaround because currently the
+    // TIPC bridge sends a packet back after initial connection
+    int8_t buf;
+    res = TEMP_FAILURE_RETRY(read(s, &buf, sizeof(buf)));
+    if (res == sizeof(buf)) {
+      return unique_fd(s);
+    } else {
+      cout << "failed to connect to Trusty VM service. Error code:" << res;
+      return unique_fd{};
+    }
+  };
+  auto status = session->setupPreconnectedClient(unique_fd{}, request);
   if (status != android::OK) {
     cout << "unable to set up vsock client";
     return nullptr;
@@ -751,24 +788,6 @@ static bool CheckAidlVersionMatchesDeclared(
   return false;
 }
 
-static std::vector<std::string> halsUpdatableViaSystem() {
-  std::vector<std::string> hals = {};
-  // The KeyMint HALs connecting to the Trusty VM in the system image are
-  // supposed to be enabled in vendor init when the system property
-  // |trusty.security_vm.keymint.enabled| is set to true in W.
-  if (base::GetBoolProperty("trusty.security_vm.keymint.enabled", false)) {
-    hals.push_back("android.hardware.security.keymint.IKeyMintDevice/default");
-    hals.push_back(
-        "android.hardware.security.keymint.IRemotelyProvisionedComponent/"
-        "default");
-    hals.push_back(
-        "android.hardware.security.sharedsecret.ISharedSecret/default");
-    hals.push_back(
-        "android.hardware.security.secureclock.ISecureClock/default");
-  }
-  return hals;
-}
-
 static inline void checkHash(
     const ServiceInfo &hal_info, bool ignore_rel,
     const std::optional<const std::string> &parent_interface) {
@@ -853,6 +872,25 @@ void checkVintfUpdatableViaApex(const std::string &exe,
   ASSERT_THAT(exe, StartsWith("/apex/" + apex_name + "/"));
 }
 
+#ifndef TRUSTED_HAL_TEST
+static std::vector<std::string> halsUpdatableViaSystem() {
+  std::vector<std::string> hals = {};
+  // The KeyMint HALs connecting to the Trusty VM in the system image are
+  // supposed to be enabled in vendor init when the system property
+  // |trusty.security_vm.keymint.enabled| is set to true in W.
+  if (base::GetBoolProperty("trusty.security_vm.keymint.enabled", false)) {
+    hals.push_back("android.hardware.security.keymint.IKeyMintDevice/default");
+    hals.push_back(
+        "android.hardware.security.keymint.IRemotelyProvisionedComponent/"
+        "default");
+    hals.push_back(
+        "android.hardware.security.sharedsecret.ISharedSecret/default");
+    hals.push_back(
+        "android.hardware.security.secureclock.ISecureClock/default");
+  }
+  return hals;
+}
+
 TEST_P(SingleAidlTest, ExpectedUpdatableViaSystemHals) {
   const auto &[aidl_instance, _] = GetParam();
   const std::string name = ServiceName(aidl_instance);
@@ -868,6 +906,7 @@ TEST_P(SingleAidlTest, ExpectedUpdatableViaSystemHals) {
         << "VINTF manifest but it does not have system dependency.";
   }
 }
+#endif  // TRUSTED_HAL_TEST
 
 // An AIDL HAL with VINTF stability can only be registered if it is in the
 // manifest. However, we still must manually check that every declared HAL is
@@ -964,6 +1003,20 @@ TEST_P(SingleAidlTest, HalIsServed) {
 
   if (updatable_via_apex.has_value()) {
     checkVintfUpdatableViaApex(actual_hal_info.exe, updatable_via_apex.value());
+  }
+}
+
+TEST_P(SingleAidlTest, NoExclusiveToVmHalExistIfTrustedVmDisabled) {
+  const auto &[aidl_instance, _] = GetParam();
+  const std::string name = ServiceName(aidl_instance);
+
+  const bool trustyVmEnabled =
+      base::GetBoolProperty("trusty.security_vm.enabled", false) ||
+      base::GetBoolProperty("trusty.widevine_vm.enabled", false);
+  if (!trustyVmEnabled) {
+    ASSERT_NE(ExclusiveTo::VM, aidl_instance.exclusiveTo())
+        << "HAL " << name << " is exclusive to VM but the device does not "
+        << "support any Trusty VM.";
   }
 }
 
