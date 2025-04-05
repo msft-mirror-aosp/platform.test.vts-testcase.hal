@@ -1,0 +1,5 @@
+dirgroup {
+    name: "trusty_dirgroup_test_vts-testcase_hal_treble_vintf_aidl",
+    dirs: ["."],
+    visibility: ["//trusty/vendor/google/aosp/scripts"],
+}
