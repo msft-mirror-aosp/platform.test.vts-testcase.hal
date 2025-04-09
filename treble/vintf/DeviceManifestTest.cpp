@@ -18,6 +18,7 @@
 
 #include <android-base/properties.h>
 #include <android-base/result.h>
+#include <android-base/strings.h>
 #include <libvts_vintf_test_common/common.h>
 #include <vintf/VintfObject.h>
 
@@ -53,7 +54,9 @@ TEST_F(DeviceManifestTest, ShippingFcmVersion) {
 // Manifest must have an entry in the Compatibility Matrix
 TEST_F(DeviceManifestTest, UnusedHals) {
   auto vintfObject = VintfObject::GetInstance();
-  auto res = vintfObject->checkUnusedHals({});
+  auto res = vintfObject->checkUnusedHals({}, [](const std::string& hal) {
+    return android::base::StartsWith(hal, "android.");
+  });
 
   if (!res.ok()) {
     uint64_t vendor_api_level = GetVendorApiLevel();
