@@ -19,6 +19,7 @@
 #include <android-base/properties.h>
 #include <android-base/result.h>
 #include <android-base/strings.h>
+#include <android/api-level.h>
 #include <libvts_vintf_test_common/common.h>
 #include <vintf/VintfObject.h>
 
@@ -38,6 +39,78 @@ void DeviceManifestTest::SetUp() {
   vendor_manifest_ = VintfObject::GetDeviceHalManifest();
   ASSERT_NE(vendor_manifest_, nullptr)
       << "Failed to get vendor HAL manifest." << endl;
+}
+
+// @VsrTest = TODO(FIXME) We need to add this to VSR/GMS somewhere explicitly
+TEST(FrameworkSupportTest, VendorApiLevel) {
+  // Android vendor implementations from Level::V onward have three
+  // additional years of upgrade support!
+  // clang-format off
+  static const std::map<uint64_t, std::set<Level>>
+      kSupportedVendorLevelPerSdkLevel{
+          {__ANDROID_API_R__,
+           {Level::R, Level::Q, Level::P, Level::O, Level::O_MR1, Level::LEGACY}},
+          {__ANDROID_API_S__,
+           {Level::S, Level::R, Level::Q, Level::P, Level::O, Level::O_MR1}},
+          {__ANDROID_API_T__,
+           {Level::T, Level::S, Level::R, Level::Q, Level::P}},
+          {__ANDROID_API_U__,
+           {Level::U, Level::T, Level::S, Level::R, Level::Q}},
+          {__ANDROID_API_V__,
+           {Level::V, Level::U, Level::T, Level::S, Level::R}},
+          {36 /* Android B */,
+           {Level::B, Level::V, Level::U, Level::T, Level::S}},
+          {37 /* Android C */,
+           {Level::C, Level::B, Level::V, Level::U, Level::T}},
+      };
+  // clang-format on
+  uint64_t boardApiLevel = GetBoardApiLevel();
+  ASSERT_NE(boardApiLevel, 0u)
+      << "Device's board API level cannot be determined.";
+  uint64_t buildVersionSdk =
+      android::base::GetUintProperty<uint64_t>("ro.build.version.sdk", 0);
+
+  if (auto it = kSupportedVendorLevelPerSdkLevel.find(buildVersionSdk);
+      it != kSupportedVendorLevelPerSdkLevel.end()) {
+    if (!it->second.contains(static_cast<Level>(boardApiLevel))) {
+      // During development it's common for devices to implement a newer vendor
+      // API level before bumping the SDK API level. So if this is not a REL
+      // device, also check the next SDKs supported vendor API levels.
+      if (android::base::GetProperty("ro.build.version.codename", "") !=
+          "REL") {
+        auto nextSdkVersion = buildVersionSdk + 1;
+        if (auto it = kSupportedVendorLevelPerSdkLevel.find(nextSdkVersion);
+            it != kSupportedVendorLevelPerSdkLevel.end()) {
+          if (it->second.contains(static_cast<Level>(boardApiLevel))) {
+            return;
+          }
+        } else {
+          FAIL()
+              << "VTS testcase failure! We are not yet prepared for the next "
+              << "version of Android. This requires a test fix.";
+        }
+      }
+
+      std::string acceptedBoardApis = android::base::Join(it->second, ",");
+      auto failMessage =
+          "This build is using a version of Android (" +
+          std::to_string(buildVersionSdk) +
+          ") that no longer supports this board API level (" +
+          std::to_string(boardApiLevel) +
+          "). This means we no longer support building the vendor image "
+          "from source code that is this old. The board API level must "
+          "be increased for this upgrade to one of " +
+          acceptedBoardApis;
+      if (GetVendorApiLevel() <= static_cast<uint64_t>(Level::B)) {
+        std::cout << "[  WARNING ] " << failMessage << std::endl;
+      } else {
+        ADD_FAILURE() << failMessage;
+      }
+    }
+  } else {
+    ADD_FAILURE() << "Unknown ro.build.version.sdk value of: "
+                  << buildVersionSdk;
+  }
 }
 
 // Tests that Shipping FCM Version in the device manifest is at least the

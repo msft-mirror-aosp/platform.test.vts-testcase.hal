@@ -154,6 +154,10 @@ extern const set<string> kPassthroughHals;
 // this is calculated. In system/core/init/property_service.cpp.
 uint64_t GetVendorApiLevel();
 
+// Read ro.board.api_level
+// This is set based on the level of source code the vendor image is built from
+uint64_t GetBoardApiLevel();
+
 // For a given interface returns package root if known. Returns empty string
 // otherwise.
 const string PackageRoot(const FQName& fq_iface_name);
