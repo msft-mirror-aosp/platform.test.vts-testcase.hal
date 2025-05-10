@@ -117,6 +117,10 @@ uint64_t GetVendorApiLevel() {
   return GetUintProperty<uint64_t>("ro.vendor.api_level", 0);
 }
 
+uint64_t GetBoardApiLevel() {
+  return GetUintProperty<uint64_t>("ro.board.api_level", 0);
+}
+
 // For a given interface returns package root if known. Returns empty string
 // otherwise.
 const string PackageRoot(const FQName &fq_iface_name) {
