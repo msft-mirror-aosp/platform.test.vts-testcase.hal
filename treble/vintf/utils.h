@@ -31,6 +31,19 @@
 #include <string>
 #include <vector>
 
+// Conditionally define if TRUSTED_HAL_TEST IS defined
+#ifdef TRUSTED_HAL_TEST
+#define SKIP_TEST_IN_TRUSTED_HAL_VTS()                                 \
+  do {                                                                 \
+    GTEST_SKIP() << "skipping this test in Trusted HAL VTS; it's not " \
+                    "relevant to Trusted HAL";                         \
+  } while (0)
+#else  // TRUSTED_HAL_TEST
+#define SKIP_TEST_IN_TRUSTED_HAL_VTS() \
+  do {                                 \
+  } while (0)
+#endif  // TRUSTED_HAL_TEST
+
 namespace android {
 namespace vintf {
 namespace testing {

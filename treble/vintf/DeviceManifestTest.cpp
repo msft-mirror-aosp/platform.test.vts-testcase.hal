@@ -164,6 +164,7 @@ TEST_F(DeviceManifestTest, NoDeprecatedHalsOnManifest) {
 // compatibility matrix.
 // @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, GraphicsMapperHalVersionCompatibility) {
+  SKIP_TEST_IN_TRUSTED_HAL_VTS();
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   bool is_go_device =
       android::base::GetBoolProperty("ro.config.low_ram", false);
@@ -225,6 +226,7 @@ TEST_F(DeviceManifestTest, GraphicsMapperHalVersionCompatibility) {
 // NoDeprecatedHalsOnManifest already checks it.
 // @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, HealthHal) {
+  SKIP_TEST_IN_TRUSTED_HAL_VTS();
   bool has_hidl = vendor_manifest_->hasHidlInstance(
       "android.hardware.health", {2, 0}, "IHealth", "default");
   bool has_aidl = vendor_manifest_->hasAidlInstance("android.hardware.health",
@@ -239,6 +241,7 @@ TEST_F(DeviceManifestTest, HealthHal) {
 // The specific versions are handled by the framework compatibility matrix.
 // @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, PowerHal) {
+  SKIP_TEST_IN_TRUSTED_HAL_VTS();
   Level fcm_version = VintfObject::GetDeviceHalManifest()->level();
   if (fcm_version == Level::UNSPECIFIED || fcm_version < Level::R) {
     GTEST_SKIP() << "Power HAL is only required on launching R+ devices";
@@ -272,6 +275,7 @@ TEST_F(DeviceManifestTest, GatekeeperHal) {
 // NoDeprecatedHalsOnManifest already checks it.
 // @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, ComposerHal) {
+  SKIP_TEST_IN_TRUSTED_HAL_VTS();
   bool has_hidl = vendor_manifest_->hasHidlInstance(
       "android.hardware.graphics.composer", {2, 1}, "IComposer", "default");
   bool has_aidl = vendor_manifest_->hasAidlInstance(
@@ -288,6 +292,7 @@ TEST_F(DeviceManifestTest, ComposerHal) {
 // NoDeprecatedHalsOnManifest already checks it.
 // @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, GrallocHal) {
+  SKIP_TEST_IN_TRUSTED_HAL_VTS();
   bool has_hidl = false;
   for (size_t hidl_major = 2; hidl_major <= 4; hidl_major++)
     has_hidl = has_hidl || vendor_manifest_->hasHidlInstance(
@@ -306,6 +311,7 @@ TEST_F(DeviceManifestTest, GrallocHal) {
 // between <hal>'s, add a test here.
 // @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, ThermalHal) {
+  SKIP_TEST_IN_TRUSTED_HAL_VTS();
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   if (shipping_fcm_version == Level::UNSPECIFIED ||
       shipping_fcm_version < Level::T) {
@@ -326,6 +332,7 @@ TEST_F(DeviceManifestTest, ThermalHal) {
 // compatibility matrix.
 // @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
+  SKIP_TEST_IN_TRUSTED_HAL_VTS();
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   bool is_go_device =
       android::base::GetBoolProperty("ro.config.low_ram", false);
@@ -352,6 +359,7 @@ TEST_F(DeviceManifestTest, GrallocHalVersionCompatibility) {
 // compatibility matrices cannot express these conditions.
 // @VsrTest = VSR-3.2-014
 TEST_F(DeviceManifestTest, AudioHal) {
+  SKIP_TEST_IN_TRUSTED_HAL_VTS();
   Level shipping_fcm_version = VintfObject::GetDeviceHalManifest()->level();
   if (shipping_fcm_version == Level::UNSPECIFIED ||
       shipping_fcm_version < Level::U) {
