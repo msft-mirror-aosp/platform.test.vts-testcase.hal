@@ -127,9 +127,13 @@ TEST_F(DeviceManifestTest, ShippingFcmVersion) {
 // Manifest must have an entry in the Compatibility Matrix
 TEST_F(DeviceManifestTest, UnusedHals) {
   auto vintfObject = VintfObject::GetInstance();
+  // Don't check instance names because there may be android.* HALs with
+  // custom instance names in the product/system_ext FCM, not visible in the
+  // VTS test.
+  constexpr bool shouldCheckInstanceName = false;
   auto res = vintfObject->checkUnusedHals({}, [](const std::string& hal) {
     return android::base::StartsWith(hal, "android.");
-  });
+  }, shouldCheckInstanceName);
 
   if (!res.ok()) {
     uint64_t vendor_api_level = GetVendorApiLevel();
