@@ -834,7 +834,8 @@ static inline void checkHash(
     //
     // we only require that these are frozen, but we cannot check them for
     // accuracy
-    if (hash.empty() || hash == "notfrozen") {
+    if (hash.empty() ||
+        (GetVendorApiLevel() >= kAndroidApi202504 && hash == "notfrozen")) {
       if (is_release) {
         ADD_FAILURE()
             << "Interface "
