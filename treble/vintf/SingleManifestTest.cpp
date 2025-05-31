@@ -1056,6 +1056,7 @@ static std::optional<NativePackage> findKnownNativePackage(
 
 // using device manifest test for access to GetNativeInstances
 TEST(NativeDeclaredTest, NativeDeclaredIfExists) {
+  SKIP_TEST_IN_TRUSTED_HAL_VTS();
   std::set<std::string> names;  // e.g. 'mapper.instance_name'
 
   // read all the native HALs installed on disk
