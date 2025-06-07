@@ -104,6 +104,7 @@ cc_test {
         ":trusty_test_vm_elf",
         ":trusty_test_vm_config",
         ":trusty_vm_launcher_sh",
+        ":trusty_vm_kill_sh",
         ":trusty_wait_ready_sh",
         ":trusty-ut-ctrl.system",
     ],
