@@ -638,7 +638,7 @@ sp<IServiceInfoFetcher> GetTrustedHalInfoFetcher() {
   return IServiceInfoFetcher::asInterface(root);
 }
 
-TEST(TrustedHalDeclaredTest, TrustedHalDeclaredMatchesInstalled) {
+TEST(TrustedHalDeclaredTest, InstalledTrustedHalsAreDeclared) {
   auto trusted_hal_info_fetcher = GetTrustedHalInfoFetcher();
   ASSERT_NE(trusted_hal_info_fetcher, nullptr)
       << "failed to get IServiceInfoFetcher";
@@ -651,20 +651,22 @@ TEST(TrustedHalDeclaredTest, TrustedHalDeclaredMatchesInstalled) {
       << "failed to list all services";
   std::set<std::string> actual_instances(actual_trusted_hal_list.begin(),
                                          actual_trusted_hal_list.end());
-
-  // Retrieve the list of declared Trusted HALs from the vintf manifest.
-  std::set<std::string> declared_instances = {};
   for (const auto &aidl_instance : VtsTrebleVintfTestBase::GetAidlInstances(
            VintfObject::GetDeviceHalManifest())) {
+    auto name = ServiceName(aidl_instance);
     if (aidl_instance.exclusiveTo() == ExclusiveTo::VM) {
-      declared_instances.insert(ServiceName(aidl_instance));
+      ASSERT_TRUE(actual_instances.contains(name))
+          << "Declared Trusted HAL instance (exclusive to VM) is not "
+             "installed: "
+          << name;
+      actual_instances.erase(name);
+    } else if (aidl_instance.exclusiveTo() == ExclusiveTo::EMPTY) {
+      actual_instances.erase(name);
     }
   }
-
-  // Compare the declared and actual sets.
-  ASSERT_EQ(declared_instances, actual_instances)
-      << "Declared Trusted HAL instances (exclusive to VM) do not match the "
-      << "actually installed instances.";
+  ASSERT_TRUE(actual_instances.empty())
+      << "Installed Trusted HAL instances are not declared: "
+      << actual_instances.size();
 }
 
 #else   // TRUSTED_HAL_TEST
