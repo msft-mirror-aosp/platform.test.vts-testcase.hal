@@ -131,9 +131,19 @@ TEST_F(DeviceManifestTest, UnusedHals) {
   // custom instance names in the product/system_ext FCM, not visible in the
   // VTS test.
   constexpr bool shouldCheckInstanceName = false;
-  auto res = vintfObject->checkUnusedHals({}, [](const std::string& hal) {
-    return android::base::StartsWith(hal, "android.");
-  }, shouldCheckInstanceName);
+  const std::set<std::string> kExceptions = {
+      // This HAL is intended to be a framework HAL but has been declared
+      // by a lot of devices in the device manifest. So, it's not in the FCM
+      // in GSI.
+      "android.se.omapi",
+  };
+  auto res = vintfObject->checkUnusedHals(
+      {},
+      [&](const std::string& hal) {
+        if (kExceptions.find(hal) != kExceptions.end()) return false;
+        return android::base::StartsWith(hal, "android.");
+      },
+      shouldCheckInstanceName);
 
   if (!res.ok()) {
     uint64_t vendor_api_level = GetVendorApiLevel();
