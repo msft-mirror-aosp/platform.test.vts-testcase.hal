@@ -613,16 +613,7 @@ sp<IServiceInfoFetcher> GetTrustedHalInfoFetcher() {
       return unique_fd{};
     } else {
       cout << "vsock connection successful\n";
-    }
-    // TODO(b/406418102): This is a temporary workaround because currently the
-    // TIPC bridge sends a packet back after initial connection
-    int8_t buf;
-    res = TEMP_FAILURE_RETRY(read(s, &buf, sizeof(buf)));
-    if (res == sizeof(buf)) {
       return unique_fd(s);
-    } else {
-      cout << "failed to connect to Trusty VM service. Error code:" << res;
-      return unique_fd{};
     }
   };
   auto status = session->setupPreconnectedClient(unique_fd{}, request);
