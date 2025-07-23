@@ -51,13 +51,20 @@ const set<string> kPassthroughHals = {
     "android.hidl.memory",
 };
 
-std::string SanitizeTestCaseName(std::string original) {
-  for (char &c : original) {
-    if (!isalnum(c)) {
-      c = '_';
+std::string SanitizeTestCaseName(const std::string &original) {
+  std::string sanitized;
+  // The final string will be at least as long as the original.
+  sanitized.reserve(original.length());
+  for (const char c : original) {
+    if (c == '_') {
+      sanitized += "__";
+    } else if (isalnum(c)) {
+      sanitized += c;
+    } else {
+      sanitized += '_';
     }
   }
-  return original;
+  return sanitized;
 }
 
 HidlInstance::HidlInstance(const ManifestInstance &other)

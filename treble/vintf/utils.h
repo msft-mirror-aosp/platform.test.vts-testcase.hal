@@ -138,25 +138,14 @@ struct NativeInstance : private ManifestInstance {
 ostream& operator<<(ostream& os, const NativeInstance& val);
 
 // Sanitize a string so it can be used as a test case name.
-std::string SanitizeTestCaseName(std::string original);
+std::string SanitizeTestCaseName(const std::string& original);
 
 // Print test case name for SingleHidlTest and SingleAidlTest
 template <typename Test>
 std::string GetTestCaseSuffix(
     const ::testing::TestParamInfo<typename Test::ParamType>& info) {
   const auto& instance = std::get<0>(info.param);
-  std::string test_name = instance.test_case_name();
-#ifdef TRUSTED_HAL_TEST
-  // For Trusted HAL tests, we omit the index from the test suffix.
-  // This ensures test names remain stable across environments with different
-  // sets of available HALs, which is critical for reliably filtering tests
-  // in test configurations.
-#else   // TRUSTED_HAL_TEST
-  // For most parameterized tests, append the gtest-generated index to ensure
-  // unique test names.
-  test_name += "_" + std::to_string(info.index);
-#endif  // TRUSTED_HAL_TEST
-  return test_name;
+  return instance.test_case_name();
 }
 
 using HashCharArray = hidl_array<unsigned char, 32>;
