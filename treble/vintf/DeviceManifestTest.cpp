@@ -65,8 +65,13 @@ TEST(FrameworkSupportTest, VendorApiLevel) {
       };
   // clang-format on
   uint64_t boardApiLevel = GetBoardApiLevel();
-  ASSERT_NE(boardApiLevel, 0u)
-      << "Device's board API level cannot be determined.";
+  if (boardApiLevel == 0u) {
+    if (GetVendorApiLevel() < static_cast<uint64_t>(Level::V)) {
+      GTEST_SKIP() << "ro.board.api_level was not required before Android V";
+    }
+    ASSERT_NE(boardApiLevel, 0u)
+        << "Device's board API level cannot be determined.";
+  }
   uint64_t buildVersionSdk =
       android::base::GetUintProperty<uint64_t>("ro.build.version.sdk", 0);
 
