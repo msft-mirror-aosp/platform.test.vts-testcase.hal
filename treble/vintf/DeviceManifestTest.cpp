@@ -41,7 +41,7 @@ void DeviceManifestTest::SetUp() {
       << "Failed to get vendor HAL manifest." << endl;
 }
 
-// @VsrTest = TODO(FIXME) We need to add this to VSR/GMS somewhere explicitly
+// @VsrTest = GMS-VSR-3.2-015
 TEST(FrameworkSupportTest, VendorApiLevel) {
   // Android vendor implementations from Level::V onward have three
   // additional years of upgrade support!
