@@ -107,6 +107,7 @@ cc_test {
         ":trusty_vm_kill_sh",
         ":trusty_wait_ready_sh",
         ":trusty-ut-ctrl.system",
+        ":trusty_test_vm_instance_id",
     ],
     cflags: [
         "-DTRUSTED_HAL_TEST",
