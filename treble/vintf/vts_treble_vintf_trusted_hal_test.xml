@@ -40,11 +40,6 @@
         <!--Note: the first run-command shall not expect the background command to have started -->
         <option name="run-bg-command" value="sh /data/local/tmp/trusty_test_vm/trusty-vm-launcher.sh" />
         <option name="run-command" value="sh /data/local/tmp/trusty_test_vm/trusty-wait-ready.sh" />
-        <!-- Wait one second for the VM to fully launch to reduce test flakiness -->
-        <option name="run-command" value="sleep 3" />
-        <option name="run-command" value="start storageproxyd_test_vm" />
-        <option name="teardown-command" value="stop storageproxyd_test_vm" />
-        <option name="teardown-command" value="killall storageproxyd_test_vm || true" />
         <option name="teardown-command" value="sh /data/local/tmp/trusty_test_vm/trusty-vm-kill.sh" />
     </target_preparer>
     <test class="com.android.tradefed.testtype.GTest" >
