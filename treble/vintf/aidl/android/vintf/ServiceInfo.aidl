@@ -16,6 +16,8 @@
 
 package android.vintf;
 
+import android.vintf.StabilityLevel;
+
 /**
  * Represents information about a service.
  */
@@ -54,4 +56,12 @@ parcelable ServiceInfo {
      * Extension interfaces of the service.
      */
     List<ServiceInfo> extensions;
+
+    /**
+     * Default stability level of the binder library used to expose this service.
+     * This was introduced for validating that VM-exclusive services are built with the
+     * correct binder library, which is otherwise difficult because they are not in Android,
+     * but rather in a TEE.
+     */
+    StabilityLevel binderLibDefaultStability;
 }

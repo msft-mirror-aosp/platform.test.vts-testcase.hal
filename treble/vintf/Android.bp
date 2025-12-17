@@ -64,6 +64,7 @@ filegroup {
     srcs: [
         "aidl/android/vintf/ServiceInfo.aidl",
         "aidl/android/vintf/IServiceInfoFetcher.aidl",
+        "aidl/android/vintf/StabilityLevel.aidl",
     ],
     path: "aidl",
 }
