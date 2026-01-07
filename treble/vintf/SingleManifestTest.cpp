@@ -935,6 +935,10 @@ TEST_P(SingleAidlTest, HalIsServed) {
       << "failed to get service info for HAL exclusive to VM: " << name;
 
   actual_partition = Partition::VENDOR;
+
+  // Currently, we expect all VM-exclusive HALs to be served from vendor-stable
+  // binder libraries.
+  ASSERT_EQ(actual_hal_info.binderLibDefaultStability, StabilityLevel::VENDOR);
 #else   // TRUSTED_HAL_TEST
   if (aidl_instance.exclusiveTo() == ExclusiveTo::VM) {
     GTEST_SKIP() << name
