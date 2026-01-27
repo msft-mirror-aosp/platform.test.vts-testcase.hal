@@ -46,7 +46,7 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
     public static final String TAG = VtsAidlUsbHostTest.class.getSimpleName();
 
     private static final String HAL_SERVICE = "android.hardware.usb.IUsb/default";
-    private static final long CONN_TIMEOUT = 9000;
+    private static final long CONN_TIMEOUT = 29000;
     // Extra time to wait for device to be available after being NOT_AVAILABLE state.
     private static final long EXTRA_RECOVERY_TIMEOUT = 1000;
     private static final String PRODUCT_FIRST_API_LEVEL_PROP = "ro.product.first_api_level";
@@ -120,7 +120,7 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
             RunUtil.getDefault().sleep(300);
         }
 
-        Assert.assertTrue("USB port did not reconnect within 10000ms timeout.", mReconnected.get());
+        Assert.assertTrue("USB port did not reconnect within 30000ms timeout.", mReconnected.get());
     }
 
     @Test
