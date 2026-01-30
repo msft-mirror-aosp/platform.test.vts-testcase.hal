@@ -44,6 +44,7 @@ cc_defaults {
         "libtinyxml2",
         "libvintf",
         "libvts_vintf_test_common",
+        "packagemanager_aidl-cpp",
     ],
     srcs: [
         "VtsTrebleVintfTestBase.cpp",
