@@ -56,6 +56,7 @@ namespace {
 
 constexpr int kAndroidApi202404 = 202404;
 constexpr int kAndroidApi202504 = 202504;
+constexpr int kAndroidApi202604 = 202604;
 constexpr unsigned int kTrustyTestVmVintfTaPort = 10;
 
 }  // namespace
@@ -992,8 +993,12 @@ TEST_P(SingleAidlTest, HalIsServed) {
     checkVintfExtensionInterfaces(actual_hal_info);
   }
 
-  // TODO(b/388106311): always be able to determine where this code comes from
   const bool ableToDeterminePartition = actual_partition != Partition::UNKNOWN;
+  if (!ableToDeterminePartition && GetVendorApiLevel() >= kAndroidApi202604) {
+    ADD_FAILURE() << "Interface " << name << " comes from an unknown partition."
+                  << "Interfaces need to have known partitions";
+  }
+
   if (GetVendorApiLevel() >= kAndroidApi202504 && ableToDeterminePartition) {
     Partition expected_partition = PartitionOfType(manifest->type());
     EXPECT_EQ(expected_partition, actual_partition);
