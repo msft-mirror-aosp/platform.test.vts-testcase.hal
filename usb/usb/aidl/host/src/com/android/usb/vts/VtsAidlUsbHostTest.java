@@ -19,22 +19,21 @@ package com.android.tests.usbport;
 import com.android.compatibility.common.util.VsrTest;
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.device.ITestDevice;
-import com.android.tradefed.log.LogUtil.CLog;
 import com.android.tradefed.invoker.TestInformation;
+import com.android.tradefed.log.LogUtil.CLog;
 import com.android.tradefed.testtype.DeviceJUnit4ClassRunner;
 import com.android.tradefed.testtype.junit4.BaseHostJUnit4Test;
 import com.android.tradefed.testtype.junit4.BeforeClassWithInfo;
 import com.android.tradefed.util.RunInterruptedException;
 import com.android.tradefed.util.RunUtil;
 import com.google.common.base.Strings;
-
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -54,6 +53,17 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
     private static final String BOARD_FIRST_API_LEVEL_PROP = "ro.board.first_api_level";
     // TODO Remove unknown once b/383164760 is fixed.
     private static final Set<String> VSR_54_REQUIRED_HAL_VERSIONS = Set.of("V2_0", "V1_3", "unknown");
+
+    // Regex for USB root hub at /sys/bus/usb/devices.
+    private static final Pattern RE_USB_ROOT_HUB = Pattern.compile("^usb[0-9]+$");
+    private static final String SYS_BUS_USB_DEVICES = "/sys/bus/usb/devices";
+    private static final String SELINUX_USB_LABEL = "u:object_r:sysfs_usb:s0";
+
+    // Critical files for USB root hub. All of these must exist and have the right selinux labels
+    // applied to them.
+    private static final Set<String> CRIT_USB_FILES =
+            Set.of("authorized", "authorized_default", "busnum", "descriptors", "devnum",
+                    "idProduct", "idVendor", "interface_authorized_default", "removable", "speed");
 
     private static boolean mHasService;
 
@@ -242,5 +252,73 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         return Integer.parseInt(m1.group(1)) > major
                 || (Integer.parseInt(m1.group(1)) == major
                 && Integer.parseInt(m1.group(2)) > minor);
+    }
+
+    private String getSelinuxLabelForFile(String filePath) throws Exception {
+        String result = mDevice.executeShellCommand(String.format("ls -Z %s", filePath));
+
+        String[] words = result.split("\\s++");
+        return words[0];
+    }
+
+    private String joinToPath(String base, String file) {
+        return new File(base, file).getPath();
+    }
+
+    private void assertFileHasLabel(String filePath, String label) throws Exception {
+        CLog.i("Checking for label [%s] on [%s]", label, filePath);
+        String foundLabel = getSelinuxLabelForFile(filePath);
+        Assert.assertEquals(label, foundLabel);
+    }
+
+    private void assertUsbRootFiles(String usbPath) throws Exception {
+        CLog.i("assertUsbRootFiles on [%s]", usbPath);
+
+        String[] children = mDevice.getChildren(usbPath);
+        HashSet<String> seen = new HashSet<>();
+
+        for (String entry : children) {
+            CLog.i("Usb file seen: [%s]", entry);
+
+            if (CRIT_USB_FILES.contains(entry)) {
+                seen.add(entry);
+                assertFileHasLabel(joinToPath(usbPath, entry), SELINUX_USB_LABEL);
+            }
+        }
+
+        // Make sure we saw all critical usb files.
+        Assert.assertEquals(seen, CRIT_USB_FILES);
+    }
+
+    // Test that typec ports have the necessary selinux labels. We only check the root hub ports as
+    // we expect labels to be recursively applied and all other ports are sub-directories under
+    // a root hub (instead of a symlink to another subsystem, i.e. pci).
+    //
+    // This also tests that all critical USB sysfs nodes are added and at least 1 root hub is
+    // listed.
+    @Test
+    @VsrTest(requirements = {"VSR-5.4-0026"})
+    public void testUsbPortsHaveSelinuxLabel() throws Exception {
+        long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
+
+        Assume.assumeTrue(String.format("Skip on devices with %s (%d) less than %d",
+                                  BOARD_API_LEVEL_PROP, roBoardApiLevel, 202604),
+                roBoardApiLevel >= 202604);
+
+        String[] usbEntries = mDevice.getChildren(SYS_BUS_USB_DEVICES);
+
+        boolean hubDevicesFound = false;
+
+        for (String entry : usbEntries) {
+            String childPath = joinToPath(SYS_BUS_USB_DEVICES, entry);
+
+            Matcher hubMatcher = RE_USB_ROOT_HUB.matcher(entry);
+            if (hubMatcher.find()) {
+                hubDevicesFound = true;
+                assertUsbRootFiles(childPath);
+            }
+        }
+
+        Assert.assertTrue("Expect at least 1 hub device found.", hubDevicesFound);
     }
 }
