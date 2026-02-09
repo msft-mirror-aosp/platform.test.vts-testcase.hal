@@ -42,13 +42,17 @@ public final class VtsUsbTypecTest extends BaseHostJUnit4Test {
 
     private static final Pattern RE_PORT = Pattern.compile("^port(\\d+)$");
     private static final Pattern RE_PORT_ALTMODE = Pattern.compile("^port(\\d+)\\.(\\d+)$");
+    private static final Pattern RE_TBT_DEV = Pattern.compile("^(\\d+)-(\\d+)$");
 
     private static final String SYSFS_TYPEC_PATH = "/sys/class/typec";
+    private static final String SYSFS_THUNDERBOLT_PATH = "/sys/bus/thunderbolt/devices";
 
     private static final String SELINUX_TYPEC_LABEL = "u:object_r:sysfs_typec:s0";
+    private static final String SELINUX_THUNDERBOLT_LABEL = "u:object_r:sysfs_thunderbolt:s0";
 
     private static final Set<String> CRIT_PORT_FILES = Set.of("data_role", "power_role");
     private static final Set<String> CRIT_ALTMODE_FILES = Set.of("active", "svid");
+    private static final Set<String> CRIT_TBT_FILES = Set.of("authorized");
 
     @Before
     public void setUp() {
@@ -131,6 +135,47 @@ public final class VtsUsbTypecTest extends BaseHostJUnit4Test {
             Matcher portMatcher = RE_PORT.matcher(entry);
             if (portMatcher.find()) {
                 assertPortFiles(childPath);
+            }
+        }
+    }
+
+    private void assertTbtDeviceFiles(String tbtDevicePath) throws Exception {
+        CLog.i("assertTbtDeviceFiles on [%s]", tbtDevicePath);
+
+        String[] children = mDevice.getChildren(tbtDevicePath);
+        HashSet<String> seen = new HashSet<>();
+
+        for (String entry : children) {
+            CLog.i("Thunderbolt file seen: [%s]", entry);
+
+            if (CRIT_TBT_FILES.contains(entry)) {
+                seen.add(entry);
+                assertFileHasLabel(joinToPath(tbtDevicePath, entry), SELINUX_THUNDERBOLT_LABEL);
+            }
+        }
+
+        // Make sure we saw all critical thunderbolt files.
+        Assert.assertEquals(seen, CRIT_TBT_FILES);
+    }
+
+    // Test that thunderbolt devices (if they exist) have the necessary selinux labels.
+    @Test
+    @VsrTest(requirements = {"VSR-5.4-0020"})
+    public void testThunderboltDevicesHaveSelinuxLabel() throws Exception {
+        // Test only applies for boards starting after 202604
+        assumeMinimumBoardApiLevel(202604);
+
+        // First make sure this platform actually has thunderbolt enabled.
+        Assume.assumeTrue(mDevice.doesFileExist(SYSFS_THUNDERBOLT_PATH));
+
+        String[] thunderboltEntries = mDevice.getChildren(SYSFS_THUNDERBOLT_PATH);
+
+        for (String entry : thunderboltEntries) {
+            String childPath = joinToPath(SYSFS_THUNDERBOLT_PATH, entry);
+
+            Matcher tbtDeviceMatcher = RE_TBT_DEV.matcher(entry);
+            if (tbtDeviceMatcher.find()) {
+                assertTbtDeviceFiles(childPath);
             }
         }
     }
