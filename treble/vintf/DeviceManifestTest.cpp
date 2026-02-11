@@ -60,8 +60,10 @@ TEST(FrameworkSupportTest, VendorApiLevel) {
            {Level::V, Level::U, Level::T, Level::S, Level::R}},
           {36 /* Android B */,
            {Level::B, Level::V, Level::U, Level::T, Level::S}},
-          {37 /* Android C */,
-           {Level::C, Level::B, Level::V, Level::U, Level::T}},
+          {37 /* Android C - TODO(b/483500116) remove Level::D and allower newer board APIs */,
+           {Level::D, Level::C, Level::B, Level::V, Level::U, Level::T}},
+          {38 /* Android D */,
+           {Level::D, Level::C, Level::B, Level::V, Level::U}},
       };
   // clang-format on
   uint64_t boardApiLevel = GetBoardApiLevel();
