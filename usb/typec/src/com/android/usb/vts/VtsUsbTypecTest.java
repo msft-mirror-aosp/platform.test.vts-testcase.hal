@@ -45,6 +45,7 @@ public final class VtsUsbTypecTest extends BaseHostJUnit4Test {
     private static final Pattern RE_TBT_DEV = Pattern.compile("^(\\d+)-(\\d+)$");
 
     private static final String SYSFS_TYPEC_PATH = "/sys/class/typec";
+    private static final String SYSFS_TYPEC_PORT0_PATH = "/sys/class/typec/port0";
     private static final String SYSFS_THUNDERBOLT_PATH = "/sys/bus/thunderbolt/devices";
 
     private static final String SELINUX_TYPEC_LABEL = "u:object_r:sysfs_typec:s0";
@@ -122,10 +123,15 @@ public final class VtsUsbTypecTest extends BaseHostJUnit4Test {
 
     // Test that typec ports and altmodes have the necessary selinux labels.
     @Test
-    @VsrTest(requirements = {"VSR-5.4-0017"})
+    @VsrTest(requirements = {"VSR-5.4-0012", "VSR-5.4-0017"})
     public void testTypecPortsAndChildrenHaveSelinuxLabel() throws Exception {
         // Test only applies for boards starting after 202604
         assumeMinimumBoardApiLevel(202604);
+
+        // All systems must have at least one Type-C receptacle.
+        Assert.assertTrue("VSR-5.4-0012: All systems must have at least one Type-C receptacle "
+                        + "(port0 missing)",
+                mDevice.doesFileExist(SYSFS_TYPEC_PORT0_PATH));
 
         String[] typecEntries = mDevice.getChildren(SYSFS_TYPEC_PATH);
 
