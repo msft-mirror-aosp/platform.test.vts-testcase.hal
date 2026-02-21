@@ -16,6 +16,7 @@
 
 package com.android.tests.usbport;
 
+import android.platform.test.annotations.RequiresDevice;
 import com.android.compatibility.common.util.VsrTest;
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.device.ITestDevice;
@@ -297,7 +298,8 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
     // This also tests that all critical USB sysfs nodes are added and at least 1 root hub is
     // listed.
     @Test
-    @VsrTest(requirements = {"VSR-5.4-0026"})
+    @VsrTest(requirements = {"VSR-5.4-026"})
+    @RequiresDevice
     public void testUsbPortsHaveSelinuxLabel() throws Exception {
         long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
 

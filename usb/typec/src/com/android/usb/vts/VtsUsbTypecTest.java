@@ -16,6 +16,7 @@
 
 package com.android.tests.usbtypec;
 
+import android.platform.test.annotations.RequiresDevice;
 import com.android.compatibility.common.util.VsrTest;
 import com.android.tradefed.device.ITestDevice;
 import com.android.tradefed.log.LogUtil.CLog;
@@ -123,7 +124,8 @@ public final class VtsUsbTypecTest extends BaseHostJUnit4Test {
 
     // Test that typec ports and altmodes have the necessary selinux labels.
     @Test
-    @VsrTest(requirements = {"VSR-5.4-0012", "VSR-5.4-0017"})
+    @VsrTest(requirements = {"VSR-5.4-012", "VSR-5.4-017"})
+    @RequiresDevice
     public void testTypecPortsAndChildrenHaveSelinuxLabel() throws Exception {
         // Test only applies for boards starting after 202604
         assumeMinimumBoardApiLevel(202604);
@@ -166,7 +168,8 @@ public final class VtsUsbTypecTest extends BaseHostJUnit4Test {
 
     // Test that thunderbolt devices (if they exist) have the necessary selinux labels.
     @Test
-    @VsrTest(requirements = {"VSR-5.4-0020"})
+    @VsrTest(requirements = {"VSR-5.4-020"})
+    @RequiresDevice
     public void testThunderboltDevicesHaveSelinuxLabel() throws Exception {
         // Test only applies for boards starting after 202604
         assumeMinimumBoardApiLevel(202604);
