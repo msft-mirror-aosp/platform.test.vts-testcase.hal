@@ -291,12 +291,13 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         Assert.assertEquals(seen, CRIT_USB_FILES);
     }
 
-    // Test that typec ports have the necessary selinux labels. We only check the root hub ports as
+    // Test that host ports have the necessary selinux labels. We only check the root hub ports as
     // we expect labels to be recursively applied and all other ports are sub-directories under
-    // a root hub (instead of a symlink to another subsystem, i.e. pci).
+    // a root hub (instead of a symlink to another subsystem, i.e. pci). This also tests that all
+    // critical USB sysfs nodes are added.
     //
-    // This also tests that all critical USB sysfs nodes are added and at least 1 root hub is
-    // listed.
+    // This test assumes that there is at least 1 root hub available. This assumption can fail if
+    // there is a single USB port and it is running in device mode.
     @Test
     @VsrTest(requirements = {"VSR-5.4-026"})
     @RequiresDevice
@@ -321,6 +322,8 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
             }
         }
 
-        Assert.assertTrue("Expect at least 1 hub device found.", hubDevicesFound);
+        // Assume that at least 1 hub device is found so that we don't pass the test if no hub
+        // devices were found at all.
+        Assume.assumeTrue("Assume at least 1 hub device found.", hubDevicesFound);
     }
 }
