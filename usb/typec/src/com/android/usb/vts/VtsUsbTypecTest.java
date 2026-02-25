@@ -72,12 +72,22 @@ public final class VtsUsbTypecTest extends BaseHostJUnit4Test {
         return new File(base, file).getPath();
     }
 
+    private String getFullyResolvedPath(String filePath) throws Exception {
+        String result = mDevice.executeShellCommand("readlink -f " + filePath);
+        return result.trim();
+    }
+
     private void assertFileHasLabel(String filePath, String label) throws Exception {
         CLog.i("Checking for label [%s] on [%s]", label, filePath);
         String result = mDevice.executeShellCommand(String.format("ls -Z %s", filePath));
         String foundLabel = result.split("\\s++")[0];
-        Assert.assertEquals(
-                String.format("Wanted %s, cmd result: %s", label, result), label, foundLabel);
+
+        if (!label.equals(foundLabel)) {
+            String resolvedPath = getFullyResolvedPath(filePath);
+            Assert.assertEquals(String.format("Selinux label mismatch at %s: %s wanted vs %s found",
+                                        resolvedPath, label, foundLabel),
+                    label, foundLabel);
+        }
     }
 
     private void assertPortFiles(String portPath) throws Exception {
