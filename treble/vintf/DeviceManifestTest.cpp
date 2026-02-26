@@ -402,6 +402,50 @@ TEST_F(DeviceManifestTest, AudioHal) {
       << "Device must have either Audio HIDL HAL or AIDL HAL";
 }
 
+static bool IsEmulator() {
+  if (android::base::GetBoolProperty("ro.boot.qemu", false) ||
+      android::base::GetBoolProperty("ro.kernel.qemu", false)) {
+    return true;
+  }
+  std::string device = android::base::GetProperty("ro.product.device", "");
+  std::string model = android::base::GetProperty("ro.product.model", "");
+  std::string name = android::base::GetProperty("ro.product.name", "");
+  std::string hardware = android::base::GetProperty("ro.hardware", "");
+
+  return android::base::StartsWith(device, "vsoc_") ||
+         android::base::StartsWith(model, "Cuttlefish ") ||
+         android::base::StartsWith(name, "cf_") ||
+         android::base::StartsWith(name, "aosp_cf_") ||
+         android::base::StartsWith(hardware, "cutf") ||
+         android::base::StartsWith(hardware, "ranchu");
+}
+
+// Devices with Board API level 202604+ that support device mode (have a UDC)
+// must have the AIDL USB Gadget HAL.
+// @VsrTest = VSR-5.4-027
+TEST_F(DeviceManifestTest, UsbGadgetHal) {
+  if (IsEmulator()) {
+    GTEST_SKIP() << "Skip test on emulator";
+  }
+
+  uint64_t board_api_level = GetBoardApiLevel();
+  if (board_api_level < 202604) {
+    GTEST_SKIP() << "USB Gadget AIDL HAL is only required on Board API level "
+                    "202604 or later (current: "
+                 << board_api_level << ")";
+  }
+
+  std::string controller = android::base::GetProperty("sys.usb.controller", "");
+  if (controller.empty()) {
+    GTEST_SKIP() << "Device does not support USB device mode (no UDC)";
+  }
+
+  ASSERT_TRUE(vendor_manifest_->hasAidlInstance("android.hardware.usb.gadget",
+                                                "IUsbGadget", "default"))
+      << "Device must have the android.hardware.usb.gadget.IUsbGadget/default "
+         "HAL";
+}
+
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SingleHidlTest);
 INSTANTIATE_TEST_CASE_P(
     DeviceManifest, SingleHidlTest,
