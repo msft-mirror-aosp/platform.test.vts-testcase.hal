@@ -262,6 +262,11 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
         return words[0];
     }
 
+    private String getFullyResolvedPath(String filePath) throws Exception {
+        String result = mDevice.executeShellCommand("readlink -f " + filePath);
+        return result.trim();
+    }
+
     private String joinToPath(String base, String file) {
         return new File(base, file).getPath();
     }
@@ -269,7 +274,12 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
     private void assertFileHasLabel(String filePath, String label) throws Exception {
         CLog.i("Checking for label [%s] on [%s]", label, filePath);
         String foundLabel = getSelinuxLabelForFile(filePath);
-        Assert.assertEquals(label, foundLabel);
+        if (!label.equals(foundLabel)) {
+            String resolvedPath = getFullyResolvedPath(filePath);
+            Assert.assertEquals(String.format("Selinux label mismatch at %s: %s wanted vs %s found",
+                                        resolvedPath, label, foundLabel),
+                    label, foundLabel);
+        }
     }
 
     private void assertUsbRootFiles(String usbPath) throws Exception {
