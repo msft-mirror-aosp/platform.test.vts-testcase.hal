@@ -56,6 +56,18 @@ public final class VtsUsbTypecTest extends BaseHostJUnit4Test {
     private static final Set<String> CRIT_ALTMODE_FILES = Set.of("active", "svid");
     private static final Set<String> CRIT_TBT_FILES = Set.of("authorized");
 
+    // Strings to detect certain form factors.
+    private static final String FEATURE_TV = "android.hardware.type.television";
+    private static final String FEATURE_WATCH = "android.hardware.type.watch";
+
+    // Strings to detect emulators.
+    private static final String PROP_BOOT_QEMU = "ro.boot.qemu";
+    private static final String PROP_KERNEL_QEMU = "ro.kernel.qemu";
+    private static final String PROP_PRODUCT_DEVICE = "ro.product.device";
+    private static final String PROP_PRODUCT_MODEL = "ro.product.model";
+    private static final String PROP_PRODUCT_NAME = "ro.product.name";
+    private static final String PROP_HARDWARE = "ro.hardware";
+
     @Before
     public void setUp() {
         mDevice = getDevice();
@@ -132,6 +144,57 @@ public final class VtsUsbTypecTest extends BaseHostJUnit4Test {
         Assert.assertEquals(seen, CRIT_ALTMODE_FILES);
     }
 
+    private String getStringProperty(String id) throws Exception {
+        String prop = mDevice.getProperty(id);
+
+        if (prop == null) {
+            return "";
+        }
+
+        return prop;
+    }
+
+    private boolean isEmulator() throws Exception {
+        // First use the provided check (which only checks serial at this time).
+        if (mDevice.getIDevice().isEmulator()) {
+            return true;
+        }
+
+        // Next check for QEMU.
+        boolean isQemu = mDevice.getBooleanProperty(PROP_BOOT_QEMU, false)
+                || mDevice.getBooleanProperty(PROP_KERNEL_QEMU, false);
+        if (isQemu) {
+            return true;
+        }
+
+        // Check for specific emulator VM names.
+        String device = getStringProperty(PROP_PRODUCT_DEVICE);
+        String model = getStringProperty(PROP_PRODUCT_MODEL);
+        String name = getStringProperty(PROP_PRODUCT_NAME);
+        String hardware = getStringProperty(PROP_HARDWARE);
+
+        return device.startsWith("vsoc_") || model.startsWith("Cuttlefish")
+                || name.startsWith("cf_") || name.startsWith("aosp_cf_")
+                || hardware.startsWith("cutf") || hardware.startsWith("ranchu")
+                || hardware.startsWith("goldfish");
+    }
+
+    // Check whether we should assert at least 1 Type-C port on the system (VSR-5.4-0012).
+    // On some systems, we will turn the assert into an Assume instead if there's a legitimate
+    // reason to skip the test.
+    private boolean shouldAssertAtLeastOneTypec() throws Exception {
+        // Emulators may not populate any USB-C ports.
+        if (isEmulator()) {
+            return false;
+        }
+
+        // TVs and Watches don't yet REQUIRE physical Type-C ports.
+        boolean isTv = mDevice.hasFeature(FEATURE_TV);
+        boolean isWatch = mDevice.hasFeature(FEATURE_WATCH);
+
+        return !(isTv || isWatch);
+    }
+
     // Test that typec ports and altmodes have the necessary selinux labels.
     @Test
     @VsrTest(requirements = {"VSR-5.4-012", "VSR-5.4-017"})
@@ -140,10 +203,18 @@ public final class VtsUsbTypecTest extends BaseHostJUnit4Test {
         // Test only applies for boards starting after 202604
         assumeMinimumBoardApiLevel(202604);
 
-        // All systems must have at least one Type-C receptacle.
-        Assert.assertTrue("VSR-5.4-0012: All systems must have at least one Type-C receptacle "
-                        + "(port0 missing)",
-                mDevice.doesFileExist(SYSFS_TYPEC_PORT0_PATH));
+        String vsrMessage = "VSR-5.4-0012: All systems must have at least one Type-C receptacle "
+                + "(port0 missing)";
+        boolean portZeroExists = mDevice.doesFileExist(SYSFS_TYPEC_PORT0_PATH);
+
+        // Most systems must have at least one Type-C receptacle. For those systems, assert that we
+        // have at least 1 TypeC (i.e. they will fail the test). For others, use assume so that the
+        // test is only applicable if there is at least 1 Type-C port.
+        if (shouldAssertAtLeastOneTypec()) {
+            Assert.assertTrue(vsrMessage, portZeroExists);
+        } else {
+            Assume.assumeTrue(vsrMessage, portZeroExists);
+        }
 
         String[] typecEntries = mDevice.getChildren(SYSFS_TYPEC_PATH);
 
