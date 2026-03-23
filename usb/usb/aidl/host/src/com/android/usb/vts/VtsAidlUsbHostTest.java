@@ -17,6 +17,7 @@
 package com.android.tests.usbport;
 
 import android.platform.test.annotations.RequiresDevice;
+import com.android.compatibility.common.util.PropertyUtil;
 import com.android.compatibility.common.util.VsrTest;
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.device.ITestDevice;
@@ -312,11 +313,11 @@ public final class VtsAidlUsbHostTest extends BaseHostJUnit4Test {
     @VsrTest(requirements = {"VSR-5.4-026"})
     @RequiresDevice
     public void testUsbPortsHaveSelinuxLabel() throws Exception {
-        long roBoardApiLevel = mDevice.getIntProperty(BOARD_API_LEVEL_PROP, -1);
-
-        Assume.assumeTrue(String.format("Skip on devices with %s (%d) less than %d",
-                                  BOARD_API_LEVEL_PROP, roBoardApiLevel, 202604),
-                roBoardApiLevel >= 202604);
+        long minApiLevel = 202604;
+        long vsrApiLevel = PropertyUtil.getVsrApiLevel(mDevice);
+        Assume.assumeTrue(String.format("Skip on devices with VSR API level (%d) less than %d",
+                                  vsrApiLevel, minApiLevel),
+                vsrApiLevel >= minApiLevel);
 
         String[] usbEntries = mDevice.getChildren(SYS_BUS_USB_DEVICES);
 
