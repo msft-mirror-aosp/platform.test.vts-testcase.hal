@@ -420,7 +420,7 @@ static bool IsEmulator() {
          android::base::StartsWith(hardware, "ranchu");
 }
 
-// Devices with Board API level 202604+ that support device mode (have a UDC)
+// Devices with Vendor API level 202604+ that support device mode (have a UDC)
 // must have the AIDL USB Gadget HAL.
 // @VsrTest = VSR-5.4-027
 TEST_F(DeviceManifestTest, UsbGadgetHal) {
@@ -428,11 +428,11 @@ TEST_F(DeviceManifestTest, UsbGadgetHal) {
     GTEST_SKIP() << "Skip test on emulator";
   }
 
-  uint64_t board_api_level = GetBoardApiLevel();
-  if (board_api_level < 202604) {
-    GTEST_SKIP() << "USB Gadget AIDL HAL is only required on Board API level "
+  uint64_t vendor_api_level = GetVendorApiLevel();
+  if (vendor_api_level < 202604) {
+    GTEST_SKIP() << "USB Gadget AIDL HAL is only required on Vendor API level "
                     "202604 or later (current: "
-                 << board_api_level << ")";
+                 << vendor_api_level << ")";
   }
 
   std::string controller = android::base::GetProperty("sys.usb.controller", "");
