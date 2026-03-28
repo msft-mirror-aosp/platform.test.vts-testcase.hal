@@ -999,7 +999,19 @@ TEST_P(SingleAidlTest, HalIsServed) {
                   << "Interfaces need to have known partitions";
   }
 
-  if (GetVendorApiLevel() >= kAndroidApi202504 && ableToDeterminePartition) {
+  const std::set<std::string> kExceptions = {
+      // This HAL is intended to be a framework HAL but has been declared
+      // by a lot of devices in the device manifest. So, it's not in the FCM
+      // in GSI.
+      "android.se.omapi",
+  };
+  const bool requiresPartitionCheck =
+      std::none_of(kExceptions.begin(), kExceptions.end(),
+                   [&name](const std::string& exception) {
+                     return base::StartsWith(name, exception);
+                   });
+  if (requiresPartitionCheck && GetVendorApiLevel() >= kAndroidApi202504 &&
+      ableToDeterminePartition) {
     Partition expected_partition = PartitionOfType(manifest->type());
     EXPECT_EQ(expected_partition, actual_partition);
   }
