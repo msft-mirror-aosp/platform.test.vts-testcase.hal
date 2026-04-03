@@ -74,12 +74,15 @@ TEST(FrameworkSupportTest, VendorApiLevel) {
     ASSERT_NE(boardApiLevel, 0u)
         << "Device's board API level cannot be determined.";
   }
+
+  auto boardFcmLevel = GetFcmVersionFromApiLevel(boardApiLevel);
+  ASSERT_RESULT_OK(boardFcmLevel);
   uint64_t buildVersionSdk =
       android::base::GetUintProperty<uint64_t>("ro.build.version.sdk", 0);
 
   if (auto it = kSupportedVendorLevelPerSdkLevel.find(buildVersionSdk);
       it != kSupportedVendorLevelPerSdkLevel.end()) {
-    if (!it->second.contains(static_cast<Level>(boardApiLevel))) {
+    if (!it->second.contains(*boardFcmLevel)) {
       // During development it's common for devices to implement a newer vendor
       // API level before bumping the SDK API level. So if this is not a REL
       // device, also check the next SDKs supported vendor API levels.
@@ -87,7 +90,7 @@ TEST(FrameworkSupportTest, VendorApiLevel) {
       if (android::base::GetProperty("ro.build.version.codename", "") !=
           "REL") {
         while (++it != kSupportedVendorLevelPerSdkLevel.end()) {
-          if (it->second.contains(static_cast<Level>(boardApiLevel))) {
+          if (it->second.contains(*boardFcmLevel)) {
             return;
           }
         }
@@ -100,12 +103,12 @@ TEST(FrameworkSupportTest, VendorApiLevel) {
           "This build is using a version of Android (" +
           std::to_string(buildVersionSdk) +
           ") that no longer supports this board API level (" +
-          std::to_string(boardApiLevel) +
+          std::to_string(static_cast<size_t>(*boardFcmLevel)) +
           "). This means we no longer support building the vendor image "
           "from source code that is this old. The board API level must "
           "be increased for this upgrade to one of " +
           acceptedBoardApis;
-      if (GetVendorApiLevel() <= static_cast<uint64_t>(Level::B)) {
+      if (GetVendorApiLevel() <= static_cast<size_t>(Level::B)) {
         std::cout << "[  WARNING ] " << failMessage << std::endl;
       } else {
         ADD_FAILURE() << failMessage;
